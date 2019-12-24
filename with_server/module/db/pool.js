@@ -19,6 +19,8 @@ module.exports = {
     queryParam_Arr: async (...args) => {
         const query = args[0]
         const value = args[1] // array
+        const pool = await poolPromise;
+
         let result
         try {
             var connection = await pool.getConnection() // connection을 pool에서 하나 가져온다.
@@ -34,6 +36,8 @@ module.exports = {
     queryParam_Parse: async (inputquery, inputvalue) => {
         const query = inputquery
         const value = inputvalue
+        const pool = await poolPromise;
+
         let result
         try {
             var connection = await pool.getConnection()
@@ -50,6 +54,7 @@ module.exports = {
     },
     Transaction: async (...args) => {
         let result = "Success"
+        const pool = await poolPromise;
 
         try {
             var connection = await pool.getConnection()

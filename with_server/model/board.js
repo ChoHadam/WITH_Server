@@ -9,17 +9,27 @@ module.exports = {
         region,
         title,
         content,
+        uploadTime,
         startDate,
         endDate,
         userIdx,
+        active,
         withNum,
         filter
     }) => {
+        //uploadTime 설정. 현재 서울의 시간을 uploadTime으로 저장.
+        const moment = require('moment');
+        require('moment-timezone');
+        moment.tz.setDefault("Asia/Seoul");
+        var newDate = moment().format('YYYY-MM-DD HH:mm:ss');
+        uploadTime = newDate;
+        //console.log(uploadTime);
+
         const table = 'Bulletin';
-        const fields = 'country, region, title, content, startDate, endDate, userIdx, withNum, filter';
-        const questions = `?, ?, ?, ?, ?, ?, ?, ?, ?`;
+        const fields = 'country, region, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter';
+        const questions = `?, ?, ?, ?, ?, ?, ?, ?, ?, ?`;
         const query = `INSERT INTO ${table}(${fields}) VALUES(${questions})`;
-        const values = [country, region, title, content, startDate, endDate, userIdx, withNum, filter];
+        const values = [country, region, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter];
         return pool.queryParam_Parse(query, values)
             .then(result => {
                 console.log(result);
@@ -42,9 +52,11 @@ module.exports = {
                 throw err;
             });
     },
+
     readAll: () => {
         const table = 'Bulletin';
-        const query = `SELECT * FROM ${table}`
+        const query = `SELECT * FROM ${table}`;
+
         return pool.queryParam_None(query)
             .then(result => {
                 return {
@@ -57,12 +69,11 @@ module.exports = {
                 throw err;
             });
     },
-    read: ({
-        bltIdx
-    }) => {
+
+    read: (bltIdx) => {
         const table = 'Bulletin';
         const query = `SELECT * FROM ${table} WHERE bltIdx = '${bltIdx}'`;
-        return pool.queryParam_None(query)
+        return pool.queryParam_Parse(query)
             .then(result => {
                 if (result.length == 0) {
                     return {
@@ -80,19 +91,20 @@ module.exports = {
                 throw err;
             });
     },
+
     update: ({
-        bltIdx,
         country,
         region,
         title,
         content,
+        uploadTime,
         startDate,
         endDate,
         userIdx,
+        active,
         withNum,
         filter
-        
-    }) => {
+    }, bltIdx) => {
         const table = 'Bulletin';
         //const values = [bltIdx, country, region, title, content, startDate, endDate, userIdx, withNum, filter];
         const conditions = [];
@@ -101,6 +113,7 @@ module.exports = {
         if (region) conditions.push(`region = '${region}'`);
         if (title) conditions.push(`title = '${title}'`);
         if (content) conditions.push(`content = '${content}'`);
+        if (uploadTime) conditions.push(`uploadTime = '${uploadTime}'`);
         if (startDate) conditions.push(`startDate = '${startDate}'`);
         if (endDate) conditions.push(`endDate = '${endDate}'`);
         if (withNum) conditions.push(`withNum = '${withNum}'`);
@@ -111,7 +124,7 @@ module.exports = {
         const user = `SELECT userIdx FROM ${table} WHERE bltIdx = ${bltIdx}`;
         return pool.queryParam_None(query)
             .then(result => {
-                if (bltIdx >= tableLength){
+                /*if (bltIdx >= tableLength){
                     resolve({
                         code: statusCode.BAD_REQUEST,
                         json: authUtil.successFalse(responseMessage.NO_BOARD)   
@@ -123,8 +136,8 @@ module.exports = {
                         code: statusCode.FORBIDDEN,
                         json: authUtil.successFalse(responseMessage.MISS_MATCH_ID)
                     });
-                return;
-                }
+                    return;
+                }*/
                 console.log(result);
                 return {
                     code: statusCode.OK,
@@ -136,6 +149,7 @@ module.exports = {
                 throw err;
             });
     },
+
     delete: (whereJson = {}) => {
         const table = 'Bulletin';
         const conditions = Object.entries(whereJson).map(it => `${it[0]} = '${it[1]}'`).join(',');

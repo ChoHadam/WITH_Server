@@ -16,7 +16,7 @@ router.post('/', async (req, res, next) => {
       res.status(code).send(json);
     }).catch(err => {
       console.log(err);
-      res.status(sC.INTERNAL_SERVER_ERROR).send(aU.successFalse(rM.X_CREATE_FAIL(THIS_LOG)));
+      res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_CREATE_FAIL));
     });
   });
 
@@ -36,7 +36,7 @@ router.get("/", async (req, res, next) => {
 
 // 게시글 하나 보기
 router.get("/:bltIdx", async(req, res, next) => {
-    Bulletin.read().then(({
+    Bulletin.read(req.params.bltIdx).then(({
         code,
         json
     }) => {
@@ -49,8 +49,8 @@ router.get("/:bltIdx", async(req, res, next) => {
 });
 
 // 게시글 수정하기
-router.put("/", async(req, res, next) => {
-    Bulletin.update().then(({
+router.put("/:bltIdx", async(req, res, next) => {
+    Bulletin.update(req.body, req.params.bltIdx).then(({
         code,
         json
     }) => {
