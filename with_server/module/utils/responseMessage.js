@@ -21,6 +21,7 @@ module.exports = {
     NO_USER: "존재하지 않는 유저 입니다.",
     NO_BOARD: "존재하지 않은 게시글 입니다.",
     MISS_MATCH_PW: "비밀번호가 일치하지 않습니다",
+    MISS_MATCH_ID: "현재 유저는 해당 게시물의 글쓴이가 아닙니다",
     INTERNAL_SERVER_ERROR: "서버 내부 오류",
     INVALID_TOKEN: "올바르지 않은 토큰",
 
