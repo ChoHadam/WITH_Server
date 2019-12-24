@@ -108,6 +108,7 @@ module.exports = {
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
         const query = `UPDATE ${table} ${setStr} WHERE bltIdx = ${bltIdx}`;
         const tableLength = `SELECT count(*) FROM ${table}`
+        const user = `SELECT userIdx FROM ${table} WHERE bltIdx = ${bltIdx}`;
         return pool.queryParam_None(query)
             .then(result => {
                 if (bltIdx >= tableLength){
@@ -117,7 +118,7 @@ module.exports = {
                     });
                     return;
                 }
-                if(userIdx != userIdx){
+                if(userIdx != user){
                     resolve({
                         code: statusCode.FORBIDDEN,
                         json: authUtil.successFalse(responseMessage.MISS_MATCH_ID)
