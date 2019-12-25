@@ -1,5 +1,6 @@
 # WITH_Server
 Server 개고수들의 개발저장📗📘
+[REST API 문서](https://github.com/TEAM-WITH/WITH_Server/wiki)
 
 ## 팀원
 
