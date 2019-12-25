@@ -7,6 +7,7 @@ const statusCode = require('../../module/utils/statusCode');
 
 const Bulletin = require('../../model/board');
 
+
 // 게시글 생성하기
 router.post('/', async (req, res) => {
     const {country, region, title, content, startDate, endDate, userIdx, withNum, filter} = req.body;
