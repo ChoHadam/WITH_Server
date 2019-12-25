@@ -39,7 +39,7 @@ module.exports = {
                 console.log('invalid token');
                 return -2;
             } else {
-                console.log("invalid token");
+                console.log("error");
                 return -2;
             }
         }

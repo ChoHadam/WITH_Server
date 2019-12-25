@@ -36,6 +36,8 @@ router.post('/', async(req, res) => {
                 .send(utils.successFalse(responseMessage.EMPTY_TOKEN));
                 return;
             } else{   //토큰 생성
+
+                console.log(jwtUtils.verify(result.token));
                 res
                 .status(statusCode.OK)
                 .send(utils.successTrue(responseMessage.SIGN_IN_SUCCESS,result.token));                
