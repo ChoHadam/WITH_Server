@@ -8,6 +8,8 @@ module.exports = {
     ALREADY_ID: "존재하는 ID 입니다.",
     NO_USER: "존재하지 않는 유저 id 입니다.",
     MISS_MATCH_PW: "비밀번호가 일치하지 않습니다",
+    EMPTY_TOKEN: "토큰이 없습니다",
+    
 
     BOARD_CREATE_SUCCESS: "게시글 작성 성공",
     BOARD_CREATE_FAIL: "게시글 작성 실패",
