@@ -12,13 +12,13 @@ const user = {
         const values = [json.userId,json.password,json.salt,json.name,json.birth,json.gender,json.img];        
         //const values = [`"${json.userId}","${json.password}","${json.name}","${json.birth},","${json.gender}," `];        
         const signupQuery = `INSERT INTO ${table}(${fields}) VALUES(${questions})`;
-        const result = await db.queryParam_Parse(signupQuery, values)
+        const result = await db.queryParam_Parse(signupQuery, values);
         return result;
     },
     checkUser : async(userId) =>{
-        //이미 존재하는 회원인지 확인(아이디 중복체크)            
-        const checkDupQuery = `SELECT * FROM ${table} WHERE userID = ${userId}`;
-        const result = await db.queryParam_None(checkDupQuery)
+        //존재하는 회원인지 확인          
+        const checkUserQuery = `SELECT * FROM ${table} WHERE userID = ${userId}`;
+        const result = await db.queryParam_None(checkUserQuery);
         return result;
     },
     signin : async(json) => {

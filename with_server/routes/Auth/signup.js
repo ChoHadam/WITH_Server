@@ -9,7 +9,7 @@ const upload = require('../../config/multer');
 const User = require('../../model/user');
 
 router.post('/',upload.single('img'),async (req,res) =>{    
-    const {userId, password, name, birth, gender} = req.body
+    const {userId, password, name, birth, gender} = req.body;
     //필수항목 안채웠으면 오류메세지 전송
     if(!userId || !password || name || name || birth || gender){
         res
@@ -18,7 +18,7 @@ router.post('/',upload.single('img'),async (req,res) =>{
         return;
     }
     //빈 항목이 없다면 그 아이디 중복되는지 확인
-    const checkDup = await User.checkUser(req.body.userIdx);
+    const checkDup = await User.checkUser(userId);
     if(checkDup.length != 0)
     {
         res
@@ -48,5 +48,5 @@ router.post('/',upload.single('img'),async (req,res) =>{
     }
     res
     .status(statusCode.OK)
-    .send(authUtil.successTrue(responseMessage.SIGN_UP_SUCCESS));
+    .send(authUtil.successTrue(responseMessage.SIGN_UP_SUCCESS));//회원가입 성공하면 data뭐 반납해야됨??
 });
