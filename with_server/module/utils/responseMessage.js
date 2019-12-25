@@ -25,6 +25,13 @@ module.exports = {
     INTERNAL_SERVER_ERROR: "서버 내부 오류",
     INVALID_TOKEN: "올바르지 않은 토큰",
 
+    MYPAGE_READ_SUCCESS : "마이페이지 조회 성공",
+    MYPAGE_READ_FAIL : "마이페이지 조회 실패",
+    MYPAGE_UPDATE_SUCCESS : "마이페이지 수정 성공",
+    MYPAGE_UPDATE_FAIL : "마이페이지 수정 실패",
+
+
+
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,
     X_CREATE_FAIL: (x) => `${x} 작성 실패`,
     X_READ_ALL_SUCCESS: (x) => `${x} 전체 조회 성공`,
