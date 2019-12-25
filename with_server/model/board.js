@@ -1,171 +1,73 @@
-const authUtil = require('../module/utils/utils');
 const statusCode = require('../module/utils/statusCode');
 const responseMessage = require('../module/utils/responseMessage');
+const authUtil = require('../module/utils/utils');
+
 const pool = require('../module/db/pool');
+const moment = require('moment');
+const moment_timezone = require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
+
+const table = 'Bulletin';
 
 module.exports = {
-    create: ({
-        country,
-        region,
-        title,
-        content,
-        uploadTime,
-        startDate,
-        endDate,
-        userIdx,
-        active,
-        withNum,
-        filter
-    }) => {
-        //uploadTime 설정. 현재 서울의 시간을 uploadTime으로 저장.
-        const moment = require('moment');
-        require('moment-timezone');
-        moment.tz.setDefault("Asia/Seoul");
+    create : async(json) => {
+        // uploadTime에 현재 서울 시각 저장
         var newDate = moment().format('YYYY-MM-DD HH:mm:ss');
-        uploadTime = newDate;
-        //console.log(uploadTime);
+        json.uploadTime = newDate;
 
-        const table = 'Bulletin';
-        const fields = 'country, region, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter';
-        const questions = `?, ?, ?, ?, ?, ?, ?, ?, ?, ?`;
-        const query = `INSERT INTO ${table}(${fields}) VALUES(${questions})`;
-        const values = [country, region, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter];
-        return pool.queryParam_Parse(query, values)
-            .then(result => {
-                console.log(result);
-                const bltIdx = result.bltIdx;
-                return {
-                    code: statusCode.OK,
-                    json: authUtil.successTrue(responseMessage.BOARD_CREATE_SUCCESS, bltIdx)
-                };
-            })
-            .catch(err => {
-                // ER_NO_REFERENCED_ROW_2 : 참조받는 테이블의 데이터를 먼저 삽입해서 발생한 오류(참조키는 항상 부모키에 해당하는 값만 넣을 수 있다)
-                if (err.errno == 1452) {
-                    console.log(err.errno, err.code);
-                    return {
-                        code: statusCode.BAD_REQUEST,
-                        json: authUtil.successFalse([responseMessage.BOARD_CREATE_FAIL, responseMessage.NO_USER].join(','))
-                    };
-                }
-                console.log(err);
-                throw err;
-            });
+        // 나라, 대륙, 제목, 내용, 작성시간, 동행시작시간, 동행종료시간, 작성자인덱스, 활성화유무, 동행자 수, 동성필터여부
+        const fields = 'country, region, title, content, uploadTime, startDate, endDate, userIdx, active, withNum, filter';
+        const questions = `"${json.country}", "${json.region}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.active}", "${json.withNum}", "${json.filter}"`;
+        const result = await pool.queryParam_None(`INSERT INTO ${table}(${fields}) VALUES(${questions})`);
+        return result;
     },
 
-    readAll: () => {
-        const table = 'Bulletin';
-        const query = `SELECT * FROM ${table}`;
+    //readAll : async(filter) => {
+    readAll : async() => {
+        // // 동성필터 적용한 경우
+        // if(filter == 1)
+        // {
+        //     const result = await pool.queryParam_None(`SELECT bltIdx FROM Bulletin, User WHERE Bulletin.userIdx = User.userIdx AND User.gender = ${gender}`);
+        //     return result;
+        // }
+        // // 동성필터 적용하지 않은 경우
+        // else
+        // {
+        //     const result = await pool.queryParam_None(`SELECT bltIdx FROM Bulletin, User WHERE Bulletin.filter = 0 UNION SELECT bltIdx FROM Bulletin, User WHERE Bulletin.filter = 1 AND Bulletin.userIdx = User.userIdx AND User.gender = ${gender}`);
+        //     return result;
+        // }
 
-        return pool.queryParam_None(query)
-            .then(result => {
-                return {
-                    code: statusCode.OK,
-                    json: authUtil.successTrue(responseMessage.BOARD_READ_SUCCESS, result)
-                };
-            })
-            .catch(err => {
-                console.log(err);
-                throw err;
-            });
+        const result = await pool.queryParam_None(`SELECT * FROM ${table}`);
+        return result;
     },
 
-    read: (bltIdx) => {
-        const table = 'Bulletin';
-        const query = `SELECT * FROM ${table} WHERE bltIdx = '${bltIdx}'`;
-        return pool.queryParam_Parse(query)
-            .then(result => {
-                if (result.length == 0) {
-                    return {
-                        code: statusCode.BAD_REQUEST,
-                        json: authUtil.successFalse(responseMessage.NO_BOARD)
-                    };
-                }
-                return {
-                    code: statusCode.OK,
-                    json: authUtil.successTrue(responseMessage.BOARD_READ_SUCCESS, result[0])
-                };
-            })
-            .catch(err => {
-                console.log(err);
-                throw err;
-            });
+    read : async(bltIdx) => {
+        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE bltIdx = '${bltIdx}'`);
+        return result;
     },
 
-    update: ({
-        country,
-        region,
-        title,
-        content,
-        uploadTime,
-        startDate,
-        endDate,
-        userIdx,
-        active,
-        withNum,
-        filter
-    }, bltIdx) => {
-        const table = 'Bulletin';
-        //const values = [bltIdx, country, region, title, content, startDate, endDate, userIdx, withNum, filter];
+    update : async(json, bltIdx) => {
         const conditions = [];
 
-        if (country) conditions.push(`country = '${country}'`);
-        if (region) conditions.push(`region = '${region}'`);
-        if (title) conditions.push(`title = '${title}'`);
-        if (content) conditions.push(`content = '${content}'`);
-        if (uploadTime) conditions.push(`uploadTime = '${uploadTime}'`);
-        if (startDate) conditions.push(`startDate = '${startDate}'`);
-        if (endDate) conditions.push(`endDate = '${endDate}'`);
-        if (withNum) conditions.push(`withNum = '${withNum}'`);
-        if (filter) conditions.push(`filter = '${filter}'`);
+        if (json.country) conditions.push(`country = '${json.country}'`);
+        if (json.region) conditions.push(`region = '${json.region}'`);
+        if (json.title) conditions.push(`title = '${json.title}'`);
+        if (json.content) conditions.push(`content = '${json.content}'`);
+        if (json.uploadTime) conditions.push(`uploadTime = '${json.uploadTime}'`);
+        if (json.startDate) conditions.push(`startDate = '${json.startDate}'`);
+        if (json.endDate) conditions.push(`endDate = '${json.endDate}'`);
+        if (json.withNum) conditions.push(`withNum = '${json.withNum}'`);
+        if (json.filter) conditions.push(`filter = '${json.filter}'`);
+
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
-        const query = `UPDATE ${table} ${setStr} WHERE bltIdx = ${bltIdx}`;
-        const tableLength = `SELECT count(*) FROM ${table}`
-        const user = `SELECT userIdx FROM ${table} WHERE bltIdx = ${bltIdx}`;
-        return pool.queryParam_None(query)
-            .then(result => {
-                /*if (bltIdx >= tableLength){
-                    resolve({
-                        code: statusCode.BAD_REQUEST,
-                        json: authUtil.successFalse(responseMessage.NO_BOARD)   
-                    });
-                    return;
-                }
-                if(userIdx != user){
-                    resolve({
-                        code: statusCode.FORBIDDEN,
-                        json: authUtil.successFalse(responseMessage.MISS_MATCH_ID)
-                    });
-                    return;
-                }*/
-                console.log(result);
-                return {
-                    code: statusCode.OK,
-                    json: authUtil.successTrue(responseMessage.BOARD_UPDATE_SUCCESS)
-                };
-            })
-            .catch(err => {
-                console.log(err);
-                throw err;
-            });
+        const result = await pool.queryParam_None(`UPDATE ${table} ${setStr} WHERE bltIdx = ${bltIdx}`);
+        return result;
     },
 
-    delete: (whereJson = {}) => {
-        const table = 'Bulletin';
-        const conditions = Object.entries(whereJson).map(it => `${it[0]} = '${it[1]}'`).join(',');
+    delete : async(json) => {
+        const conditions = Object.entries(json).map(it => `${it[0]} = '${it[1]}'`).join(',');
         const whereStr = conditions.length > 0 ? `WHERE ${conditions}` : '';
-        const query = `DELETE FROM ${table} ${whereStr}`
-        return pool.queryParam_None(query)
-            .then(result => {
-                console.log(result);
-                return {
-                    code: statusCode.OK,
-                    json: authUtil.successTrue(responseMessage.BOARD_DELETE_SUCCESS)
-                };
-            })
-            .catch(err => {
-                console.log(err);
-                throw err;
-            });
-    },
-};
+        const result = await pool.queryParam_None(`DELETE FROM ${table} ${whereStr}`)
+        return result;
+    }
+}
