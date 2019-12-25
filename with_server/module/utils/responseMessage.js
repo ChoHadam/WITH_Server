@@ -11,6 +11,8 @@ module.exports = {
 
     BOARD_CREATE_SUCCESS: "게시글 작성 성공",
     BOARD_CREATE_FAIL: "게시글 작성 실패",
+    BOARD_READ_ALL_SUCCESS: "게시글 전체 조회 성공",
+    BOARD_READ_ALL_FAIL: "게시글 전체 조회 실패",
     BOARD_READ_SUCCESS: "게시글 조회 성공",
     BOARD_READ_FAIL: "게시글 조회 실패",
     BOARD_UPDATE_SUCCESS: "게시글 수정 성공",
@@ -25,6 +27,7 @@ module.exports = {
     INTERNAL_SERVER_ERROR: "서버 내부 오류",
     INVALID_TOKEN: "올바르지 않은 토큰",
 
+    X_NULL_VALUE: (x) => `${x}가 존재하지 않습니다.`,
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,
     X_CREATE_FAIL: (x) => `${x} 작성 실패`,
     X_READ_ALL_SUCCESS: (x) => `${x} 전체 조회 성공`,
