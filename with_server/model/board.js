@@ -15,47 +15,106 @@ module.exports = {
         var newDate = moment().format('YYYY-MM-DD HH:mm:ss');
         json.uploadTime = newDate;
 
+        // region, country 정보만 왔을 경우 (region, semi_region 채우기)
+        if(!json.semi_region && json.country)
+        {
+            const find_result = await pool.queryParam_None(`SELECT semi_region FROM Country WHERE country = '${json.country}'`);
+            json.semi_region = find_result[0].semi_region;
+        }
+
+        // region, semi_region 정보만 왔을 경우
+        else if(!json.country && json.semi_region)
+        {
+            json.country = "";
+        }
+
+        // region 정보만 왔을 경우
+        else
+        {
+            json.semi_region = "";
+            json.country = "";
+        }
+
         // 나라, 대륙, 제목, 내용, 작성시간, 동행시작시간, 동행종료시간, 작성자인덱스, 활성화유무, 동행자 수, 동성필터여부
-        const fields = 'country, region, title, content, uploadTime, startDate, endDate, userIdx, active, withNum, filter';
-        const questions = `"${json.country}", "${json.region}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.active}", "${json.withNum}", "${json.filter}"`;
+        const fields = 'country, semi_region, region, title, content, uploadTime, startDate, endDate, userIdx, active, withNum, filter';
+        const questions = `"${json.country}", "${json.semi_region}", "${json.region}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.active}", "${json.withNum}", "${json.filter}"`;
         const result = await pool.queryParam_None(`INSERT INTO ${table}(${fields}) VALUES(${questions})`);
         return result;
     },
 
     //readAll : async(filter) => {
     readAll : async() => {
-        // // 동성필터 적용한 경우
-        // if(filter == 1)
-        // {
-        //     const result = await pool.queryParam_None(`SELECT bltIdx FROM Bulletin, User WHERE Bulletin.userIdx = User.userIdx AND User.gender = ${gender}`);
-        //     return result;
-        // }
-        // // 동성필터 적용하지 않은 경우
-        // else
-        // {
-        //     const result = await pool.queryParam_None(`SELECT bltIdx FROM Bulletin, User WHERE Bulletin.filter = 0 UNION SELECT bltIdx FROM Bulletin, User WHERE Bulletin.filter = 1 AND Bulletin.userIdx = User.userIdx AND User.gender = ${gender}`);
-        //     return result;
-        // }
+        /*console.log(req.headers.region);
+        if(req.headers.country)
+        {
+            country = req.headers.country;
+            result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE country = '${country}'`)
+        }
 
-        const result = await pool.queryParam_None(`SELECT * FROM ${table}`);
+        else if(req.headers.semi_region)
+        {
+            semi_region = req.headers.semi_region;
+            result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE semi_region = '${semi_region}'`)
+        }
+        
+        else
+        {
+            result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE region = '${region}'`)
+        }*/
+
+        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE active = 1`);
         return result;
     },
 
     read : async(bltIdx) => {
-        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE bltIdx = '${bltIdx}'`);
+        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE active = 1 AND bltIdx = '${bltIdx}'`);
         return result;
     },
 
     update : async(json, bltIdx) => {
         const conditions = [];
 
-        if (json.country) conditions.push(`country = '${json.country}'`);
-        if (json.region) conditions.push(`region = '${json.region}'`);
+        if(json.country)
+        {
+            const find_result = await pool.queryParam_None(`SELECT region, semi_region FROM Country WHERE country = '${json.country}'`);
+            json.semi_region = find_result[0].semi_region;
+            json.region = find_result[0].region;
+
+            conditions.push(`country = '${json.country}'`);
+            conditions.push(`semi_region = '${json.semi_region}'`);
+            conditions.push(`region = '${json.region}'`);
+        }
+
+        else if(json.semi_region)
+        {
+            const find_result = await pool.queryParam_None(`SELECT region FROM Country WHERE semi_region = '${json.semi_region}'`);
+            json.region = find_result[0].region;
+            json.country = "";
+
+            conditions.push(`country = '${json.country}'`);
+            conditions.push(`semi_region = '${json.semi_region}'`);
+            conditions.push(`region = '${json.region}'`);
+        }
+
+        else if(json.region)
+        {
+            json.semi_region = "";
+            json.country = "";
+
+            conditions.push(`country = '${json.country}'`);
+            conditions.push(`semi_region = '${json.semi_region}'`);
+            conditions.push(`region = '${json.region}'`);
+        }
+
+        // if (json.country) conditions.push(`country = '${json.country}'`);
+        // if (json.semi_region) conditions.push(`region = '${json.semi_region}'`);
+        // if (json.region) conditions.push(`region = '${json.region}'`);
         if (json.title) conditions.push(`title = '${json.title}'`);
         if (json.content) conditions.push(`content = '${json.content}'`);
         if (json.uploadTime) conditions.push(`uploadTime = '${json.uploadTime}'`);
         if (json.startDate) conditions.push(`startDate = '${json.startDate}'`);
         if (json.endDate) conditions.push(`endDate = '${json.endDate}'`);
+        if (json.active) conditions.push(`active = '${json.active}'`);
         if (json.withNum) conditions.push(`withNum = '${json.withNum}'`);
         if (json.filter) conditions.push(`filter = '${json.filter}'`);
 

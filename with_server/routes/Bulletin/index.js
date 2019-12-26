@@ -10,8 +10,8 @@ const Bulletin = require('../../model/board');
 
 // 게시글 생성하기
 router.post('/', async (req, res) => {
-    const {country, region, title, content, startDate, endDate, userIdx, withNum, filter} = req.body;
-    if(!country || !region || !title || !content || !startDate || !endDate || !userIdx || !withNum || !filter)
+    const {country, semi_region, region, title, content, startDate, endDate, userIdx, withNum, filter} = req.body;
+    if(!title || !content || !startDate || !endDate || !userIdx || !withNum || !filter)
     {
       const missParameters = Object.entries({country, region, title, content, startDate, endDate, userIdx, withNum, filter})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
@@ -19,6 +19,32 @@ router.post('/', async (req, res) => {
       res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
       return;
     }
+    
+    /*
+    // 선택 지역 파악하기
+    var destination;
+    if(region)
+    {
+      if(semi_region)
+      {
+        if(country)
+        {
+          //destination = country;
+          
+        }
+
+        else
+        {
+          destination = semi_region;
+        }
+      }
+
+      else
+      {
+        destination = region;
+      }
+    }
+    */
 
     const result = await Bulletin.create(req.body);
 
@@ -43,7 +69,8 @@ router.get("/", async (req, res) => {
   // }
 
   //const result = await Bulletin.readAll(filter);
-
+  //console.log(req.headers.region);
+  
   const result = await Bulletin.readAll();
   
   if(result.length == 0)
