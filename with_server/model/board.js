@@ -7,7 +7,7 @@ const moment = require('moment');
 const moment_timezone = require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 
-const table = 'Bulletin';
+const table = 'Board';
 
 module.exports = {
     create : async(json) => {
@@ -15,54 +15,42 @@ module.exports = {
         var newDate = moment().format('YYYY-MM-DD HH:mm:ss');
         json.uploadTime = newDate;
 
-        // region, country 정보만 왔을 경우 (region, semi_region 채우기)
-        if(!json.semi_region && json.country)
-        {
-            const find_result = await pool.queryParam_None(`SELECT semi_region FROM Country WHERE country = '${json.country}'`);
-            json.semi_region = find_result[0].semi_region;
-        }
-
-        // region, semi_region 정보만 왔을 경우
-        else if(!json.country && json.semi_region)
-        {
-            json.country = "";
-        }
-
-        // region 정보만 왔을 경우
-        else
-        {
-            json.semi_region = "";
-            json.country = "";
-        }
-
         // 나라, 대륙, 제목, 내용, 작성시간, 동행시작시간, 동행종료시간, 작성자인덱스, 활성화유무, 동행자 수, 동성필터여부
-        const fields = 'country, semi_region, region, title, content, uploadTime, startDate, endDate, userIdx, active, withNum, filter';
-        const questions = `"${json.country}", "${json.semi_region}", "${json.region}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.active}", "${json.withNum}", "${json.filter}"`;
+        const fields = 'regionCode, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter';
+        const questions = `"${json.regionCode}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.withNum}", "${json.filter}"`;
         const result = await pool.queryParam_None(`INSERT INTO ${table}(${fields}) VALUES(${questions})`);
         return result;
     },
 
     //readAll : async(filter) => {
-    readAll : async() => {
-        /*console.log(req.headers.region);
-        if(req.headers.country)
+    readAll : async(regionCode) => {
+        // regionCode Parsing
+        var region = regionCode.substr(0,2);
+        var semi_region = regionCode.substr(2,2);
+        var country = regionCode.substr(4,2);
+        var result;
+
+        if(country == "00")
         {
-            country = req.headers.country;
-            result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE country = '${country}'`)
+            if(semi_region == "00")
+            {
+                // 대분류에서 찾기
+                result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE regionCode LIKE '${region}____' AND active = 1`);
+            }
+
+            else
+            {
+                // 중분류에서 찾기
+                result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE regionCode LIKE '${region}${semi_region}__' AND active = 1`);
+            }
         }
 
-        else if(req.headers.semi_region)
-        {
-            semi_region = req.headers.semi_region;
-            result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE semi_region = '${semi_region}'`)
-        }
-        
         else
         {
-            result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE region = '${region}'`)
-        }*/
+            // 나라에서 찾기
+            result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE regionCode = '${regionCode}' AND active = 1`);
+        }
 
-        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE active = 1`);
         return result;
     },
 
@@ -74,41 +62,7 @@ module.exports = {
     update : async(json, bltIdx) => {
         const conditions = [];
 
-        if(json.country)
-        {
-            const find_result = await pool.queryParam_None(`SELECT region, semi_region FROM Country WHERE country = '${json.country}'`);
-            json.semi_region = find_result[0].semi_region;
-            json.region = find_result[0].region;
-
-            conditions.push(`country = '${json.country}'`);
-            conditions.push(`semi_region = '${json.semi_region}'`);
-            conditions.push(`region = '${json.region}'`);
-        }
-
-        else if(json.semi_region)
-        {
-            const find_result = await pool.queryParam_None(`SELECT region FROM Country WHERE semi_region = '${json.semi_region}'`);
-            json.region = find_result[0].region;
-            json.country = "";
-
-            conditions.push(`country = '${json.country}'`);
-            conditions.push(`semi_region = '${json.semi_region}'`);
-            conditions.push(`region = '${json.region}'`);
-        }
-
-        else if(json.region)
-        {
-            json.semi_region = "";
-            json.country = "";
-
-            conditions.push(`country = '${json.country}'`);
-            conditions.push(`semi_region = '${json.semi_region}'`);
-            conditions.push(`region = '${json.region}'`);
-        }
-
-        // if (json.country) conditions.push(`country = '${json.country}'`);
-        // if (json.semi_region) conditions.push(`region = '${json.semi_region}'`);
-        // if (json.region) conditions.push(`region = '${json.region}'`);
+        if (json.regionCode) conditions.push(`regionCode = '${json.regionCode}'`);
         if (json.title) conditions.push(`title = '${json.title}'`);
         if (json.content) conditions.push(`content = '${json.content}'`);
         if (json.uploadTime) conditions.push(`uploadTime = '${json.uploadTime}'`);
@@ -120,6 +74,11 @@ module.exports = {
 
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
         const result = await pool.queryParam_None(`UPDATE ${table} ${setStr} WHERE bltIdx = ${bltIdx}`);
+        return result;
+    },
+
+    search : async(keyword) => {
+        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE (title LIKE '%${keyword}%' OR content LIKE '%${keyword}%') AND active = 1`)
         return result;
     },
 
