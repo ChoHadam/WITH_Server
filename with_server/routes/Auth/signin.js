@@ -13,6 +13,10 @@ router.post('/', async(req, res) => {
     if(!userId || !password){ //공백데이터 검사
         const missParameters = Object.entries({userId, password})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
+
+        console.log(missParameters);
+        console.log("gg");
+
         res.status(statusCode.BAD_REQUEST)
         .send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
         return;
