@@ -30,7 +30,6 @@ router.post('/', authutil.validToken, async (req, res) => {
 
     // Token 통해서 userIdx 취득
     const userIdx = req.decoded.userIdx;
-    //console.log(userIdx);
 
     const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, filter};
 
@@ -62,15 +61,13 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
   }
 
   const json = {regionCode, startDate, endDate, userIdx, filter, keyword, gender};
-
   const result = await Board.readAll(json);
-
   if(result.length == 0)
   {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_FAIL));
     return;
   }
-
+  console.log('check3');
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result));
 });
 

@@ -22,22 +22,19 @@ module.exports = {
         var semi_region = json.regionCode.substr(2,2);
         var country = json.regionCode.substr(4,2);
         var query;
-
         if(country == "00")
         {
             if(semi_region == "00")
             {
                 // 대분류에서 찾기
-                query = `SELECT * FROM ${table} WHERE regionCode LIKE '${region}____' AND active = 1`;
+                query = `SELECT * FROM ${table} WHERE regionCode LIKE '${region}%' AND active = 1`;
             }
-
             else
             {
                 // 중분류에서 찾기
-                query = `SELECT * FROM ${table} WHERE regionCode LIKE '${region}${semi_region}__' AND active = 1`;
+                query = `SELECT * FROM ${table} WHERE regionCode LIKE '${region}${semi_region}%' AND active = 1`;
             }
         }
-
         else
         {
             // 나라에서 찾기
@@ -45,35 +42,31 @@ module.exports = {
         }
 
         // 날짜 필터 적용된 경우
-        if(json.startDate && json.endDate)
+        if(!json.startDate && !json.endDate)
         {
-            query += ` AND startDate = '${json.startDate}' AND endDate = '${json.endDate}'`;
+            query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
         }
 
         // 검색 필터 적용된 경우
-        if(json.keyword)
+        if(!json.keyword)
         {
-            query += `AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
+            query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
         }
-
+        var front_query = query.substr(0, 20);
+        var back_query = query.substr(19, query.length);
         // 동성 필터 적용된 경우
-        if(json.filter)
+        if(!json.filter)
         {
-            var front_query = query.substr(0, 20);
-            var back_query = query.substr(19, query.length);
-            query = front_query + ` LEFT JOIN User ON Board.userIdx = User.userIdx ` + back_query;
+            query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
             query += ` AND gender = ${json.gender}`;
         }
-
         // 동성 필터 적용되지 않은 경우
         else
         {
-            var front_query = query.substr(0, 20);
-            var back_query = query.substr(19, query.length - 20);
-            query = front_query + ` LEFT JOIN User ON Board.userIdx = User.userIdx ` + back_query;
-            query += ` AND filter = -1 OR (filter = 1 AND gender = ${json.gender})`;
+            query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
+            query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender}))`;
         }
-
+        console.log(query);
         const result = await pool.queryParam_None(query);
         return result;
     },
