@@ -5,22 +5,35 @@ const utils = require('../../module/utils/utils');
 const responseMessage = require('../../module/utils/responseMessage');
 const statusCode = require('../../module/utils/statusCode');
 
+const moment = require('moment');
+const moment_timezone = require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
+const authutil = require('../../module/utils/authUtil');
 const Board = require('../../model/board');
 
 
 // 게시글 생성하기
-router.post('/', async (req, res) => {
-    const {regionCode, title, content, startDate, endDate, userIdx, withNum, filter} = req.body;
-    if(!regionCode || !title || !content || !startDate || !endDate || !userIdx || !withNum || !filter)
+router.post('/', authutil.validToken, async (req, res) => {
+    const {regionCode, title, content, startDate, endDate, withNum, filter} = req.body;
+    if(!regionCode || !title || !content || !startDate || !endDate || !withNum || !filter)
     {
-      const missParameters = Object.entries({regionCode, title, content, startDate, endDate, userIdx, withNum, filter})
+      const missParameters = Object.entries({regionCode, title, content, startDate, endDate, withNum, filter})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
 
       res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
       return;
     }
     
-    const result = await Board.create(req.body);
+    // uploadTime에 현재 서울 시각 저장
+    const uploadTime = moment().format('YYYY-MM-DD HH:mm:ss');
+
+    // Token 통해서 userIdx 취득
+    const userIdx = req.decoded.userIdx;
+    console.log(userIdx);
+
+    const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter};
+
+    const result = await Board.create(json);
 
     if(result.length == 0)
     {
@@ -32,18 +45,13 @@ router.post('/', async (req, res) => {
 });
 
 // 게시글 전체 보기
-//router.get("/:filter", async (req, res) => {
-router.get("/region/:regionCode", async (req, res) => {
-  // const filter = req.params.filter;
-
-  // if(filter.length == 0)
-  // {
-  //   res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
-  //   return;
-  // }
-
-  //const result = await Board.readAll(filter);
+router.get("/board/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter", authutil.validToken, async (req, res) => {
   const regionCode = req.params.regionCode;
+  const startDate = req.params.startDate;
+  const endDate = req.params.endDate;
+  const keyword = req.params.keyword;
+  const filter = req.params.filter;
+  const gender = req.decoded.gender;
 
   if(!regionCode)
   {
@@ -51,8 +59,10 @@ router.get("/region/:regionCode", async (req, res) => {
     return;
   }
 
-  const result = await Board.readAll(regionCode);
-  
+  const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter, keyword, gender};
+
+  const result = await Board.readAllFilter(json);
+
   if(result.length == 0)
   {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_FAIL));
