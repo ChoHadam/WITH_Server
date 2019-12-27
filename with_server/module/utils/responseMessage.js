@@ -28,6 +28,19 @@ module.exports = {
     MISS_MATCH_ID: "현재 유저는 해당 게시물의 글쓴이가 아닙니다",
     INTERNAL_SERVER_ERROR: "서버 내부 오류",
     INVALID_TOKEN: "올바르지 않은 토큰",
+    SEARCH_SUCCESS: "검색 성공",
+    SEARCH_FAIL: "검색 실패",
+
+    MYPAGE_READ_SUCCESS: "마이페이지 조회 성공",
+    MYPAGE_READ_FAIL: "마이페이지 조회 실패",
+    MYPAGE_UPDATE_SUCCESS: "마이페이지 수정 성공",
+    MYPAGE_UPDATE_FAIL: "마이페이지 수정 실패",
+
+    RECOMMEND_READ_SUCCESS: "추천 동행지 조회 성공",
+    RECOMMEND_READ_FAIL: "추천 동행지 조회 실패",
+
+    MATE_READ_SUCCESS: "위드 메이트 조회 성공",
+    MATE_READ_FALSE: "위드 메이트 조회 실패",
 
     X_NULL_VALUE: (x) => `${x}가 존재하지 않습니다.`,
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,
