@@ -4,11 +4,11 @@ const utils = require('../../module/utils/utils');
 const responseMessage = require('../../module/utils/responseMessage');
 const statusCode = require('../../module/utils/statusCode');
 const Mypage = require('../../model/myPage');
+const authUtil = require('../../module/utils/authUtil');
 
 // 마이페이지 보기
-router.get("/:userIdx", async(req, res) => {
-    const userIdx = req.params.userIdx;
-
+router.get("/",authUtil.validToken, async(req, res) => {
+    const userIdx = req.decoded.userIdx;
     if(!userIdx)
     {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
@@ -28,8 +28,8 @@ router.get("/:userIdx", async(req, res) => {
 });
 
 // 마이페이지 수정하기
-router.put("/:userIdx", async(req, res) => {
-    const userIdx = req.params.userIdx;
+router.put("/",authUtil.validToken ,async(req, res) => {
+    const userIdx = req.decoded.userIdx;
     const intro = req.body.intro;
 
     if(!userIdx)
@@ -51,8 +51,8 @@ router.put("/:userIdx", async(req, res) => {
 
 });
 // 내가 쓴 게시글 전체 보기
-router.get("/:userIdx/board", async (req, res) => {
-    const userIdx = req.params.userIdx;
+router.get("/boards", authUtil.validToken,async (req, res) => {
+    const userIdx = req.decoded.userIdx;
     
     if(!userIdx)
     {
@@ -72,25 +72,5 @@ router.get("/:userIdx/board", async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
-// 내가 쓴 게시글 하나 보기
-router.get("/board/:bltIdx", async(req, res) => {
-    const bltIdx = req.params.bltIdx;
 
-    if(!bltIdx)
-    {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
-        return;
-    }
-
-    const result = await Mypage.read(bltIdx);
-    
-    if(result.length == 0)
-    {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NO_BOARD));
-        return;
-    }
-    
-
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result));
-});
 module.exports = router;

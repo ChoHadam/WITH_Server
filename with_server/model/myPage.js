@@ -26,10 +26,5 @@ module.exports = {
     readAll: async(userIdx) => {
         const result = await pool.queryParam_None(`SELECT * FROM ${table2} WHERE userIdx = '${userIdx}'`)
         return result;    
-    },
-
-    read: async(bltIdx) => {
-        const result = await pool.queryParam_None(`SELECT * FROM ${table2} WHERE bltIdx = '${bltIdx}'`)
-        return result;    
-    }
+    }   
 };
