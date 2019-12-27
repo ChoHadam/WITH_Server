@@ -45,12 +45,13 @@ router.post('/', authutil.validToken, async (req, res) => {
 });
 
 // 게시글 전체 보기
-router.get("/board/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter", authutil.validToken, async (req, res) => {
+router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter", authutil.validToken, async (req, res) => {
   const regionCode = req.params.regionCode;
   const startDate = req.params.startDate;
   const endDate = req.params.endDate;
   const keyword = req.params.keyword;
   const filter = req.params.filter;
+  const userIdx = req.decoded.userIdx;
   const gender = req.decoded.gender;
 
   if(!regionCode)
@@ -59,9 +60,9 @@ router.get("/board/region/:regionCode/startDates/:startDate/endDates/:endDate/ke
     return;
   }
 
-  const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter, keyword, gender};
+  const json = {regionCode, startDate, endDate, userIdx, filter, keyword, gender};
 
-  const result = await Board.readAllFilter(json);
+  const result = await Board.readAll(json);
 
   if(result.length == 0)
   {
@@ -113,27 +114,6 @@ router.put("/:boardIdx", async(req, res) => {
 
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
-
-// 게시글 검색하기
-router.get("/search/:keyword", async(req, res) => {
-  const keyword = req.params.keyword;
-
-  if(!keyword)
-  {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
-    return;
-  }
-
-  const result = await Board.search(keyword);
-
-  if(result.length == 0)
-  {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.SEARCH_FAIL));
-    return;
-  }
-
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.SEARCH_SUCCESS, result));
-})
 
 // 게시글 삭제하기 (error....)
 router.delete("/", async(req, res) => {

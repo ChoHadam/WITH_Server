@@ -16,12 +16,11 @@ module.exports = {
         return result;
     },
 
-    //readAll : async(filter) => {
-    readAll : async(regionCode) => {
+    readAll : async(json) => {
         // regionCode Parsing
-        var region = regionCode.substr(0,2);
-        var semi_region = regionCode.substr(2,2);
-        var country = regionCode.substr(4,2);
+        var region = json.regionCode.substr(0,2);
+        var semi_region = json.regionCode.substr(2,2);
+        var country = json.regionCode.substr(4,2);
         var query;
 
         if(country == "00")
@@ -45,60 +44,39 @@ module.exports = {
             query = `SELECT * FROM ${table} WHERE regionCode = '${regionCode}' AND active = 1`;
         }
 
-        // json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter, keyword, gender};
         // 날짜 필터 적용된 경우
-        if(startDate && endDate)
+        if(json.startDate && json.endDate)
         {
-            query += `AND startDate = '${startDate}' AND endDate = '${endDate}'`;
+            query += ` AND startDate = '${json.startDate}' AND endDate = '${json.endDate}'`;
+        }
+
+        // 검색 필터 적용된 경우
+        if(json.keyword)
+        {
+            query += `AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
         }
 
         // 동성 필터 적용된 경우
-        else if(filter)
+        if(json.filter)
+        {
+            var front_query = query.substr(0, 20);
+            var back_query = query.substr(19, query.length);
+            query = front_query + ` LEFT JOIN User ON Board.userIdx = User.userIdx ` + back_query;
+            query += ` AND gender = ${json.gender}`;
+        }
+
+        // 동성 필터 적용되지 않은 경우
+        else
         {
             var front_query = query.substr(0, 20);
             var back_query = query.substr(19, query.length - 20);
-            query = front_query + `, User` + back_query;
-
-            query += `AND ${table}.userIdx = User.userIdx AND User.gender = ${gender}`
-            
-            //`SELECT bltIdx FROM Board, User WHERE Board.userIdx = User.userIdx AND User.gender = ${gender}`
+            query = front_query + ` LEFT JOIN User ON Board.userIdx = User.userIdx ` + back_query;
+            query += ` AND filter = 0 OR (filter = 1 AND gender = ${json.gender})`;
         }
-
-        // 
-        else if()
 
         const result = await pool.queryParam_None(query);
         return result;
     },
-
-    /*
-    readAllFilter : async(json) => {
-        //const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter, keyword, gender};
-        if(country == "00")
-        {
-            if(semi_region == "00")
-            {
-                // 대분류에서 찾기
-                result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE regionCode LIKE '${region}____' AND active = 1`);
-            }
-
-            else
-            {
-                // 중분류에서 찾기
-                result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE regionCode LIKE '${region}${semi_region}__' AND active = 1`);
-            }
-        }
-
-        else
-        {
-            // 나라에서 찾기
-            result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE regionCode = '${regionCode}' AND active = 1`);
-        }
-
-
-
-    },
-    */
 
     read : async(bltIdx) => {
         const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE active = 1 AND bltIdx = '${bltIdx}'`);
@@ -120,11 +98,6 @@ module.exports = {
 
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
         const result = await pool.queryParam_None(`UPDATE ${table} ${setStr} WHERE bltIdx = ${bltIdx}`);
-        return result;
-    },
-
-    search : async(keyword) => {
-        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE (title LIKE '%${keyword}%' OR content LIKE '%${keyword}%') AND active = 1`)
         return result;
     },
 
