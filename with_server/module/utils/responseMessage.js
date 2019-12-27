@@ -28,6 +28,8 @@ module.exports = {
     MISS_MATCH_ID: "현재 유저는 해당 게시물의 글쓴이가 아닙니다",
     INTERNAL_SERVER_ERROR: "서버 내부 오류",
     INVALID_TOKEN: "올바르지 않은 토큰",
+    SEARCH_SUCCESS: "검색 성공",
+    SEARCH_FAIL: "검색 실패",
 
     MYPAGE_READ_SUCCESS: "마이페이지 조회 성공",
     MYPAGE_READ_FAIL: "마이페이지 조회 실패",
