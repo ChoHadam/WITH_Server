@@ -5,22 +5,35 @@ const utils = require('../../module/utils/utils');
 const responseMessage = require('../../module/utils/responseMessage');
 const statusCode = require('../../module/utils/statusCode');
 
-const Bulletin = require('../../model/board');
+const moment = require('moment');
+const moment_timezone = require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
+const authutil = require('../../module/utils/authUtil');
+const Board = require('../../model/board');
 
 
 // 게시글 생성하기
-router.post('/', async (req, res) => {
-    const {country, region, title, content, startDate, endDate, userIdx, withNum, filter} = req.body;
-    if(!country || !region || !title || !content || !startDate || !endDate || !userIdx || !withNum || !filter)
+router.post('/', authutil.validToken, async (req, res) => {
+    const {regionCode, title, content, startDate, endDate, withNum, filter} = req.body;
+    if(!regionCode || !title || !content || !startDate || !endDate || !withNum || !filter)
     {
-      const missParameters = Object.entries({country, region, title, content, startDate, endDate, userIdx, withNum, filter})
+      const missParameters = Object.entries({regionCode, title, content, startDate, endDate, withNum, filter})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
 
       res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
       return;
     }
+    
+    // uploadTime에 현재 서울 시각 저장
+    const uploadTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
-    const result = await Bulletin.create(req.body);
+    // Token 통해서 userIdx 취득
+    const userIdx = req.decoded.userIdx;
+    console.log(userIdx);
+
+    const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter};
+
+    const result = await Board.create(json);
 
     if(result.length == 0)
     {
@@ -32,20 +45,25 @@ router.post('/', async (req, res) => {
 });
 
 // 게시글 전체 보기
-//router.get("/:filter", async (req, res) => {
-router.get("/", async (req, res) => {
-  // const filter = req.params.filter;
+router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter", authutil.validToken, async (req, res) => {
+  const regionCode = req.params.regionCode;
+  const startDate = req.params.startDate;
+  const endDate = req.params.endDate;
+  const keyword = req.params.keyword;
+  const filter = req.params.filter;
+  const userIdx = req.decoded.userIdx;
+  const gender = req.decoded.gender;
 
-  // if(filter.length == 0)
-  // {
-  //   res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
-  //   return;
-  // }
+  if(!regionCode)
+  {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    return;
+  }
 
-  //const result = await Bulletin.readAll(filter);
+  const json = {regionCode, startDate, endDate, userIdx, filter, keyword, gender};
 
-  const result = await Bulletin.readAll();
-  
+  const result = await Board.readAll(json);
+
   if(result.length == 0)
   {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_FAIL));
@@ -56,16 +74,16 @@ router.get("/", async (req, res) => {
 });
 
 // 게시글 하나 보기
-router.get("/:bltIdx", async(req, res) => {
-  const bltIdx = req.params.bltIdx;
+router.get("/:boardIdx", async(req, res) => {
+  const boardIdx = req.params.boardIdx;
 
-  if(!bltIdx)
+  if(!boardIdx)
   {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
     return;
   }
 
-  const result = await Bulletin.read(bltIdx);
+  const result = await Board.read(boardIdx);
 
   if(result.length == 0)
   {
@@ -77,16 +95,16 @@ router.get("/:bltIdx", async(req, res) => {
 });
 
 // 게시글 수정하기
-router.put("/:bltIdx", async(req, res) => {
-  const bltIdx = req.params.bltIdx;
+router.put("/:boardIdx", async(req, res) => {
+  const boardIdx = req.params.boardIdx;
   
-  if(!bltIdx)
+  if(!boardIdx)
   {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
     return;
   }
 
-  const result = await Bulletin.update(req.body, bltIdx);
+  const result = await Board.update(req.body, boardIdx);
 
   if(result.length == 0)
   {
@@ -99,7 +117,7 @@ router.put("/:bltIdx", async(req, res) => {
 
 // 게시글 삭제하기 (error....)
 router.delete("/", async(req, res) => {
-  const result = await Bulletin.delete(req.body);
+  const result = await Board.delete(req.body);
   console.log(result);
   if(result.length == 0)
   {
