@@ -82,11 +82,9 @@ module.exports = {
         if (json.regionCode) conditions.push(`regionCode = '${json.regionCode}'`);
         if (json.title) conditions.push(`title = '${json.title}'`);
         if (json.content) conditions.push(`content = '${json.content}'`);
-        if (json.uploadTime) conditions.push(`uploadTime = '${json.uploadTime}'`);
         if (json.startDate) conditions.push(`startDate = '${json.startDate}'`);
         if (json.endDate) conditions.push(`endDate = '${json.endDate}'`);
         if (json.active) conditions.push(`active = '${json.active}'`);
-        if (json.withNum) conditions.push(`withNum = '${json.withNum}'`);
         if (json.filter) conditions.push(`filter = '${json.filter}'`);
 
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
