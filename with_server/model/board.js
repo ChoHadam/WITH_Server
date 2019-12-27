@@ -10,8 +10,8 @@ const table = 'Board';
 module.exports = {
     create : async(json) => {
         // 나라, 대륙, 제목, 내용, 작성시간, 동행시작시간, 동행종료시간, 작성자인덱스, 활성화유무, 동행자 수, 동성필터여부
-        const fields = 'regionCode, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter';
-        const questions = `"${json.regionCode}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.withNum}", "${json.filter}"`;
+        const fields = 'regionCode, title, content, uploadTime, startDate, endDate, userIdx, filter';
+        const questions = `"${json.regionCode}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.filter}"`;
         const result = await pool.queryParam_None(`INSERT INTO ${table}(${fields}) VALUES(${questions})`);
         return result;
     },
@@ -71,19 +71,19 @@ module.exports = {
             var front_query = query.substr(0, 20);
             var back_query = query.substr(19, query.length - 20);
             query = front_query + ` LEFT JOIN User ON Board.userIdx = User.userIdx ` + back_query;
-            query += ` AND filter = 0 OR (filter = 1 AND gender = ${json.gender})`;
+            query += ` AND filter = -1 OR (filter = 1 AND gender = ${json.gender})`;
         }
 
         const result = await pool.queryParam_None(query);
         return result;
     },
 
-    read : async(bltIdx) => {
-        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE active = 1 AND bltIdx = '${bltIdx}'`);
+    read : async(boardIdx) => {
+        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE active = 1 AND boardIdx = '${boardIdx}'`);
         return result;
     },
 
-    update : async(json, bltIdx) => {
+    update : async(json, boardIdx) => {
         const conditions = [];
 
         if (json.regionCode) conditions.push(`regionCode = '${json.regionCode}'`);
@@ -97,7 +97,7 @@ module.exports = {
         if (json.filter) conditions.push(`filter = '${json.filter}'`);
 
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
-        const result = await pool.queryParam_None(`UPDATE ${table} ${setStr} WHERE bltIdx = ${bltIdx}`);
+        const result = await pool.queryParam_None(`UPDATE ${table} ${setStr} WHERE boardIdx = ${boardIdx}`);
         return result;
     },
 

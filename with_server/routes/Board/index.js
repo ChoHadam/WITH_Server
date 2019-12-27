@@ -14,13 +14,14 @@ const Board = require('../../model/board');
 
 // 게시글 생성하기
 router.post('/', authutil.validToken, async (req, res) => {
-    const {regionCode, title, content, startDate, endDate, withNum, filter} = req.body;
-    if(!regionCode || !title || !content || !startDate || !endDate || !withNum || !filter)
+    const {regionCode, title, content, startDate, endDate, filter} = req.body;
+    if(!regionCode || !title || !content || !startDate || !endDate || !filter)
     {
-      const missParameters = Object.entries({regionCode, title, content, startDate, endDate, withNum, filter})
+      const missParameters = Object.entries({regionCode, title, content, startDate, endDate, filter})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
+      console.log(missParameters)
 
-      res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
+      res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
       return;
     }
     
@@ -29,9 +30,9 @@ router.post('/', authutil.validToken, async (req, res) => {
 
     // Token 통해서 userIdx 취득
     const userIdx = req.decoded.userIdx;
-    console.log(userIdx);
+    //console.log(userIdx);
 
-    const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, withNum, filter};
+    const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, filter};
 
     const result = await Board.create(json);
 
