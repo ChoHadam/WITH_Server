@@ -27,3 +27,8 @@ Server 개고수들의 개발저장📗📘
 * 조현아
 * 최승준
 * 석영현
+
+### iOS [Page](https://github.com/TEAM-WITH/WITH_iOS)
+
+* 김남수
+* 권준
