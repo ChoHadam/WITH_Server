@@ -42,20 +42,20 @@ module.exports = {
         }
 
         // 날짜 필터 적용된 경우
-        if(!json.startDate && !json.endDate)
+        if(json.startDate!='0' && json.endDate!='0')
         {
             query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
         }
-
         // 검색 필터 적용된 경우
-        if(!json.keyword)
+
+        if(json.keyword!='0')
         {
             query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
         }
         var front_query = query.substr(0, 20);
         var back_query = query.substr(19, query.length);
         // 동성 필터 적용된 경우
-        if(!json.filter)
+        if(json.filter!='0')
         {
             query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
             query += ` AND gender = ${json.gender}`;
