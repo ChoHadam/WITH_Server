@@ -12,7 +12,8 @@ module.exports = {
         // 나라, 대륙, 제목, 내용, 작성시간, 동행시작시간, 동행종료시간, 작성자인덱스, 활성화유무, 동행자 수, 동성필터여부
         const fields = 'regionCode, title, content, uploadTime, startDate, endDate, userIdx, filter';
         const questions = `"${json.regionCode}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.filter}"`;
-        const result = await pool.queryParam_None(`INSERT INTO ${table}(${fields}) VALUES(${questions})`);
+        let result = await pool.queryParam_None(`INSERT INTO ${table}(${fields}) VALUES(${questions})`);
+        result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE userIdx = ${json.userIdx} ORDER BY uploadTime DESC LIMIT 1`);
         return result;
     },
 

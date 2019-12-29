@@ -14,7 +14,9 @@ const Board = require('../../model/board');
 
 // 게시글 생성하기
 router.post('/', authutil.validToken, async (req, res) => {
-    const {regionCode, title, content, startDate, endDate, filter} = req.body;
+    var {regionCode, title, content, startDate, endDate, filter} = req.body;
+    startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
+    endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
     if(!regionCode || !title || !content || !startDate || !endDate || !filter)
     {
       const missParameters = Object.entries({regionCode, title, content, startDate, endDate, filter})
@@ -32,20 +34,28 @@ router.post('/', authutil.validToken, async (req, res) => {
     const userIdx = req.decoded.userIdx;
 
     const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, filter};
-
-    const result = await Board.create(json);
+  
+    let result = await Board.create(json);
 
     if(result.length == 0)
     {
       res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_CREATE_FAIL));
       return;
     }
-
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_CREATE_SUCCESS));
+    result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
+    result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
+    res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_CREATE_SUCCESS, result));
 });
 
 // 게시글 전체 보기
 router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter", authutil.validToken, async (req, res) => {
+  var {regionCode, startDate, endDate, keyword, filter} = req.params;
+  const {userIdx, gender} = req.decoded;
+  if(startDate !='0' && endDate != '0'){
+    startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
+    endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
+  }
+  /*
   const regionCode = req.params.regionCode;
   const startDate = req.params.startDate;
   const endDate = req.params.endDate;
@@ -53,21 +63,28 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
   const filter = req.params.filter;
   const userIdx = req.decoded.userIdx;
   const gender = req.decoded.gender;
-
+  */
   if(!regionCode)
   {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
     return;
   }
-
   const json = {regionCode, startDate, endDate, userIdx, filter, keyword, gender};
-  const result = await Board.readAll(json);
+  let result = await Board.readAll(json);
+
   if(result.length == 0)
   {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_FAIL));
     return;
   }
-  console.log('check3');
+
+  for(var i in result){
+    result[i].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
+    result[i].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
+    console.log(result[i].startDate);
+    console.log(result[i].endDate);
+  }
+
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result));
 });
 
@@ -81,13 +98,16 @@ router.get("/:boardIdx", async(req, res) => {
     return;
   }
 
-  const result = await Board.read(boardIdx);
+  var result = await Board.read(boardIdx);
 
   if(result.length == 0)
   {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NO_BOARD));
     return;
   }
+
+  result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
+  result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
   
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result));
 });
