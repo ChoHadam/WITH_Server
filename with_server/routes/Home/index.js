@@ -71,8 +71,15 @@ router.get("/boards/:boardIdx", async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.MATE_READ_SUCCESS, result));
 });
 
-router.get("/regions", async (req, res) => {
-    const result = await Home.readAllRegion();
+router.get("/regions/:regionCode", async (req, res) => {
+    const regionCode = req.params.regionCode;
+
+    if(!regionCode){
+        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
+        return;
+    }
+
+    const result = await Home.readRegion(regionCode);
 
     if(result.length == 0)
     {
