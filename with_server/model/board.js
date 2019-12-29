@@ -100,11 +100,15 @@ module.exports = {
         if (json.content) conditions.push(`content = '${json.content}'`);
         if (json.startDate) conditions.push(`startDate = '${json.startDate}'`);
         if (json.endDate) conditions.push(`endDate = '${json.endDate}'`);
-        if (json.active) conditions.push(`active = '${json.active}'`);
         if (json.filter) conditions.push(`filter = '${json.filter}'`);
 
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
         const result = await pool.queryParam_None(`UPDATE ${table} ${setStr} WHERE boardIdx = ${boardIdx}`);
+        return result;
+    },
+
+    activate : async(boardIdx) => {
+        const result = await pool.queryParam_None(`UPDATE ${table} SET active = '1' WHERE boardIdx = ${boardIdx}`);
         return result;
     },
 
