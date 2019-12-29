@@ -17,6 +17,7 @@ module.exports = {
         const result = await pool.queryParam_None(`SELECT name, userImg, regionCode, title FROM ${table3} LEFT JOIN ${table1} ON Board.userIdx = User.userIdx WHERE boardIdx = '${boardIdx}'`);
         return result;    
     },
+<<<<<<< HEAD
     readRegion: async (regionCode) => {
         // regionCode Parsing
         var region = regionCode.substr(0,2);
@@ -37,6 +38,10 @@ module.exports = {
             }
         }
         const result = await pool.queryParam_None(query);
+=======
+    readAllRegion: async () => {        
+        const result = await pool.queryParam_None(`SELECT * FROM Region WHERE regionCode = ${regionCode}`);
+>>>>>>> 29a2ff86a05de9224a334216c1401c9972a59c7c
         return result; 
     }
 };

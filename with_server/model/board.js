@@ -26,8 +26,7 @@ module.exports = {
         var country = json.regionCode.substr(4,2);
         var query;
         
-        // boardIdx, regionCode, title, content, uploadTime, startDate, endDate, active, withNum, filter, name, userImg, likeNum, dislikeNum
-        const fields = 'boardIdx, regionName, title, uploadTime, startDate, endDate, withNum, filter, userImg, likeNum, dislikeNum';
+        const fields = 'boardIdx, regionCode, title, uploadTime, startDate, endDate, withNum, filter, userImg';
         if(country == "00")
         {
             if(semi_region == "00")
@@ -58,9 +57,11 @@ module.exports = {
         {
             query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
         }
-        var front_query = query.substr(0, 125);
-        var back_query = query.substr(124, query.length);
+
+        var front_query = query.substr(0, 104);
+        var back_query = query.substr(103, query.length);
         query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;
+
         // 동성 필터 적용된 경우
         if(json.filter!='0')
         {
@@ -73,12 +74,12 @@ module.exports = {
         }
         console.log(query);
         const result = await pool.queryParam_None(query);
+
         return result;
     },
 
     read : async(boardIdx) => {
-        // boardIdx, regionCode, title, content, uploadTime, startDate, endDate, active, withNum, filter, name, userImg, likeNum, dislikeNum
-        const fields = 'boardIdx, regionCode, title, content, startDate, endDate, Board.userIdx, name, birth, gender, userImg, hashTag, intro';
+        const fields = 'boardIdx, regionCode, title, content, startDate, endDate, Board.userIdx, name, birth, gender, userImg, intro';
 
         const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} LEFT JOIN User ON Board.userIdx = User.userIdx WHERE active = 1 AND boardIdx = '${boardIdx}'`);
         
@@ -111,10 +112,11 @@ module.exports = {
         return result;
     },
 
-    delete : async(json) => {
-        const conditions = Object.entries(json).map(it => `${it[0]} = '${it[1]}'`).join(',');
+    delete : async(boardIdx) => {
+        /*const conditions = Object.entries(json).map(it => `${it[0]} = '${it[1]}'`).join(',');
         const whereStr = conditions.length > 0 ? `WHERE ${conditions}` : '';
-        const result = await pool.queryParam_None(`DELETE FROM ${table} ${whereStr}`)
+        const result = await pool.queryParam_None(`DELETE FROM ${table} ${whereStr}`)*/
+        const result = await pool.queryParam_None(`DELETE FROM ${table} WHERE boardIdx = ${boardIdx}`);
         return result;
     }
 }
