@@ -6,6 +6,7 @@ const pool = require('../module/db/pool');
 
 
 const table = 'Board';
+const table2 = 'User';
 
 module.exports = {
     create : async(json) => {
@@ -96,6 +97,17 @@ module.exports = {
         const result = await pool.queryParam_None(`UPDATE ${table} SET active = '1' WHERE boardIdx = ${boardIdx}`);
         return result;
     },
+
+    like : async(userIdx) => {
+        const result = await pool.queryParam_None(`UPDATE ${table2} SET likeNum = likeNum +1 WHERE userIdx = ${userIdx}`);
+        return result;
+    },
+
+    dislike : async(userIdx) => {
+        const result = await pool.queryParam_None(`UPDATE ${table2} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${userIdx}`);
+        return result;
+    },
+
 
     delete : async(json) => {
         const conditions = Object.entries(json).map(it => `${it[0]} = '${it[1]}'`).join(',');

@@ -45,6 +45,9 @@ module.exports = {
     ACTIVATE_SUCCESS:"마감 풀기 성공",
     ACTIVATE_FALSE:"마감 풀기 실패",
 
+    EVALUATE_SUCCESS:"동행 평가 성공",
+    EVALUATE_FAIL:"동행 평가 실패",
+
     X_NULL_VALUE: (x) => `${x}가 존재하지 않습니다.`,
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,
     X_CREATE_FAIL: (x) => `${x} 작성 실패`,

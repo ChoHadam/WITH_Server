@@ -113,7 +113,7 @@ router.get("/:boardIdx", async(req, res) => {
 });
 
 // 게시글 수정하기
-router.put("/:boardIdx", async(req, res) => {
+router.put("edit/:boardIdx", authutil.validToken, async(req, res) => {
   const boardIdx = req.params.boardIdx;
   
   if(!boardIdx)
@@ -123,16 +123,18 @@ router.put("/:boardIdx", async(req, res) => {
   }
 
   const result = await Board.update(req.body, boardIdx);
-
+  /*
   if(result.length == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_UPDATE_FAIL));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.EVALUATE_FAIL));
     return;
   }
+  */
 
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
 
+// 마감 풀기
 router.put("/activate/:boardIdx", async(req, res) => {
   const boardIdx = req.params.boardIdx;
   
@@ -147,6 +149,37 @@ router.put("/activate/:boardIdx", async(req, res) => {
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
 
+/*
+// 동행 평가하기 - 좋아요+1
+router.put("/like", authutil.validToken, async(req, res) => {
+  const userIdx = req.decoded.userIdx;
+  
+  if(!userIdx)
+  {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    return;
+  }
+
+  const result = await Board.like(userIdx);
+
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS, result));
+});
+
+// 동행 평가하기 - 싫어요+1
+router.put("/dislike", authutil.validToken, async(req, res) => {
+  const userIdx = req.decoded.userIdx;
+  
+  if(!userIdx)
+  {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    return;
+  }
+
+  const result = await Board.dislike(userIdx);
+
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS, result));
+});
+*/
 
 // 게시글 삭제하기 (error....)
 router.delete("/", async(req, res) => {
