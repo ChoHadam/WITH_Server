@@ -81,8 +81,6 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
   for(var i in result){
     result[i].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
     result[i].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
-    console.log(result[i].startDate);
-    console.log(result[i].endDate);
   }
 
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
