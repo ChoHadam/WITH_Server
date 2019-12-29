@@ -75,6 +75,34 @@ module.exports = {
         console.log(query);
         const result = await pool.queryParam_None(query);
 
+        // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
+        for(var i in result)
+        {
+            var postTerm = moment().diff(result[i].uploadTime,"Minutes");
+
+            if(postTerm < 1)
+            {
+                //console.log("방금");
+                result[i].uploadTime = "방금";
+            }
+            else if(postTerm < 60)
+            {
+                //console.log(`${postTerm}분 전`);
+                result[i].uploadTime = `${postTerm}분 전`;
+            }
+            else if(postTerm < 1440)
+            {
+                postTerm = moment().diff(result[i].uploadTime,"Hours");
+                //console.log(`${postTerm}시간 전`);
+                result[i].uploadTime = `${postTerm}시간 전`;
+            }
+            else
+            {
+                postTerm = moment().diff(result[i].uploadTime,"Days");
+                //console.log(`${postTerm}일 전`);
+                result[i].uploadTime = `${postTerm}일 전`;
+            }
+        }
         return result;
     },
 
