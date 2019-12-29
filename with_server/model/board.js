@@ -55,16 +55,15 @@ module.exports = {
         }
         var front_query = query.substr(0, 20);
         var back_query = query.substr(19, query.length);
+        query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;
         // 동성 필터 적용된 경우
         if(json.filter!='0')
         {
-            query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
             query += ` AND gender = ${json.gender}`;
         }
         // 동성 필터 적용되지 않은 경우
         else
         {
-            query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
             query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender}))`;
         }
         console.log(query);
