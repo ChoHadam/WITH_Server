@@ -114,7 +114,7 @@ module.exports = {
     },
 
     read : async(boardIdx) => {
-        const fields = 'boardIdx, regionCode, title, content, uploadTime, startDate, endDate, withNum, Board.userIdx, name, birth, gender, userImg, intro';
+        const fields = 'boardIdx, regionCode, title, content, uploadTime, startDate, endDate, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro';
 
         const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} LEFT JOIN User ON Board.userIdx = User.userIdx WHERE active = 1 AND boardIdx = '${boardIdx}'`);
 
