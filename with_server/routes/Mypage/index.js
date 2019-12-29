@@ -11,7 +11,7 @@ router.get("/",authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     if(!userIdx)
     {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
 
@@ -34,7 +34,7 @@ router.put("/",authUtil.validToken ,async(req, res) => {
 
     if(!userIdx)
     {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
     
@@ -56,7 +56,7 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
     
     if(!userIdx)
     {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
 
@@ -66,8 +66,7 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
     {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_ALL_FAIL));
         return;
-    }
-    
+    }    
 
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });

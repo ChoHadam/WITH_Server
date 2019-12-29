@@ -40,10 +40,16 @@ module.exports = {
     RECOMMEND_READ_FAIL: "추천 동행지 조회 실패",
 
     MATE_READ_SUCCESS: "위드 메이트 조회 성공",
-    MATE_READ_FALSE: "위드 메이트 조회 실패",
+    MATE_READ_FAIL: "위드 메이트 조회 실패",
 
     ACTIVATE_SUCCESS:"마감 풀기 성공",
     ACTIVATE_FALSE:"마감 풀기 실패",
+
+    READ_REGION_LIST_SUCCESS: "국가 리스트 조회 성공",
+    READ_REGION_LIST_FAIL: "국가 리스트 조회 성공",
+
+    EVALUATE_SUCCESS:"동행 평가 성공",
+    EVALUATE_FAIL:"동행 평가 실패",
 
     X_NULL_VALUE: (x) => `${x}가 존재하지 않습니다.`,
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,

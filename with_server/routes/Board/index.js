@@ -8,12 +8,12 @@ const statusCode = require('../../module/utils/statusCode');
 const moment = require('moment');
 const moment_timezone = require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
-const authutil = require('../../module/utils/authUtil');
+const authUtil = require('../../module/utils/authUtil');
 const Board = require('../../model/board');
 
 
 // 게시글 생성하기
-router.post('/', authutil.validToken, async (req, res) => {
+router.post('/', authUtil.validToken, async (req, res) => {
     var {regionCode, title, content, startDate, endDate, filter} = req.body;
     startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
     endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
@@ -23,7 +23,7 @@ router.post('/', authutil.validToken, async (req, res) => {
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
       console.log(missParameters)
 
-      res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
+      res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
       return;
     }
     
@@ -48,7 +48,7 @@ router.post('/', authutil.validToken, async (req, res) => {
 });
 
 // 게시글 전체 보기
-router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter", authutil.validToken, async (req, res) => {
+router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter", authUtil.validToken, async (req, res) => {
   var {regionCode, startDate, endDate, keyword, filter} = req.params;
   const {userIdx, gender} = req.decoded;
   if(startDate !='0' && endDate != '0'){
@@ -66,7 +66,7 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
   */
   if(!regionCode)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
   const json = {regionCode, startDate, endDate, userIdx, filter, keyword, gender};
@@ -74,16 +74,18 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
 
   if(result.length == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_FAIL));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_ALL_FAIL));
     return;
   }
 
   for(var i in result){
     result[i].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
     result[i].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
+    console.log(result[i].startDate);
+    console.log(result[i].endDate);
   }
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result));
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
 // 게시글 하나 보기
@@ -92,7 +94,7 @@ router.get("/:boardIdx", async(req, res) => {
 
   if(!boardIdx)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
 
@@ -111,52 +113,90 @@ router.get("/:boardIdx", async(req, res) => {
 });
 
 // 게시글 수정하기
-router.put("/:boardIdx", async(req, res) => {
+router.put("edit/:boardIdx", authUtil.validToken, async(req, res) => {
   const boardIdx = req.params.boardIdx;
   
   if(!boardIdx)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
 
   const result = await Board.update(req.body, boardIdx);
-
+  /*
   if(result.length == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_UPDATE_FAIL));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.EVALUATE_FAIL));
     return;
   }
+  */
 
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
 
-router.put("/activate/:boardIdx", async(req, res) => {
+// 게시글 삭제하기 (error....)
+router.delete("/:boardIdx", async(req, res) => {
   const boardIdx = req.params.boardIdx;
-  
+
   if(!boardIdx)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
 
+  const result = await Board.delete(boardIdx);
+
+  if(result.length == 0){
+    res
+    .status(statusCode.INTERNAL_SERVER_ERROR)
+    .send(utils.successFalse(responseMessage.BOARD_DELETE_FAIL));
+    return;
+  }
+  res.status(statusCode.OK)
+  .send(utils.successTrue(responseMessage.BOARD_DELETE_SUCCESS));
+});
+
+// 마감 풀기
+router.put("/activate/:boardIdx", async(req, res) => {
   const result = await Board.activate(req.body, boardIdx);
 
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
 
-
-// 게시글 삭제하기 (error....)
-router.delete("/", async(req, res) => {
-  const result = await Board.delete(req.body);
-  console.log(result);
-  if(result.length == 0)
+/*
+// 동행 평가하기 - 좋아요+1
+router.put("/like", authUtil.validToken, async(req, res) => {
+  const userIdx = req.decoded.userIdx;
+  
+  if(!userIdx)
+>>>>>>> 3b9221400ab44178dadca75db5d151717971989b
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.ACTIVATE_FALSE));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
     return;
   }
-  
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.ACTIVATE_SUCCESS, result));
+
+  const result = await Board.like(userIdx);
+
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS, result));
 });
+
+// 동행 평가하기 - 싫어요+1
+router.put("/dislike", authUtil.validToken, async(req, res) => {
+  const userIdx = req.decoded.userIdx;
+  
+  if(!userIdx)
+  {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    return;
+  }
+
+  const result = await Board.dislike(userIdx);
+
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS, result));
+});
+
+*/
+
+// 게시글 삭제하기 (error....)
 
 module.exports = router;
