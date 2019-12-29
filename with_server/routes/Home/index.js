@@ -72,17 +72,23 @@ router.get("/boards/:boardIdx", async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
-router.get("/regions", async (req, res) => {
-    
-    const result = await Home.readAllRegion();
+router.get("/regions/:regionCode", async (req, res) => {
+    const regionCode = req.params.regionCode;
 
-    if(result.length == 0)
-    {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.MATE_READ_FAIL));
+    if(!regionCode){
+        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
 
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.MATE_READ_SUCCESS, result));
+    const result = await Home.readRegion(regionCode);
+
+    if(result.length == 0)
+    {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.READ_REGION_LIST_FAIL));
+        return;
+    }
+
+    res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_REGION_LIST_SUCCESS, result));
 });
 
 module.exports = router;

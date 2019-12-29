@@ -113,7 +113,7 @@ router.get("/:boardIdx", async(req, res) => {
 });
 
 // 게시글 수정하기
-router.put("/:boardIdx", async(req, res) => {
+router.put("edit/:boardIdx", authUtil.validToken, async(req, res) => {
   const boardIdx = req.params.boardIdx;
   
   if(!boardIdx)
@@ -123,12 +123,13 @@ router.put("/:boardIdx", async(req, res) => {
   }
 
   const result = await Board.update(req.body, boardIdx);
-
+  /*
   if(result.length == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_UPDATE_FAIL));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.EVALUATE_FAIL));
     return;
   }
+  */
 
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
@@ -136,20 +137,66 @@ router.put("/:boardIdx", async(req, res) => {
 // 게시글 삭제하기 (error....)
 router.delete("/:boardIdx", async(req, res) => {
   const boardIdx = req.params.boardIdx;
-  
+
   if(!boardIdx)
   {
     res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
 
-  if(result.length == 0)
-  {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_DELETE_FAIL));
+  const result = await Board.delete(boardIdx);
+
+  if(result.length == 0){
+    res
+    .status(statusCode.INTERNAL_SERVER_ERROR)
+    .send(utils.successFalse(responseMessage.BOARD_DELETE_FAIL));
     return;
   }
-  
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_DELETE_SUCCESS, result));
+  res.status(statusCode.OK)
+  .send(utils.successTrue(responseMessage.BOARD_DELETE_SUCCESS));
 });
+
+// 마감 풀기
+router.put("/activate/:boardIdx", async(req, res) => {
+  const result = await Board.activate(req.body, boardIdx);
+
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
+});
+
+/*
+// 동행 평가하기 - 좋아요+1
+router.put("/like", authUtil.validToken, async(req, res) => {
+  const userIdx = req.decoded.userIdx;
+  
+  if(!userIdx)
+>>>>>>> 3b9221400ab44178dadca75db5d151717971989b
+  {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    return;
+  }
+
+  const result = await Board.like(userIdx);
+
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS, result));
+});
+
+// 동행 평가하기 - 싫어요+1
+router.put("/dislike", authUtil.validToken, async(req, res) => {
+  const userIdx = req.decoded.userIdx;
+  
+  if(!userIdx)
+  {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    return;
+  }
+
+  const result = await Board.dislike(userIdx);
+
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS, result));
+});
+
+*/
+
+// 게시글 삭제하기 (error....)
 
 module.exports = router;

@@ -17,8 +17,26 @@ module.exports = {
         const result = await pool.queryParam_None(`SELECT name, userImg, regionCode, title FROM ${table3} LEFT JOIN ${table1} ON Board.userIdx = User.userIdx WHERE boardIdx = '${boardIdx}'`);
         return result;    
     },
-    readAllRegion: async () => {        
-        const result = await pool.queryParam_None(`SELECT * FROM Region WHERE regionCode = ${regionCode}`);
+    readRegion: async (regionCode) => {
+        // regionCode Parsing
+        var region = regionCode.substr(0,2);
+        var semi_region = regionCode.substr(2,2);
+        var country = regionCode.substr(4,2);
+        var query = `SELECT regionCode, regionName FROM Region WHERE regionCode LIKE `;
+        if(country == "00")
+        {
+            if(semi_region == "00")
+            {
+                // 대분류에서 찾기
+                query += `'${region}%'`;
+            }
+            else
+            {
+                // 중분류에서 찾기
+                query += `'${region}${semi_region}%'`;
+            }
+        }
+        const result = await pool.queryParam_None(query);
         return result; 
     }
 };
