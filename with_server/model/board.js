@@ -27,7 +27,7 @@ module.exports = {
         var query;
         
         // boardIdx, regionCode, title, content, uploadTime, startDate, endDate, active, withNum, filter, name, userImg, likeNum, dislikeNum
-        const fields = 'boardIdx, regionCode, title, startDate, endDate, withNum, filter, userImg, likeNum, dislikeNum';
+        const fields = 'boardIdx, regionCode, title, uploadTime, startDate, endDate, withNum, filter, userImg, likeNum, dislikeNum';
         if(country == "00")
         {
             if(semi_region == "00")
@@ -38,7 +38,7 @@ module.exports = {
             else
             {
                 // 중분류에서 찾기
-                query = `SELECT ${fields}FROM ${table} WHERE regionCode LIKE '${region}${semi_region}%' AND active = 1`;
+                query = `SELECT ${fields} FROM ${table} WHERE regionCode LIKE '${region}${semi_region}%' AND active = 1`;
             }
         }
         else
@@ -58,19 +58,19 @@ module.exports = {
         {
             query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
         }
-        var front_query = query.substr(0, 113);
-        var back_query = query.substr(112, query.length);
+        var front_query = query.substr(0, 125);
+        var back_query = query.substr(124, query.length);
         // 동성 필터 적용된 경우
         if(json.filter!='0')
         {
             query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
-            query += ` AND gender = ${json.gender}`;
+            query += ` AND gender = ${json.gender} ORDER BY uploadTime desc`;
         }
         // 동성 필터 적용되지 않은 경우
         else
         {
             query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
-            query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender}))`;
+            query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender})) ORDER BY uploadTime desc`;
         }
         console.log(query);
         const result = await pool.queryParam_None(query);
