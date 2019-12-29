@@ -133,7 +133,7 @@ module.exports = {
         }
         else if(postTerm < 1440)
         {
-            postTerm = moment().diff(result[i].uploadTime,"Hours");
+            postTerm = moment().diff(result[0].uploadTime,"Hours");
             //console.log(`${postTerm}시간 전`);
             result[0].uploadTime = `${postTerm}시간 전`;
         }
