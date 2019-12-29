@@ -3,9 +3,7 @@ const responseMessage = require('../module/utils/responseMessage');
 const authUtil = require('../module/utils/utils');
 
 const pool = require('../module/db/pool');
-const moment = require('moment');
-const moment_timezone = require('moment-timezone');
-moment.tz.setDefault("Asia/Seoul");
+
 
 const table = 'Board';
 const table2 = 'User';
@@ -26,25 +24,23 @@ module.exports = {
         var semi_region = json.regionCode.substr(2,2);
         var country = json.regionCode.substr(4,2);
         var query;
-        
-        const fields = 'boardIdx, regionCode, title, uploadTime, startDate, endDate, withNum, filter, userImg';
         if(country == "00")
         {
             if(semi_region == "00")
             {
                 // 대분류에서 찾기
-                query = `SELECT ${fields} FROM ${table} WHERE regionCode LIKE '${region}%' AND active = 1`;
+                query = `SELECT * FROM ${table} WHERE regionCode LIKE '${region}%' AND active = 1`;
             }
             else
             {
                 // 중분류에서 찾기
-                query = `SELECT ${fields} FROM ${table} WHERE regionCode LIKE '${region}${semi_region}%' AND active = 1`;
+                query = `SELECT * FROM ${table} WHERE regionCode LIKE '${region}${semi_region}%' AND active = 1`;
             }
         }
         else
         {
             // 나라에서 찾기
-            query = `SELECT ${fields} FROM ${table} WHERE regionCode = '${regionCode}' AND active = 1`;
+            query = `SELECT * FROM ${table} WHERE regionCode = '${regionCode}' AND active = 1`;
         }
 
         // 날짜 필터 적용된 경우
@@ -58,38 +54,27 @@ module.exports = {
         {
             query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
         }
-
-        var front_query = query.substr(0, 104);
-        var back_query = query.substr(103, query.length);
-        query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;
-
+        var front_query = query.substr(0, 20);
+        var back_query = query.substr(19, query.length);
         // 동성 필터 적용된 경우
         if(json.filter!='0')
         {
-            query += ` AND gender = ${json.gender} ORDER BY uploadTime desc`;
+            query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
+            query += ` AND gender = ${json.gender}`;
         }
         // 동성 필터 적용되지 않은 경우
         else
         {
-            query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender})) ORDER BY uploadTime desc`;
+            query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
+            query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender}))`;
         }
         console.log(query);
         const result = await pool.queryParam_None(query);
-
         return result;
     },
 
     read : async(boardIdx) => {
-        const fields = 'boardIdx, regionCode, title, content, startDate, endDate, Board.userIdx, name, birth, gender, userImg, intro';
-
-        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} LEFT JOIN User ON Board.userIdx = User.userIdx WHERE active = 1 AND boardIdx = '${boardIdx}'`);
-        
-        // birth field 값 나이로 변환하여 반환.
-        const birthYear = result[0].birth.split("-");
-        const currentYear = moment().format('YYYY');
-        const age = currentYear - birthYear[0] + 1;
-
-        result[0].birth = age;
+        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE active = 1 AND boardIdx = '${boardIdx}'`);
         return result;
     },
 
@@ -113,27 +98,21 @@ module.exports = {
         return result;
     },
 
-<<<<<<< HEAD
     like : async(userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table2} SET likeNum = likeNum +1 WHERE userIdx = ${userIdx}`);
+        const result = await pool.queryParam_None(`UPDATE ${table} SET likeNum = likeNum +1 WHERE userIdx = ${userIdx}`);
         return result;
     },
 
     dislike : async(userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table2} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${userIdx}`);
+        const result = await pool.queryParam_None(`UPDATE ${table} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${userIdx}`);
         return result;
     },
 
 
     delete : async(json) => {
         const conditions = Object.entries(json).map(it => `${it[0]} = '${it[1]}'`).join(',');
-=======
-    delete : async(boardIdx) => {
-        /*const conditions = Object.entries(json).map(it => `${it[0]} = '${it[1]}'`).join(',');
->>>>>>> 29a2ff86a05de9224a334216c1401c9972a59c7c
         const whereStr = conditions.length > 0 ? `WHERE ${conditions}` : '';
-        const result = await pool.queryParam_None(`DELETE FROM ${table} ${whereStr}`)*/
-        const result = await pool.queryParam_None(`DELETE FROM ${table} WHERE boardIdx = ${boardIdx}`);
+        const result = await pool.queryParam_None(`DELETE FROM ${table} ${whereStr}`)
         return result;
     }
 }
