@@ -27,7 +27,7 @@ module.exports = {
         var query;
         
         // boardIdx, regionCode, title, content, uploadTime, startDate, endDate, active, withNum, filter, name, userImg, likeNum, dislikeNum
-        const fields = 'boardIdx, regionCode, title, uploadTime, startDate, endDate, withNum, filter, userImg, likeNum, dislikeNum';
+        const fields = 'boardIdx, regionName, title, uploadTime, startDate, endDate, withNum, filter, userImg, likeNum, dislikeNum';
         if(country == "00")
         {
             if(semi_region == "00")
