@@ -29,6 +29,9 @@ module.exports = {
         var semi_region = json.regionCode.substr(2,2);
         var country = json.regionCode.substr(4,2);
         var query;
+
+        const fields = 'boardIdx, regionCode, title, uploadTime, startDate, endDate, withNum, filter, userImg';
+
         if(country == "00")
         {
             if(semi_region == "00")
@@ -59,51 +62,22 @@ module.exports = {
         {
             query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
         }
-        var front_query = query.substr(0, 20);
-        var back_query = query.substr(19, query.length);
+        var front_query = query.substr(0, 104);
+        var back_query = query.substr(103, query.length);
+        query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;
         // 동성 필터 적용된 경우
         if(json.filter!='0')
         {
-            query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
-            query += ` AND gender = ${json.gender}`;
+            query += ` AND gender = ${json.gender} ORDER BY uploadTime desc`;
         }
         // 동성 필터 적용되지 않은 경우
         else
         {
-            query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
-            query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender}))`;
+            query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender})) ORDER BY uploadTime desc`;
         }
+
         console.log(query);
         const result = await pool.queryParam_None(query);
-
-        // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
-        for(var i in result)
-        {
-            var postTerm = moment().diff(result[i].uploadTime,"Minutes");
-
-            if(postTerm < 1)
-            {
-                //console.log("방금");
-                result[i].uploadTime = "방금";
-            }
-            else if(postTerm < 60)
-            {
-                //console.log(`${postTerm}분 전`);
-                result[i].uploadTime = `${postTerm}분 전`;
-            }
-            else if(postTerm < 1440)
-            {
-                postTerm = moment().diff(result[i].uploadTime,"Hours");
-                //console.log(`${postTerm}시간 전`);
-                result[i].uploadTime = `${postTerm}시간 전`;
-            }
-            else
-            {
-                postTerm = moment().diff(result[i].uploadTime,"Days");
-                //console.log(`${postTerm}일 전`);
-                result[i].uploadTime = `${postTerm}일 전`;
-            }
-        }
 
         return result;
     },
