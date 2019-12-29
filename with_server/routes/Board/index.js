@@ -55,15 +55,6 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
     startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
     endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
   }
-  /*
-  const regionCode = req.params.regionCode;
-  const startDate = req.params.startDate;
-  const endDate = req.params.endDate;
-  const keyword = req.params.keyword;
-  const filter = req.params.filter;
-  const userIdx = req.decoded.userIdx;
-  const gender = req.decoded.gender;
-  */
   if(!regionCode)
   {
     res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
@@ -78,11 +69,12 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
     return;
   }
 
-  for(var i in result){
-    result[i].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
-    result[i].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
+  if(startDate !='0' && endDate != '0'){
+    for(var i in result){
+      result[i].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
+      result[i].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
+    }
   }
-
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 

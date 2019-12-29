@@ -29,8 +29,9 @@ module.exports = {
         var semi_region = json.regionCode.substr(2,2);
         var country = json.regionCode.substr(4,2);
         var query;
-        
-        const fields = 'boardIdx, regionCode, title, uploadTime, startDate, endDate, withNum, filter, userImg';
+
+        const fields = 'boardIdx, regionCode, regionName, title, uploadTime, startDate, endDate, withNum, filter, userImg';
+
         if(country == "00")
         {
             if(semi_region == "00")
@@ -61,8 +62,9 @@ module.exports = {
         {
             query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
         }
-        var front_query = query.substr(0, 104);
-        var back_query = query.substr(103, query.length);
+
+        var front_query = query.substr(0, 116);
+        var back_query = query.substr(115, query.length);
         query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;
 
         // 동성 필터 적용된 경우
@@ -75,6 +77,7 @@ module.exports = {
         {
             query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender})) ORDER BY uploadTime desc`;
         }
+
         console.log(query);
         const result = await pool.queryParam_None(query);
         
