@@ -26,7 +26,6 @@ module.exports = {
         var country = json.regionCode.substr(4,2);
         var query;
         
-        // boardIdx, regionCode, title, content, uploadTime, startDate, endDate, active, withNum, filter, name, userImg, likeNum, dislikeNum
         const fields = 'boardIdx, regionCode, title, uploadTime, startDate, endDate, withNum, filter, userImg';
         if(country == "00")
         {
@@ -58,18 +57,19 @@ module.exports = {
         {
             query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
         }
-        var front_query = query.substr(0, 104);
-        var back_query = query.substr(103, query.length);
+
+        var front_query = query.substr(0, 125);
+        var back_query = query.substr(124, query.length);
+        query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;
+
         // 동성 필터 적용된 경우
         if(json.filter!='0')
         {
-            query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
             query += ` AND gender = ${json.gender} ORDER BY uploadTime desc`;
         }
         // 동성 필터 적용되지 않은 경우
         else
         {
-            query = front_query + `LEFT JOIN User ON Board.userIdx = User.userIdx` + back_query;
             query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender})) ORDER BY uploadTime desc`;
         }
         console.log(query);
