@@ -10,11 +10,11 @@ const User = require('../../model/user');
 router.post('/',upload.single('img'), async (req, res) => {    
     //필수항목 안채웠으면 오류메세지 전송
     const {userId, password, name, birth, gender} = req.body;
-    console.log(gender);
+
     if(!userId || !password || !name || !birth || !gender){
         const missParameters = Object.entries({userId, password, name, birth, gender})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
-        res.status(statusCode.BAD_REQUEST)
+        res.status(statusCode.NO_CONTENT)
         .send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
         return;
     }
@@ -37,9 +37,9 @@ router.post('/',upload.single('img'), async (req, res) => {
     const buf = await crypto.randomBytes(32); //64비트의 salt값 생성
     const salt = buf.toString('hex'); //비트를 문자열로 바꿈
     const hashedPw = await crypto.pbkdf2(password.toString(),salt,1000,32,'SHA512'); //버퍼 형태로 리턴해주기 때문에 base64 방식으로 문자열
-    const finalPw = hashedPw.toString('hex');
-    console.log(finalPw);
+    const finalPw = hashedPw.toString('hex');    
     const json = {userId, finalPw, salt, name, birth, gender, userImg};
+    
     result = User.signup(json);
     if(!result){
         res
@@ -49,7 +49,7 @@ router.post('/',upload.single('img'), async (req, res) => {
     }
     res
     .status(statusCode.OK)
-    .send(utils.successTrue(responseMessage.SIGN_UP_SUCCESS)); //회원가입 성공하면 data뭐 반납해야됨??
+    .send(utils.successTrue(responseMessage.SIGN_UP_SUCCESS)); 
 });
 
 module.exports = router;
