@@ -133,17 +133,32 @@ router.put("/:boardIdx", async(req, res) => {
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
 
+router.put("/activate/:boardIdx", async(req, res) => {
+  const boardIdx = req.params.boardIdx;
+  
+  if(!boardIdx)
+  {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    return;
+  }
+
+  const result = await Board.activate(req.body, boardIdx);
+
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
+});
+
+
 // 게시글 삭제하기 (error....)
 router.delete("/", async(req, res) => {
   const result = await Board.delete(req.body);
   console.log(result);
   if(result.length == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_DELETE_FAIL));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.ACTIVATE_FALSE));
     return;
   }
   
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_DELETE_SUCCESS, result));
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.ACTIVATE_SUCCESS, result));
 });
 
 module.exports = router;
