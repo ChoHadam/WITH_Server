@@ -3,6 +3,7 @@ const responseMessage = require('../module/utils/responseMessage');
 const authUtil = require('../module/utils/utils');
 
 const pool = require('../module/db/pool');
+const cron = require('node-cron');
 const moment = require('moment');
 const moment_timezone = require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
@@ -120,3 +121,8 @@ module.exports = {
         return result;
     }
 }
+
+cron.schedule('0 12 * * *', async function(){           
+    var currentTime = moment().format('YYYY-MM-DD');    
+    const result = await pool.queryParam_None(`UPDATE ${table} SET active = '-1' WHERE endDate <= '${currentTime}'`);    
+});
