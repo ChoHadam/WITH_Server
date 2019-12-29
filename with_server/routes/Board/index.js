@@ -185,17 +185,5 @@ router.put("/dislike", authutil.validToken, async(req, res) => {
 */
 
 // 게시글 삭제하기 (error....)
-router.delete("/", async(req, res) => {
-  const result = await Board.delete(req.body);
-  console.log(result);
-
-  if(result.length == 0)
-  {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_DELETE_FAIL));
-    return;
-  }
-  
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_DELETE_SUCCESS, result));
-});
 
 module.exports = router;

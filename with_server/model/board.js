@@ -108,11 +108,4 @@ module.exports = {
         return result;
     },
 
-
-    delete : async(json) => {
-        const conditions = Object.entries(json).map(it => `${it[0]} = '${it[1]}'`).join(',');
-        const whereStr = conditions.length > 0 ? `WHERE ${conditions}` : '';
-        const result = await pool.queryParam_None(`DELETE FROM ${table} ${whereStr}`)
-        return result;
-    }
 }
