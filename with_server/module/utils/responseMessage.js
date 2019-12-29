@@ -48,6 +48,9 @@ module.exports = {
     READ_REGION_LIST_SUCCESS: "국가 리스트 조회 성공",
     READ_REGION_LIST_FAIL: "국가 리스트 조회 성공",
 
+    EVALUATE_SUCCESS:"동행 평가 성공",
+    EVALUATE_FAIL:"동행 평가 실패",
+
     X_NULL_VALUE: (x) => `${x}가 존재하지 않습니다.`,
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,
     X_CREATE_FAIL: (x) => `${x} 작성 실패`,
