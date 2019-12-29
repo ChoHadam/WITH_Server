@@ -143,6 +143,8 @@ router.delete("/:boardIdx", async(req, res) => {
     return;
   }
 
+  result = await Board.delete(boardIdx);
+
   if(result.length == 0)
   {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_DELETE_FAIL));
