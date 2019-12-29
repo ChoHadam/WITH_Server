@@ -3,7 +3,9 @@ const responseMessage = require('../module/utils/responseMessage');
 const authUtil = require('../module/utils/utils');
 
 const pool = require('../module/db/pool');
-
+const moment = require('moment');
+const moment_timezone = require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
 
 const table = 'Board';
 
@@ -23,23 +25,26 @@ module.exports = {
         var semi_region = json.regionCode.substr(2,2);
         var country = json.regionCode.substr(4,2);
         var query;
+        
+        // boardIdx, regionCode, title, content, uploadTime, startDate, endDate, active, withNum, filter, name, userImg, likeNum, dislikeNum
+        const fields = 'boardIdx, regionCode, title, startDate, endDate, withNum, filter, userImg, likeNum, dislikeNum';
         if(country == "00")
         {
             if(semi_region == "00")
             {
                 // 대분류에서 찾기
-                query = `SELECT * FROM ${table} WHERE regionCode LIKE '${region}%' AND active = 1`;
+                query = `SELECT ${fields} FROM ${table} WHERE regionCode LIKE '${region}%' AND active = 1`;
             }
             else
             {
                 // 중분류에서 찾기
-                query = `SELECT * FROM ${table} WHERE regionCode LIKE '${region}${semi_region}%' AND active = 1`;
+                query = `SELECT ${fields}FROM ${table} WHERE regionCode LIKE '${region}${semi_region}%' AND active = 1`;
             }
         }
         else
         {
             // 나라에서 찾기
-            query = `SELECT * FROM ${table} WHERE regionCode = '${regionCode}' AND active = 1`;
+            query = `SELECT ${fields} FROM ${table} WHERE regionCode = '${regionCode}' AND active = 1`;
         }
 
         // 날짜 필터 적용된 경우
@@ -53,8 +58,8 @@ module.exports = {
         {
             query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
         }
-        var front_query = query.substr(0, 20);
-        var back_query = query.substr(19, query.length);
+        var front_query = query.substr(0, 113);
+        var back_query = query.substr(112, query.length);
         // 동성 필터 적용된 경우
         if(json.filter!='0')
         {
@@ -73,7 +78,17 @@ module.exports = {
     },
 
     read : async(boardIdx) => {
-        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE active = 1 AND boardIdx = '${boardIdx}'`);
+        // boardIdx, regionCode, title, content, uploadTime, startDate, endDate, active, withNum, filter, name, userImg, likeNum, dislikeNum
+        const fields = 'boardIdx, regionCode, title, content, startDate, endDate, Board.userIdx, name, birth, gender, userImg, hashTag, intro';
+
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} LEFT JOIN User ON Board.userIdx = User.userIdx WHERE active = 1 AND boardIdx = '${boardIdx}'`);
+        
+        // birth field 값 나이로 변환하여 반환.
+        const birthYear = result[0].birth.split("-");
+        const currentYear = moment().format('YYYY');
+        const age = currentYear - birthYear[0] + 1;
+
+        result[0].birth = age;
         return result;
     },
 
