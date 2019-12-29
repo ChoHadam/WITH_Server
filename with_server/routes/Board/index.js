@@ -8,12 +8,12 @@ const statusCode = require('../../module/utils/statusCode');
 const moment = require('moment');
 const moment_timezone = require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
-const authutil = require('../../module/utils/authUtil');
+const authUtil = require('../../module/utils/authUtil');
 const Board = require('../../model/board');
 
 
 // 게시글 생성하기
-router.post('/', authutil.validToken, async (req, res) => {
+router.post('/', authUtil.validToken, async (req, res) => {
     var {regionCode, title, content, startDate, endDate, filter} = req.body;
     startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
     endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
@@ -23,7 +23,7 @@ router.post('/', authutil.validToken, async (req, res) => {
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
       console.log(missParameters)
 
-      res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
+      res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
       return;
     }
     
@@ -48,7 +48,7 @@ router.post('/', authutil.validToken, async (req, res) => {
 });
 
 // 게시글 전체 보기
-router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter", authutil.validToken, async (req, res) => {
+router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter", authUtil.validToken, async (req, res) => {
   var {regionCode, startDate, endDate, keyword, filter} = req.params;
   const {userIdx, gender} = req.decoded;
   if(startDate !='0' && endDate != '0'){
@@ -66,7 +66,7 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
   */
   if(!regionCode)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
   const json = {regionCode, startDate, endDate, userIdx, filter, keyword, gender};
@@ -74,7 +74,7 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
 
   if(result.length == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_FAIL));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_ALL_FAIL));
     return;
   }
 
@@ -85,7 +85,7 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
     console.log(result[i].endDate);
   }
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result));
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
 // 게시글 하나 보기
@@ -94,7 +94,7 @@ router.get("/:boardIdx", async(req, res) => {
 
   if(!boardIdx)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
 
@@ -118,7 +118,7 @@ router.put("edit/:boardIdx", authutil.validToken, async(req, res) => {
   
   if(!boardIdx)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
 
@@ -134,16 +134,19 @@ router.put("edit/:boardIdx", authutil.validToken, async(req, res) => {
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
 
-// 마감 풀기
-router.put("/activate/:boardIdx", async(req, res) => {
+// 게시글 삭제하기 (error....)
+router.delete("/:boardIdx", async(req, res) => {
   const boardIdx = req.params.boardIdx;
   
   if(!boardIdx)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
+});
 
+// 마감 풀기
+router.put("/activate/:boardIdx", async(req, res) => {
   const result = await Board.activate(req.body, boardIdx);
 
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
@@ -185,13 +188,14 @@ router.put("/dislike", authutil.validToken, async(req, res) => {
 router.delete("/", async(req, res) => {
   const result = await Board.delete(req.body);
   console.log(result);
+
   if(result.length == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.ACTIVATE_FALSE));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_DELETE_FAIL));
     return;
   }
   
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.ACTIVATE_SUCCESS, result));
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_DELETE_SUCCESS, result));
 });
 
 module.exports = router;

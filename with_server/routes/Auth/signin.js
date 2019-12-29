@@ -8,20 +8,22 @@ const User = require('../../model/user');
 const jwtUtils= require('../../module/utils/jwt')
 
 router.post('/', async(req, res) => {
-    const {userId, password} = req.body;
-    console.log(password);
-    if(!userId || !password){ //공백데이터 검사
+    const {userId, password} = req.body;   
+
+    if(!userId || !password){ //비어있는지 검사
         const missParameters = Object.entries({userId, password})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
         
-        res.status(statusCode.BAD_REQUEST)
+        res
+        .status(statusCode.NO_CONTENT)
         .send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
         return;
     }
+
     const userResult = await User.checkUser(userId);
     if(userResult.length == 0) { //존재하지 않는 데이터
         res
-        .status(statusCode.OK)
+        .status(statusCode.BAD_REQUEST)
         .send(utils.successFalse(responseMessage.NO_USER));
         return;
     } else {
@@ -31,21 +33,23 @@ router.post('/', async(req, res) => {
         console.log(inputPw);
         if(inputPw == userResult[0].password){
             const result = jwtUtils.sign(userResult[0]);
-            if(!result){ //토큰 생성 못함
+            const token  = result.token;
+            const userIdx = userResult[0].userIdx;
+            
+            if(!token){ //토큰 생성 못함
                 res
-                .status(statusCode.OK)
+                .status(statusCode.INTERNAL_SERVER_ERROR)
                 .send(utils.successFalse(responseMessage.EMPTY_TOKEN));
                 return;
             } else{   //토큰 생성
-
-                console.log(jwtUtils.verify(result.token));
+                const finalResult = {token, userIdx};
                 res
                 .status(statusCode.OK)
-                .send(utils.successTrue(responseMessage.SIGN_IN_SUCCESS,result.token));                
+                .send(utils.successTrue(responseMessage.SIGN_IN_SUCCESS,finalResult));                
             }   
         } else { //비밀번호 불일지, 로그인 실패
             res
-            .status(statusCode.OK)
+            .status(statusCode.BAD_REQUEST)
             .send(utils.successFalse(responseMessage.SIGN_IN_FAIL));
             return;
     }
