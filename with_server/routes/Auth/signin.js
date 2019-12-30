@@ -15,7 +15,7 @@ router.post('/', async(req, res) => {
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
         
         res
-        .status(statusCode.NO_CONTENT)
+        .status(statusCode.BAD_REQUEST)
         .send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
         return;
     }
