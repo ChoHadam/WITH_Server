@@ -170,7 +170,15 @@ module.exports = {
     },
 
     activate : async(boardIdx, userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table} SET active = '1' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
+        var activeState;
+        const query = await pool.queryParam_None(`SELECT * FROM ${table} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
+        console.log(query[0].active);
+        if(query[0].active == 1){
+            activeState  = -1;
+        }else{
+            activeState  = 1;
+        }
+        const result = await pool.queryParam_None(`UPDATE ${table} SET active = '${activeState}' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
         return result;
     },
 

@@ -160,7 +160,8 @@ router.delete("/:boardIdx", async(req, res) => {
 // 마감 풀기
 router.put("/activate/:boardIdx", authUtil.validToken, async(req, res) => {
   const userIdx = req.decoded.userIdx;
-  const result = await Board.activate(req.body, boardIdx, userIdx);
+  const boardIdx = req.params.boardIdx;
+  const result = await Board.activate(boardIdx, userIdx);
 
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
