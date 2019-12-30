@@ -6,5 +6,6 @@ router.use('/auth', require('./Auth'));
 router.use('/board', require('./Board'));
 router.use('/mypage', require('./Mypage'));
 router.use('/home', require('./Home'));
+router.use('/chat', require('./Chat'));
 
 module.exports = router;
