@@ -14,7 +14,7 @@ router.post('/',upload.single('img'), async (req, res) => {
     if(!userId || !password || !name || !birth || !gender){
         const missParameters = Object.entries({userId, password, name, birth, gender})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
-        res.status(statusCode.NO_CONTENT)
+        res.status(statusCode.BAD_REQUEST)
         .send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
         return;
     }

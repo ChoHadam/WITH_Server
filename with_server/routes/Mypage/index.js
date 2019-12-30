@@ -11,7 +11,7 @@ router.get("/",authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     if(!userIdx)
     {
-        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
 
@@ -34,7 +34,7 @@ router.put("/",authUtil.validToken ,async(req, res) => {
 
     if(!userIdx)
     {
-        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
     
@@ -56,7 +56,7 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
     
     if(!userIdx)
     {
-        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
 

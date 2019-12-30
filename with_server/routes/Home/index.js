@@ -11,7 +11,7 @@ router.get("/recommendations/:regionCode", async (req, res) => {
     
     if(!regionCode)
     {
-        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
     const result = await Home.recommend(regionCode);
@@ -28,7 +28,7 @@ router.get("/mates/:userIdx/", async (req, res) => {
     const userIdx = req.params.userIdx;
     if(!userIdx)
     {
-        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
 
@@ -53,7 +53,7 @@ router.get("/boards/:boardIdx", async (req, res) => {
     const boardIdx = req.params.boardIdx;
     if(!boardIdx)
     {
-        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
 
@@ -76,7 +76,7 @@ router.get("/regions/:regionCode", async (req, res) => {
     const regionCode = req.params.regionCode;
 
     if(!regionCode){
-        res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
 
