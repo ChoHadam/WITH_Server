@@ -51,6 +51,15 @@ module.exports = {
     EVALUATE_SUCCESS:"동행 평가 성공",
     EVALUATE_FAIL:"동행 평가 실패",
 
+    CHAT_CREATE_SUCCESS: "채팅방 생성 성공",
+    CHAT_CREATE_FAIL: "채팅방 생성 실패",
+
+    WITH_SUCCESS: "동행 성공",
+    WITH_FAIL: "동행 실패",
+
+    CHAT_READ_ALL_SUCCESS: "채팅방 전체 조회 성공",
+    CHAT_READ_ALL_FAIL: "채팅방 전체 조회 실패",
+
     X_NULL_VALUE: (x) => `${x}가 존재하지 않습니다.`,
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,
     X_CREATE_FAIL: (x) => `${x} 작성 실패`,
