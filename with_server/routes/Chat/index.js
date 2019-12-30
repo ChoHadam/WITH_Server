@@ -25,6 +25,12 @@ router.post('/', authUtil.validToken, async (req, res) => {
         return;
     }
     const json = {senderIdx, receiverIdx, boardIdx};
+    const check = await Chat.checkRoom(json);
+    if(!check.length==0)
+    {
+        res.status(statusCode.OK);
+        return;
+    }
     let result = await Chat.create(json);
     if(result.length == 0)
     {
@@ -35,18 +41,19 @@ router.post('/', authUtil.validToken, async (req, res) => {
 });
 
 router.put('/', authUtil.validToken, async (req, res) => {
-    const {receiverIdx, boardIdx, withStartDate, withEndDate} = req.body;
+    let {receiverIdx, boardIdx, withDate} = req.body;
     const senderIdx = req.decoded.userIdx;
-    if(!senderIdx || !receiverIdx || !boardIdx || !withStartDate || !withEndDate)
+    if(!senderIdx || !receiverIdx || !boardIdx || !withDate)
     {
-        const missParameters = Object.entries({senderIdx, receiverIdx, boardIdx, withStartDate, withEndDate})
+        const missParameters = Object.entries({senderIdx, receiverIdx, boardIdx, withDate})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
         res
         .status(statusCode.BAD_REQUEST)
         .send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
         return;
     }
-    const json = {senderIdx, receiverIdx, boardIdx, withStartDate, withEndDate};
+    withDate = moment(withDate, 'YY.MM.DD').format('YYYY-MM-DD');
+    const json = {senderIdx, receiverIdx, boardIdx, withDate};
     let result = await Chat.update(json);
     if(result.length == 0)
     {
@@ -70,10 +77,15 @@ router.get('/', authUtil.validToken, async (req, res) => {
     let result = await Chat.readAll(myIdx);
     if(result.length == 0)
     {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.CHAT_READ_FAIL));
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.CHAT_READ_ALL_FAIL));
         return;
     }
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.CHAT_READ_SUCCESS, result));
+    for(var i in result){
+        result[i].startDate = moment(result[i].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
+        result[i].endDate = moment(result[i].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
+        result[i].withDate = moment(result[i].withDate, 'YYYY-MM-DD').format('YY.MM.DD');
+    }
+    res.status(statusCode.OK).send(utils.successTrue(responseMessage.CHAT_READ_ALL_SUCCESS, result));
 });
 
 /*
