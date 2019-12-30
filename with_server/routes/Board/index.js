@@ -102,7 +102,7 @@ router.get("/:boardIdx", async(req, res) => {
 });
 
 // 게시글 수정하기
-router.put("edit/:boardIdx", authUtil.validToken, async(req, res) => {
+router.put("/edit/:boardIdx", authUtil.validToken, async(req, res) => {
   const boardIdx = req.params.boardIdx;
   
   if(!boardIdx)
@@ -110,7 +110,19 @@ router.put("edit/:boardIdx", authUtil.validToken, async(req, res) => {
     res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
+  
+  var {regionCode, title, content, startDate, endDate, filter} = req.body;
 
+  if(startDate)
+  {
+    startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
+  }
+
+  if(endDate)
+  {
+    endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
+  }
+  
   const result = await Board.update(req.body, boardIdx);
   /*
   if(result.length == 0)
