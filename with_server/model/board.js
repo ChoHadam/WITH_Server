@@ -9,7 +9,6 @@ const moment = require('moment');
 const moment_timezone = require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 
-
 const table = 'Board';
 const table2 = 'User';
 
@@ -56,8 +55,8 @@ module.exports = {
         {
             query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
         }
-        // 검색 필터 적용된 경우
 
+        // 검색 필터 적용된 경우
         if(json.keyword!='0')
         {
             query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
@@ -158,7 +157,12 @@ module.exports = {
     update : async(json, boardIdx) => {
         const conditions = [];
 
-        if (json.regionCode) conditions.push(`regionCode = '${json.regionCode}'`);
+        if (json.regionCode)
+        {
+            conditions.push(`regionCode = '${json.regionCode}'`);
+            const result = await pool.queryParam_None(`SELECT regionName FROM Region WHERE regionCode = ${json.regionCode}`);
+            conditions.push(`regionName = '${result[0].regionName}'`);
+        }
         if (json.title) conditions.push(`title = '${json.title}'`);
         if (json.content) conditions.push(`content = '${json.content}'`);
         if (json.startDate) conditions.push(`startDate = '${json.startDate}'`);
@@ -178,8 +182,8 @@ module.exports = {
     like : async(userIdx) => {
         const result = await pool.queryParam_None(`UPDATE ${table} SET likeNum = likeNum +1 WHERE userIdx = ${userIdx}`);
         return result;
-
     },
+    
     dislike : async(userIdx) => {
         const result = await pool.queryParam_None(`UPDATE ${table} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${userIdx}`);
         return result;
