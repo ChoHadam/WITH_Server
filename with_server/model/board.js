@@ -114,9 +114,9 @@ module.exports = {
     },
 
     read : async(boardIdx) => {
-        const fields = 'boardIdx, regionCode, title, content, uploadTime, startDate, endDate, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro';
+        const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro';
 
-        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} LEFT JOIN User ON Board.userIdx = User.userIdx WHERE active = 1 AND boardIdx = '${boardIdx}'`);
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} NATURAL JOIN User NATURAL JOIN Region WHERE active = 1 AND boardIdx = '${boardIdx}'`);
 
         // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
         var postTerm = moment().diff(result[0].uploadTime,"Minutes");
