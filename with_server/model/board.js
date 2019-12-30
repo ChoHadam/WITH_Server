@@ -16,10 +16,10 @@ const table2 = 'User';
 module.exports = {
     create : async(json) => {
         // 나라, 대륙, 제목, 내용, 작성시간, 동행시작시간, 동행종료시간, 작성자인덱스, 활성화유무, 동행자 수, 동성필터여부
-        const fields = 'regionCode, title, content, uploadTime, startDate, endDate, userIdx, filter';
-        const questions = `"${json.regionCode}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.filter}"`;
+        const fields = 'regionCode, regionName, title, content, uploadTime, startDate, endDate, userIdx, filter';
+        const regionName = await pool.queryParam_None(`SELECT regionName FROM Region WHERE regionCode = '${json.regionCode}'`);
+        const questions = `"${json.regionCode}", "${regionName[0].regionName}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.filter}"`;
         let result = await pool.queryParam_None(`INSERT INTO ${table}(${fields}) VALUES(${questions})`);
-        result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE userIdx = ${json.userIdx} ORDER BY uploadTime DESC LIMIT 1`);
         return result;
     },
 
@@ -115,9 +115,10 @@ module.exports = {
 
     read : async(boardIdx) => {
         const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro';
-
-        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} NATURAL JOIN User NATURAL JOIN Region WHERE active = 1 AND boardIdx = '${boardIdx}'`);
-
+        const idx = String(boardIdx);
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} NATURAL JOIN User NATURAL JOIN Region WHERE active = 1 AND boardIdx = '${idx}'`);
+        console.log(idx);
+        console.log(result);
         // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
         var postTerm = moment().diff(result[0].uploadTime,"Minutes");
 
