@@ -174,8 +174,7 @@ module.exports = {
 
     activate : async(boardIdx, userIdx) => {
         var activeState;
-        const query = await pool.queryParam_None(`SELECT * FROM ${table} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
-        console.log(query[0].active);
+        const query = await pool.queryParam_None(`SELECT * FROM ${table} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);    
         if(query[0].active == 1){
             activeState  = -1;
         }else{

@@ -72,6 +72,7 @@ router.get("/boards/:boardIdx", async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
+//국가 리스트 뿌려주기
 router.get("/regions/:regionCode", async (req, res) => {
     const regionCode = req.params.regionCode;
 
