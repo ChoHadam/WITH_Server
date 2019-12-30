@@ -16,13 +16,13 @@ router.get("/",authUtil.validToken, async(req, res) => {
     }
 
     const result = await Mypage.readProfile(userIdx);
-    /*
+    
     if(result.length == 0)
     {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NO_USER));
         return;
     }
-    */
+    
 
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.MYPAGE_READ_SUCCESS, result));
 });
@@ -30,7 +30,6 @@ router.get("/",authUtil.validToken, async(req, res) => {
 // 마이페이지 수정하기
 router.put("/",authUtil.validToken ,async(req, res) => {
     const userIdx = req.decoded.userIdx;
-    const intro = req.body.intro;
 
     if(!userIdx)
     {
