@@ -12,12 +12,14 @@ moment.tz.setDefault("Asia/Seoul");
 
 const table = 'Board';
 const table2 = 'User';
+const table3 = 'Region';
 
 module.exports = {
     create : async(json) => {
         // 나라, 대륙, 제목, 내용, 작성시간, 동행시작시간, 동행종료시간, 작성자인덱스, 활성화유무, 동행자 수, 동성필터여부
         const fields = 'regionCode, regionName, title, content, uploadTime, startDate, endDate, userIdx, filter';
-        const regionName = await pool.queryParam_None(`SELECT regionName FROM Region WHERE regionCode = '${json.regionCode}'`);
+        const regionName = await pool.queryParam_None(`SELECT regionName FROM ${table3} WHERE regionCode = '${json.regionCode}'`);
+        const countIncrease = await pool.queryParam_None(`UPDATE ${table3} SET count = count + 1  WHERE regionCode = '${json.regionCode}'`);
         const questions = `"${json.regionCode}", "${regionName[0].regionName}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.filter}"`;
         let result = await pool.queryParam_None(`INSERT INTO ${table}(${fields}) VALUES(${questions})`);
         return result;

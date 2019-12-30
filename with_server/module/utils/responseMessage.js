@@ -21,6 +21,8 @@ module.exports = {
     BOARD_UPDATE_FAIL: "게시글 수정 실패",
     BOARD_DELETE_SUCCESS: "게시글 삭제 성공",
     BOARD_DELETE_FAIL: "게시글 삭제 실패",
+    BOARD_ACTIVATE_SUCCESS: "게시글 마감설정 변경 성공",
+    BOARD_ACTIVATE_FAIL: "게시글 마감설정 변경 실패",
     ALREADY_ID: "존재하는 ID 입니다.",
     NO_USER: "존재하지 않는 유저 입니다.",
     NO_BOARD: "존재하지 않은 게시글 입니다.",
@@ -50,15 +52,6 @@ module.exports = {
 
     EVALUATE_SUCCESS:"동행 평가 성공",
     EVALUATE_FAIL:"동행 평가 실패",
-
-    CHAT_CREATE_SUCCESS: "채팅방 생성 성공",
-    CHAT_CREATE_FAIL: "채팅방 생성 실패",
-
-    WITH_SUCCESS: "동행 성공",
-    WITH_FAIL: "동행 실패",
-
-    CHAT_READ_ALL_SUCCESS: "채팅방 전체 조회 성공",
-    CHAT_READ_ALL_FAIL: "채팅방 전체 조회 실패",
 
     X_NULL_VALUE: (x) => `${x}가 존재하지 않습니다.`,
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,
