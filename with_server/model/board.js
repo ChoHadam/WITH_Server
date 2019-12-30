@@ -169,8 +169,8 @@ module.exports = {
         return result;
     },
 
-    activate : async(boardIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table} SET active = '1' WHERE boardIdx = ${boardIdx}`);
+    activate : async(boardIdx, userIdx) => {
+        const result = await pool.queryParam_None(`UPDATE ${table} SET active = '1' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
         return result;
     },
 
