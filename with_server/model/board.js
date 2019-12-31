@@ -61,7 +61,8 @@ module.exports = {
         // 검색 필터 적용된 경우
         if(json.keyword!='0')
         {
-            query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
+            const decode_keyword = decodeURI(json.keyword);
+            query += ` AND (title LIKE '%${decode_keyword}%' OR content LIKE '%${decode_keyword}%')`;
         }
 
         var front_query = query.substr(0, 116);
@@ -115,9 +116,9 @@ module.exports = {
     },
 
     read : async(boardIdx) => {
-        const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro';
+        const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, active, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro';
         const idx = String(boardIdx);
-        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} NATURAL JOIN User NATURAL JOIN Region WHERE active = 1 AND boardIdx = '${idx}'`);
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE boardIdx = '${idx}'`);
         console.log(idx);
         console.log(result);
         // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환

@@ -76,7 +76,7 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
     result[i].endDate = moment(result[i].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
   }
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result[0]));
 });
 
 // 게시글 하나 보기
@@ -99,8 +99,8 @@ router.get("/:boardIdx", async(req, res) => {
 
   result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
   result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
-  
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result));
+
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result[0] ));
 });
 
 // 게시글 수정하기

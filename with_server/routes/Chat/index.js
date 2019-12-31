@@ -10,7 +10,7 @@ const moment_timezone = require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 
 const authUtil = require('../../module/utils/authUtil');
-const Chat = require('../../model/Chat');
+const Chat = require('../../model/chat');
 
 router.post('/', authUtil.validToken, async (req, res) => {
     const {receiverIdx, boardIdx} = req.body;

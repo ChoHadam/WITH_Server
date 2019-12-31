@@ -48,7 +48,7 @@ module.exports = {
     ACTIVATE_FALSE:"마감 풀기 실패",
 
     READ_REGION_LIST_SUCCESS: "국가 리스트 조회 성공",
-    READ_REGION_LIST_FAIL: "국가 리스트 조회 성공",
+    READ_REGION_LIST_FAIL: "국가 리스트 조회 살패",
 
     EVALUATE_SUCCESS:"동행 평가 성공",
     EVALUATE_FAIL:"동행 평가 실패",
