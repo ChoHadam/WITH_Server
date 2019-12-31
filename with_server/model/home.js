@@ -16,7 +16,7 @@ module.exports = {
         return result;    
     },
     readBoard: async (boardIdx) => {
-        const fields = 'name, userImg, regionCode';
+        const fields = 'boardIdx, name, userImg, regionName, title';
         const result = await pool.queryParam_None(`SELECT ${fields} title FROM ${table3} LEFT JOIN ${table1} ON Board.userIdx = User.userIdx WHERE boardIdx = '${boardIdx}'`);
         return result;    
     },

@@ -38,8 +38,8 @@ module.exports = {
     MYPAGE_UPDATE_SUCCESS: "마이페이지 수정 성공",
     MYPAGE_UPDATE_FAIL: "마이페이지 수정 실패",
 
-    RECOMMEND_READ_SUCCESS: "추천 동행지 조회 성공",
-    RECOMMEND_READ_FAIL: "추천 동행지 조회 실패",
+    RECOMMEND_READ_SUCCESS: "추천 여행지 조회 성공",
+    RECOMMEND_READ_FAIL: "추천 여행지 조회 실패",
 
     MATE_READ_SUCCESS: "위드 메이트 조회 성공",
     MATE_READ_FAIL: "위드 메이트 조회 실패",

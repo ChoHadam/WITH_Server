@@ -4,6 +4,7 @@ const utils = require('../../module/utils/utils');
 const responseMessage = require('../../module/utils/responseMessage');
 const statusCode = require('../../module/utils/statusCode');
 const Home = require('../../model/home');
+const authUtil = require('../../module/utils/authUtil');
 
 // 추천 동행지 보여주기
 router.get("/recommendations/:regionCode", async (req, res) => {
@@ -24,8 +25,8 @@ router.get("/recommendations/:regionCode", async (req, res) => {
 });
 
 // 위드 메이트 보여주기
-router.get("/mates/:userIdx/", async (req, res) => {
-    const userIdx = req.params.userIdx;
+router.get("/mates",authUtil.validToken, async (req, res) => {
+    const userIdx = req.decoded.userIdx;//req.params.userIdx;
     if(!userIdx)
     {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
@@ -60,8 +61,8 @@ router.get("/boards/:boardIdx", async (req, res) => {
     board_arr = boardIdx.split('+');
     var result = [];
     for ( var i in board_arr ) {
-        let board_list = await Home.readBoard(board_arr[i]);
-        result.push(board_list);
+        var board_list = await Home.readBoard(board_arr[i]);
+        result.push(board_list[0]);
     }
     if(result.length == 0)
     {
