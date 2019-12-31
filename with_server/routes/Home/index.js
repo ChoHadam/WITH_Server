@@ -93,4 +93,20 @@ router.get("/regions/:regionCode", async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_REGION_LIST_SUCCESS, result));
 });
 
+//홈 배경이미지 랜덤으로 1개 보내주기
+router.get("/bgImg", async (req, res) => {
+    
+    const result = await Home.bgImage();
+
+    if(result.length == 0)
+    {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.READ_HOME_BGIMG_FAIL));
+        return;
+    }
+    //console.log(result.length);
+    let rand = Math.floor(Math.random() * result.length) + 1;
+    //console.log(rand);
+
+    res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_HOME_BGIMG_SUCCESS, result[rand]));
+});
 module.exports = router;

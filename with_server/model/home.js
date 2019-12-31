@@ -5,8 +5,8 @@ const table3 = 'Board';
 
 module.exports = {
     recommend: async (regionCode) => {
-        var region = String(regionCode).substr(0,2);
-        const fields = 'regionNameEng, regionImg';
+        var region = String(regionCode).substr(0,2);        
+        const fields = 'regionNameEng, regionImgS';
         result =  await pool.queryParam_None(`SELECT ${fields} FROM ${table2} WHERE regionCode LIKE '%${region}%' ORDER BY count desc LIMIT 6`)
         return result;
     },
@@ -17,7 +17,7 @@ module.exports = {
     },
     readBoard: async (boardIdx) => {
         const fields = 'boardIdx, name, userImg, regionName, title';
-        const result = await pool.queryParam_None(`SELECT ${fields} title FROM ${table3} LEFT JOIN ${table1} ON Board.userIdx = User.userIdx WHERE boardIdx = '${boardIdx}'`);
+        const result = await pool.queryParam_None(`SELECT ${fields}  FROM ${table3} LEFT JOIN ${table1} ON Board.userIdx = User.userIdx WHERE boardIdx = '${boardIdx}'`);
         return result;    
     },
     readRegion: async (regionCode) => {
@@ -26,7 +26,7 @@ module.exports = {
         var semi_region = regionCode.substr(2,2);
         var country = regionCode.substr(4,2);
         
-        const fields = 'regionCode, regionName, regionImg';
+        const fields = 'regionCode, regionName, regionImgS';
         var query = `SELECT ${fields} FROM ${table2} WHERE regionCode LIKE `;
         if(country == "00")
         {
@@ -43,5 +43,10 @@ module.exports = {
         }
         const result = await pool.queryParam_None(query);
         return result; 
+    },
+    bgImage : async()  => {
+        const result = await pool.queryParam_None(`SELECT regionImgH FROM ${table2} WHERE regionImgH is not null`);
+        return result;    
+
     }
 };
