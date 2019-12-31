@@ -27,7 +27,7 @@ module.exports = {
         var country = regionCode.substr(4,2);
         
         const fields = 'regionCode, regionName, regionImg';
-        var query = `SELECT ${fields} FROM Region WHERE regionCode LIKE `;
+        var query = `SELECT ${fields} FROM ${table2} WHERE regionCode LIKE `;
         if(country == "00")
         {
             if(semi_region == "00")
