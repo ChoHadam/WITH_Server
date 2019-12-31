@@ -61,7 +61,8 @@ module.exports = {
         // 검색 필터 적용된 경우
         if(json.keyword!='0')
         {
-            query += ` AND (title LIKE '%${json.keyword}%' OR content LIKE '%${json.keyword}%')`;
+            const decode_keyword = decodeURI(json.keyword);
+            query += ` AND (title LIKE '%${decode_keyword}%' OR content LIKE '%${decode_keyword}%')`;
         }
 
         var front_query = query.substr(0, 116);
