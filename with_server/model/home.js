@@ -6,7 +6,13 @@ const table3 = 'Board';
 module.exports = {
     recommend: async (regionCode) => {
         var region = String(regionCode).substr(0,2);
-        const fields = 'regionNameEng, regionImg';
+        
+        console.log(region);        
+        if(region == "00")
+            region = "0";
+        console.log(region);
+
+        const fields = 'regionNameEng, regionImgS';
         result =  await pool.queryParam_None(`SELECT ${fields} FROM ${table2} WHERE regionCode LIKE '%${region}%' ORDER BY count desc LIMIT 6`)
         return result;
     },
