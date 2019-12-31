@@ -76,7 +76,7 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
     result[i].endDate = moment(result[i].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
   }
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result[0]));
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
 // 게시글 하나 보기
