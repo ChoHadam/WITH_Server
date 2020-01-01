@@ -45,6 +45,7 @@ module.exports = {
     update : async(json) => {
         const conditions = [];
         if (json.withDate) conditions.push(`withDate = '${json.withDate}'`);
+        if (json.withTime) conditions.push(` withTime = '${json.withTime}'`)
         conditions.push(` withFlag = 1`)
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
         const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE boardIdx = ${json.boardIdx} AND senderIdx = ${json.senderIdx} AND receiverIdx = ${json.receiverIdx}`);

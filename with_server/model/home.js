@@ -16,8 +16,20 @@ module.exports = {
         return result;
     },
     readMate: async (userIdx) => {
-        const fields = 'name, userImg';
-        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = '${userIdx}'`);
+        const fields = 'name, userImg, withDate, withTime';
+        console.log(`SELECT ${fields} FROM Chat LEFT JOIN User ON Chat.senderIdx = User.userIdx 
+        WHERE (senderIdx = ${userIdx} OR receiverIdx = ${userIdx}) AND User.userIdx != ${userIdx} AND withFlag = 1
+        UNION
+        SELECT ${fields} FROM Chat LEFT JOIN User ON Chat.receiverIdx = User.userIdx 
+        WHERE (senderIdx = ${userIdx} OR receiverIdx = ${userIdx}) AND User.userIdx != ${userIdx} AND withFlag = 1
+        ORDER BY withDate DESC, withTime DESC`);
+        const result = await pool.queryParam_None(`
+        SELECT ${fields} FROM Chat LEFT JOIN User ON Chat.senderIdx = User.userIdx 
+        WHERE (senderIdx = ${userIdx} OR receiverIdx = ${userIdx}) AND User.userIdx != ${userIdx} AND withFlag = 1
+        UNION
+        SELECT ${fields} FROM Chat LEFT JOIN User ON Chat.receiverIdx = User.userIdx 
+        WHERE (senderIdx = ${userIdx} OR receiverIdx = ${userIdx}) AND User.userIdx != ${userIdx} AND withFlag = 1
+        ORDER BY withDate DESC, withTime DESC`);
         return result;    
     },
     readBoard: async (boardIdx) => {
