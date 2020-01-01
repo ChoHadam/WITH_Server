@@ -81,6 +81,10 @@ Server 개고수들의 개발저장📗📘
 
 사진 첨부 예정
 
+## ERD
+
+![ERD path](https://github.com/TEAM-WITH/WITH_Server/blob/master/images/WITH_ERD.png)
+
 ---------------------------------------
 
 ## 팀원
