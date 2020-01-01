@@ -97,7 +97,7 @@ router.get("/bgImg", async (req, res) => {
         return;
     }
     //console.log(result.length);
-    let rand = Math.floor(Math.random() * result.length) + 1;
+    let rand = Math.floor(Math.random() * result.length);
     //console.log(rand);
 
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_HOME_BGIMG_SUCCESS, result[rand]));

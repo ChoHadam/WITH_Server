@@ -47,13 +47,13 @@ module.exports = {
     ACTIVATE_FALSE:"마감 풀기 실패",
 
     READ_REGION_LIST_SUCCESS: "국가 리스트 조회 성공",
-    READ_REGION_LIST_FAIL: "국가 리스트 조회 살패",
+    READ_REGION_LIST_FAIL: "국가 리스트 조회 실패",
 
     EVALUATE_SUCCESS:"동행 평가 성공",
     EVALUATE_FAIL:"동행 평가 실패",
 
-    READ_HOME_BGIMG_FAIL :"홈배경 이미지 조회 성공",
-    READ_HOME_BGIMG_SUCCESS : "홈배경 이미지 조회 살패",
+    READ_HOME_BGIMG_FAIL :"홈배경 이미지 조회 실패",
+    READ_HOME_BGIMG_SUCCESS : "홈배경 이미지 조회 성공",
 
     CHAT_CREATE_SUCCESS:"채팅방 생성 성공",
     CHAT_CREATE_FAIL:"채팅방 생성 실패",
