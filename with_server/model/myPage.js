@@ -24,15 +24,16 @@ module.exports = {
 
     readAll: async(userIdx) => {
         const result = await pool.queryParam_None(`SELECT * FROM ${table2} WHERE userIdx = '${userIdx}'`)
-        return result;    
+        return result;
     },
+
     like : async(userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table} SET likeNum = likeNum +1 WHERE userIdx = ${userIdx}`);
+        const result = await pool.queryParam_None(`UPDATE ${table1} SET likeNum = likeNum +1 WHERE userIdx = ${userIdx}`);
         return result;
     },
     
     dislike : async(userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${userIdx}`);
+        const result = await pool.queryParam_None(`UPDATE ${table1} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${userIdx}`);
         return result;
     }
 };
