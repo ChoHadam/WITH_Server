@@ -1,5 +1,7 @@
 # WITH_Server
 Server 개고수들의 개발저장📗📘
+
+## REST API WIKI
 [REST API 문서](https://github.com/TEAM-WITH/WITH_Server/wiki)
 
 ## 팀원 역할
@@ -78,6 +80,10 @@ Server 개고수들의 개발저장📗📘
 ## Architecture
 
 사진 첨부 예정
+
+## ERD
+
+<img src="https://github.com/TEAM-WITH/WITH_Server/blob/master/images/WITH_ERD.png" width="550px" height="700px"></img><br/>
 
 ---------------------------------------
 
