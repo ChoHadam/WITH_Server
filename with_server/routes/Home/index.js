@@ -4,6 +4,7 @@ const utils = require('../../module/utils/utils');
 const responseMessage = require('../../module/utils/responseMessage');
 const statusCode = require('../../module/utils/statusCode');
 const Home = require('../../model/home');
+const authUtil = require('../../module/utils/authUtil');
 
 // 추천 동행지 보여주기
 router.get("/recommendations/:regionCode", async (req, res) => {
@@ -24,21 +25,14 @@ router.get("/recommendations/:regionCode", async (req, res) => {
 });
 
 // 위드 메이트 보여주기
-router.get("/mates/:userIdx/", async (req, res) => {
-    const userIdx = req.params.userIdx;
+router.get("/mates", authUtil.validToken, async (req, res) => {
+    const userIdx = req.decoded.userIdx;
     if(!userIdx)
     {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
-
-    user_arr = userIdx.split('+');
-    var result = [];
-    for ( var i in user_arr ) {
-        let user_list = await Home.readMate(user_arr[i]);
-        result.push(user_list);
-    }
-    
+    const result = await Home.readMate(userIdx);
     if(result.length == 0)
     {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.MATE_READ_FAIL));

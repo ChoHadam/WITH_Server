@@ -9,7 +9,6 @@ module.exports = {
     NO_USER: "존재하지 않는 유저 id 입니다.",
     MISS_MATCH_PW: "비밀번호가 일치하지 않습니다",
     EMPTY_TOKEN: "토큰이 없습니다",
-    
 
     BOARD_CREATE_SUCCESS: "게시글 작성 성공",
     BOARD_CREATE_FAIL: "게시글 작성 실패",
@@ -52,6 +51,17 @@ module.exports = {
 
     EVALUATE_SUCCESS:"동행 평가 성공",
     EVALUATE_FAIL:"동행 평가 실패",
+
+    CHAT_CREATE_SUCCESS:"채팅방 생성 성공",
+    CHAT_CREATE_FAIL:"채팅방 생성 실패",
+    ALREADY_CHAT: "이미 채팅방이 존재합니다",
+
+    CHAT_CREATE_SUCCESS:"채팅방 생성 성공",
+    CHAT_CREATE_FAIL:"채팅방 생성 실패",
+    ALREADY_CHAT: "이미 채팅방이 존재합니다",
+
+    WITH_SUCCESS: "동행 성공",
+    WITH_FAIL: "동행 실패",
 
     X_NULL_VALUE: (x) => `${x}가 존재하지 않습니다.`,
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,
