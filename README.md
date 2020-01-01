@@ -83,7 +83,7 @@ Server 개고수들의 개발저장📗📘
 
 ## ERD
 
-<img src="https://github.com/TEAM-WITH/WITH_Server/blob/master/images/WITH_ERD.png" width="450px" height="300px"></img><br/>
+<img src="https://github.com/TEAM-WITH/WITH_Server/blob/master/images/WITH_ERD.png" width="550px" height="700px"></img><br/>
 
 ---------------------------------------
 
