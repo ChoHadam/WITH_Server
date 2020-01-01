@@ -75,8 +75,11 @@ Server 개고수들의 개발저장📗📘
   }
 </code></pre>
 
+## Architecture
 
+사진 첨부 예정
 
+===
 
 ## 팀원
 
