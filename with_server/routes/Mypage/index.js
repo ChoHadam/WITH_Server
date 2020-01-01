@@ -55,7 +55,7 @@ router.get("/",authUtil.validToken, async(req, res) => {
 
 // 마이페이지 수정하기
 var uploadImg = upload.fields([{name:'userImg', maxCount :1}, {name:'userBgImg', maxCount:1}]);
-router.post("/", authUtil.validToken, uploadImg ,async(req, res) => {
+router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
     const userIdx = req.decoded.userIdx;   
 
     var intro = req.body;    
