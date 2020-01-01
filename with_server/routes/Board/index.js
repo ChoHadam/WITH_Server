@@ -100,7 +100,24 @@ router.get("/:boardIdx", async(req, res) => {
   result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
   result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result[0] ));
+  //뱃지 계산   
+  const prop = (result[0].likeNum / (result[0].likeNum + result[0].dislikeNum)) * 100;
+    
+  if(parseInt(prop)>=70 && parseInt(prop)<80 ){
+      badge = 1;
+  }else if(parseInt(prop)>=80 && parseInt(prop)<90 ){
+      badge = 2;
+  }else if(parseInt(prop)>=90 && parseInt(prop)<=100 ){
+      badge = 3;
+  }else{
+      badge = 0;
+  }
+
+  result[0].badge = badge;
+
+  console.log(result[0]);
+
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result[0]));
 });
 
 // 게시글 수정하기
@@ -133,7 +150,7 @@ router.put("/edit/:boardIdx", authUtil.validToken, async(req, res) => {
     return;
   }
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS, result));
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS));
 });
 
 // 게시글 삭제하기 (error....)
@@ -180,33 +197,6 @@ router.put("/activate/:boardIdx", authUtil.validToken, async(req, res) => {
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_ACTIVATE_SUCCESS, result));
 });
 
-/*
-// 동행 평가하기 - 좋아요+1
-router.put("/like", authUtil.validToken, async(req, res) => {
-  const userIdx = req.decoded.userIdx;
-  
-  if(!userIdx)
-  {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
-  }
-  
-  const result = await Board.like(userIdx);
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS, result));
-});
-
-// 동행 평가하기 - 싫어요+1
-router.put("/dislike", authUtil.validToken, async(req, res) => {
-  const userIdx = req.decoded.userIdx;
-
-  if(!userIdx)
-  {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
-    return;
-  }
-  const result = await Board.dislike(userIdx);
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS, result));
-});
-*/
 
 module.exports = router;

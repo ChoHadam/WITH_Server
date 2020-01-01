@@ -49,7 +49,7 @@ module.exports = {
         else
         {
             // 나라에서 찾기
-            query = `SELECT ${fields} FROM ${table} WHERE regionCode = '${regionCode}' AND active = 1`;
+            query = `SELECT ${fields} FROM ${table} WHERE regionCode = '${json.regionCode}' AND active = 1`;
         }
 
         // 날짜 필터 적용된 경우
@@ -116,9 +116,9 @@ module.exports = {
     },
 
     read : async(boardIdx) => {
-        const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, active, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro';
+        const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, active, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro, likeNum, dislikeNum';
         const idx = String(boardIdx);
-        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE boardIdx = '${idx}'`);
+        var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE boardIdx = '${idx}'`);
         console.log(idx);
         console.log(result);
         // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
@@ -186,16 +186,6 @@ module.exports = {
             activeState  = 1;
         }
         const result = await pool.queryParam_None(`UPDATE ${table} SET active = '${activeState}' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
-        return result;
-    },
-
-    like : async(userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table} SET likeNum = likeNum +1 WHERE userIdx = ${userIdx}`);
-        return result;
-    },
-    
-    dislike : async(userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${userIdx}`);
         return result;
     }
 }

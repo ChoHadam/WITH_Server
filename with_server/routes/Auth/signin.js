@@ -8,8 +8,8 @@ const User = require('../../model/user');
 const jwtUtils= require('../../module/utils/jwt')
 
 router.post('/', async(req, res) => {
-    const {userId, password} = req.body;   
-
+    const {userId, password} = req.body;
+    
     if(!userId || !password){ //비어있는지 검사
         const missParameters = Object.entries({userId, password})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
@@ -30,7 +30,7 @@ router.post('/', async(req, res) => {
         const salt = userResult[0].salt;      
         const hashedEnterPw = await crypto.pbkdf2(password.toString(),salt,1000,32,'sha512');
         const inputPw = hashedEnterPw.toString('hex');
-        console.log(inputPw);
+        //console.log(inputPw);
         if(inputPw == userResult[0].password){
             const result = jwtUtils.sign(userResult[0]);
             const token  = result.token;

@@ -13,7 +13,7 @@ const user = {
         //존재하는 회원인지 확인    
         const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE userId = "${userId}"`)
         return result;     
-    }
+    }   
 }
 
 module.exports = user;

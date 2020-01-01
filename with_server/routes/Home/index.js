@@ -102,4 +102,6 @@ router.get("/bgImg", async (req, res) => {
 
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_HOME_BGIMG_SUCCESS, result[rand]));
 });
+
+
 module.exports = router;

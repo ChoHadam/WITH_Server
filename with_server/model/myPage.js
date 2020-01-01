@@ -4,7 +4,7 @@ const table2 = 'Board';
 
 module.exports = {
     readProfile: async(userIdx) => {
-        const fields = 'name, userImg, intro'
+        const fields = 'name, birth, gender, userImg, intro, likeNum, dislikeNum'
         const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = '${userIdx}'`);
         return result;
         
@@ -25,5 +25,14 @@ module.exports = {
     readAll: async(userIdx) => {
         const result = await pool.queryParam_None(`SELECT * FROM ${table2} WHERE userIdx = '${userIdx}'`)
         return result;    
-    }   
+    },
+    like : async(userIdx) => {
+        const result = await pool.queryParam_None(`UPDATE ${table} SET likeNum = likeNum +1 WHERE userIdx = ${userIdx}`);
+        return result;
+    },
+    
+    dislike : async(userIdx) => {
+        const result = await pool.queryParam_None(`UPDATE ${table} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${userIdx}`);
+        return result;
+    }
 };
