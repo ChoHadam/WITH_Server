@@ -40,7 +40,13 @@ Server 개고수들의 개발저장📗📘
  
 ## package
 
- - 
+ - aws-sdk : AWS 서비스를 위한 JavaScript 객체가 제공
+ - crypto-promise : 패스워드 암호화 및 인증을 지원하는 모듈의 비동기 버전
+ - jsonwebtoken : JWT(Json Web Token) 생성 및 인증
+ - moment : 날짜(Date)형식 데이터의 파싱, 검증, 조작
+ - multer-s3 : AWS S3 파일 업로드 도구
+ - node-cron : Cron은 유닉스 계열 컴퓨터 운영 체제의 시간 기반 Job 스케줄러
+ - promise-mysql : mysql의 비동기 버전
  
 <pre><code>
   "dependencies": {
