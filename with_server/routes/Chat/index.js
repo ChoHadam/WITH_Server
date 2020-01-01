@@ -38,7 +38,7 @@ router.post('/', authUtil.validToken, async (req, res) => {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.CHAT_CREATE_FAIL));
         return;
     }
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.CHAT_CREATE_SUCCESS, result));
+    res.status(statusCode.OK).send(utils.successTrue(responseMessage.CHAT_CREATE_SUCCESS));
 });
 
 router.put('/', authUtil.validToken, async (req, res) => {
@@ -62,7 +62,7 @@ router.put('/', authUtil.validToken, async (req, res) => {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.WITH_FAIL));
         return;
     }
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.WITH_SUCCESS, result));
+    res.status(statusCode.OK).send(utils.successTrue(responseMessage.WITH_SUCCESS));
 });
 
 router.get('/', authUtil.validToken, async (req, res) => {
