@@ -7,6 +7,7 @@ const Mypage = require('../../model/myPage');
 const authUtil = require('../../module/utils/authUtil');
 const moment = require('moment');
 const moment_timezone = require('moment-timezone');
+const upload = require('../../config/multer');
 
 // 마이페이지 보기
 router.get("/",authUtil.validToken, async(req, res) => {
@@ -53,17 +54,29 @@ router.get("/",authUtil.validToken, async(req, res) => {
 });
 
 // 마이페이지 수정하기
-router.put("/",authUtil.validToken ,async(req, res) => {
-    const userIdx = req.decoded.userIdx;
+var uploadImg = upload.fields([{name:'userImg', maxCount :1}, {name:'userBgImg', maxCount:1}]);
+router.post("/", authUtil.validToken, uploadImg ,async(req, res) => {
+    const userIdx = req.decoded.userIdx;   
+
+    var intro = req.body;    
 
     if(!userIdx)
     {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
-    
 
-    const result = await Mypage.update(req.body, userIdx);
+    var userImg= req.files['userImg'][0].location;
+    var userBgImg = req.files['userBgImg'][0].location;
+    
+    /*if(req.file == null){ //사용자가이미지 안넣으면 default이미지 넣어야됨
+        var userBgImg = "https://with-server.s3.ap-northeast-2.amazonaws.com/1577257294500.png";
+    }else{
+        var userBgImg = req.file.location; //s3에 저장된 이미지 url
+    }*/
+    var json = {intro,  userImg, userBgImg};
+
+    const result = await Mypage.update(json, userIdx);
     
     if(result.length == 0)
     {
@@ -95,7 +108,6 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
-
 // 동행 평가하기 - 좋아요+1
 router.put("/like", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
@@ -121,6 +133,23 @@ router.put("/dislike", authUtil.validToken, async(req, res) => {
     }
     const result = await Mypage.dislike(userIdx);
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
+});
+
+//평가 배경이미지 랜덤으로 1개 보내주기
+router.get("/bgImg", async (req, res) => {
+    
+    const result = await Home.bgImage();
+
+    if(result.length == 0)
+    {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.READ_HOME_BGIMG_FAIL));
+        return;
+    }
+    //console.log(result.length);
+    let rand = Math.floor(Math.random() * result.length);
+    //console.log(rand);
+
+    res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_HOME_BGIMG_SUCCESS, result[rand]));
 });
 
 

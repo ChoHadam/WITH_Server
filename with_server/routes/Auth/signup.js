@@ -33,7 +33,7 @@ router.post('/',upload.single('img'), async (req, res) => {
     }else{
         var userImg = req.file.location; //s3에 저장된 이미지 url
     }
-    
+
     const buf = await crypto.randomBytes(32); //64비트의 salt값 생성
     const salt = buf.toString('hex'); //비트를 문자열로 바꿈
     const hashedPw = await crypto.pbkdf2(password.toString(),salt,1000,32,'SHA512'); //버퍼 형태로 리턴해주기 때문에 base64 방식으로 문자열
