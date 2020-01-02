@@ -93,12 +93,28 @@ module.exports = {
         return result;
     },
 
-    read : async (boardIdx) => {
+    read : async (boardIdx, userIdx) => {
         const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, active, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro, likeNum, dislikeNum';
         const idx = String(boardIdx);
         var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE boardIdx = '${idx}'`);
         // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
         var postTerm = moment().diff(result[0].uploadTime,"Minutes");
+
+        // 게시글 작성자, 방문자 그리고 게시글을 모두 매칭시켜 작성자와 방문자와의 동행 매칭 여부를 반환하는 코드.
+        if(result[0].userIdx)
+        {
+            const getWithFlag = await pool.queryParam_None(`SELECT withFlag FROM Chat WHERE senderIdx = ${userIdx} AND receiverIdx = ${result[0].userIdx} AND boardIdx = ${result[0].boardIdx}`)
+
+            if(getWithFlag.length != 0)
+            {
+                result[0].withFlag = getWithFlag[0].withFlag;
+            }
+
+            else
+            {
+                result[0].withFlag = -1;
+            }
+        }
 
         if(postTerm < 1){
             result[0].uploadTime = "방금";
