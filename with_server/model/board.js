@@ -98,10 +98,12 @@ module.exports = {
         const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, active, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro, likeNum, dislikeNum';
         var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE boardIdx = ${boardIdx}`);
         const result_sub = await pool.queryParam_None(`SELECT withFlag FROM Chat WHERE boardIdx = ${boardIdx} AND Chat.userIdx = ${userIdx}`);
-        if(!result_sub[0].withFlag){
-            result[0].withFlag = 0;
+        if(result_sub.length==0){
+            console.log('ok');
+            result[0].withFlag = -1;
+        }else{
+            result[0].withFlag = result_sub[0].withFlag;
         }
-        result[0].withFlag = result_sub[0].withFlag;
         // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
         var postTerm = moment().diff(result[0].uploadTime,"Minutes");
         
