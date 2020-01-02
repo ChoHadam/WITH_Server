@@ -131,8 +131,14 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
   }else{
       badge = 0;
   }
-
   result[0].badge = badge;
+  
+  //클라에서 필요없는 정보 제거
+  delete result[0].likeNum;
+  delete result[0].dislikeNum;
+  delete result[0].regionCode;
+  delete result[0].withNum
+  delete result[0].uploadTime;
 
   console.log(result[0]);
 

@@ -14,7 +14,9 @@ module.exports = {
         // 나라, 대륙, 제목, 내용, 작성시간, 동행시작시간, 동행종료시간, 작성자인덱스, 활성화유무, 동행자 수, 동성필터여부
         const fields = 'regionCode, regionName, title, content, uploadTime, startDate, endDate, userIdx, filter';
         const regionName = await pool.queryParam_None(`SELECT regionName FROM ${table3} WHERE regionCode = '${json.regionCode}'`);
-        const countIncrease = await pool.queryParam_None(`UPDATE ${table3} SET count = count + 1  WHERE regionCode = '${json.regionCode}'`);
+        if(json.regionCode.substr(4,2) != 00){
+            const countIncrease = await pool.queryParam_None(`UPDATE ${table3} SET count = count + 1  WHERE regionCode = '${json.regionCode}'`);
+        }        
         const questions = `"${json.regionCode}", "${regionName[0].regionName}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.filter}"`;
         let result = await pool.queryParam_None(`INSERT INTO ${table1}(${fields}) VALUES(${questions})`);
 
