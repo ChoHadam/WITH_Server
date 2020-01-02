@@ -44,6 +44,24 @@ router.post('/', authUtil.validToken, async (req, res) => {
     }
     result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
     result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
+    
+    //뱃지 계산   
+    const prop = (result[0].likeNum / (result[0].likeNum + result[0].dislikeNum)) * 100;
+        
+    if(parseInt(prop)>=70 && parseInt(prop)<80 ){
+      badge = 1;
+    }else if(parseInt(prop)>=80 && parseInt(prop)<90 ){
+      badge = 2;
+    }else if(parseInt(prop)>=90 && parseInt(prop)<=100 ){
+      badge = 3;
+    }else{
+      badge = 0;
+    }
+    
+    result[0].badge = badge;
+    result[0].withFlag = -1;
+        
+    console.log(result);
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_CREATE_SUCCESS, result));
 });
 
