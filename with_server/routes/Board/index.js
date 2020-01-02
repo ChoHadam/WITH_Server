@@ -80,8 +80,9 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
 });
 
 // 게시글 하나 보기
-router.get("/:boardIdx", async(req, res) => {
+router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
   const boardIdx = req.params.boardIdx;
+  const userIdx = req.decoded.userIdx;
 
   if(!boardIdx)
   {
@@ -89,7 +90,7 @@ router.get("/:boardIdx", async(req, res) => {
     return;
   }
 
-  var result = await Board.read(boardIdx);
+  var result = await Board.read(boardIdx, userIdx);
 
   if(result.length == 0)
   {
