@@ -118,13 +118,13 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
 // 동행 평가하기 - 좋아요+1
 router.put("/like", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
+    const roomId = req.body.roomId;
 
     if(!userIdx)
     {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
     }
-
-    const result = await Mypage.like(userIdx);
+    const result = await Mypage.like(userIdx, roomId);
 
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
@@ -132,33 +132,30 @@ router.put("/like", authUtil.validToken, async(req, res) => {
 // 동행 평가하기 - 싫어요+1
 router.put("/dislike", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
+    const roomId = req.body.roomId;
 
     if(!userIdx)
     {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
     return;
     }
-    const result = await Mypage.dislike(userIdx);
+
+    const result = await Mypage.dislike(userIdx, roomId);
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
 
-//평가 배경이미지 랜덤으로 1개 보내주기
-router.get("/bgImg", async (req, res) => {
-    
-    const result = await Home.bgImage();
+//평가안함
+router.put("/noEvaluation", authUtil.validToken, async(req, res) => {
+    const userIdx = req.decoded.userIdx;
+    //const roomId = req.body.roomId;
 
-    if(result.length == 0)
-    {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.READ_HOME_BGIMG_FAIL));
-        return;
+    if(!userIdx) {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    return;
     }
-    //console.log(result.length);
-    let rand = Math.floor(Math.random() * result.length);
-    //console.log(rand);
 
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_HOME_BGIMG_SUCCESS, result[rand]));
+    const result = await Mypage.noEvaluation(userIdx);
+    res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
-
-
 
 module.exports = router;

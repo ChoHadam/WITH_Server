@@ -1,6 +1,7 @@
 const pool = require('../module/db/pool');
 const table1 = 'User';
 const table2 = 'Board';
+const table3 = 'Chat';
 
 module.exports = {
     readProfile: async(userIdx) => {
@@ -30,13 +31,28 @@ module.exports = {
         return result;
     },
 
-    like : async(userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table1} SET likeNum = likeNum +1 WHERE userIdx = ${userIdx}`);
+    like : async(userIdx, roomId) => {
+        var result = await pool.queryParam_None(`UPDATE ${table3} c INNER JOIN ${table1} u ON c.userIdx = u.userIdx SET c.evalFlag = 3, u.likeNum = u.likeNum + 1  WHERE NOT u.userIdx = '${userIdx}' AND c.roomId ='${roomId}'`);        
         return result;
     },
     
-    dislike : async(userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table1} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${userIdx}`);
+    dislike : async(userIdx, roomId) => {
+        var result = await pool.queryParam_None(`UPDATE ${table3} c INNER JOIN ${table1} u ON c.userIdx = u.userIdx SET c.evalFlag = 3, u.dislikeNum = u.dislikeNum + 1  WHERE NOT u.userIdx = '${userIdx}' AND c.roomId ='${roomId}'`);
         return result;
-    }
+    },
+    noEvaluation : async(userIdx) => {
+        //const fields = 'name, birth, gender, userImg, userBgImg, intro, likeNum, dislikeNum'
+        const result = await pool.queryParam_None(`SELECT roomId FROM ${table3} WHERE roomId LIKE '%${userIdx}'`);
+        console.log(result);
+
+        var other = [];
+        for ( var i in result ) {
+            arr = result[i].roomId.split('_');
+            other.push(arr[2]);       
+        }
+        var others = other.join(',')
+
+        await pool.queryParam_None(`UPDATE ${table3} SET evalFlag =3 WHERE userIdx IN(${others}) and roomId LIKE '%${userIdx}'`);       
+        return result; 
+    },
 };
