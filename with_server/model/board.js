@@ -104,8 +104,10 @@ module.exports = {
         // 게시글 작성자, 방문자 그리고 게시글을 모두 매칭시켜 작성자와 방문자와의 동행 매칭 여부를 반환하는 코드.
         if(result[0].userIdx && userIdx)
         {
-            const getWithFlag = await pool.queryParam_None(`SELECT withFlag FROM Chat WHERE senderIdx = ${userIdx} AND receiverIdx = ${result[0].userIdx} AND boardIdx = ${result[0].boardIdx}`)
+            const getWithFlag = await pool.queryParam_None(`SELECT withFlag FROM Chat WHERE userIdx = ${userIdx} AND boardIdx = ${result[0].boardIdx}`);
 
+            // 수정 필요할 수도 있음 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             if(getWithFlag.length != 0)
             {
                 result[0].withFlag = getWithFlag[0].withFlag;

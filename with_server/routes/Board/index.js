@@ -60,6 +60,12 @@ router.post('/', authUtil.validToken, async (req, res) => {
     
     result[0].badge = badge;
     result[0].withFlag = -1;
+
+    // 클라에서 필요없는 정보 제거
+    delete result[0].likeNum;
+    delete result[0].dislikeNum;
+    delete result[0].withNum;
+    delete result[0].uploadTime;
         
     console.log(result);
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_CREATE_SUCCESS, result));
