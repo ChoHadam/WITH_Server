@@ -49,7 +49,6 @@ Server 개고수들의 개발저장📗📘
  
  - 평가(좋아요/싫어요)에 따라 사용자에게 뱃지를 부여하여 사용자간의 신뢰를 형성한다.  
  
- - ...
  
 ## package
 
@@ -90,7 +89,7 @@ Server 개고수들의 개발저장📗📘
 
 ## Architecture
 
-사진 첨부 예정
+<img src="https://github.com/TEAM-WITH/WITH_Server/blob/master/images/server_structure.png" width="800px" height="600px"></img><br/>
 
 ## ERD
 

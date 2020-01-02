@@ -5,7 +5,7 @@ const table3 = 'Board';
 
 module.exports = {
     recommend: async (regionCode) => {
-
+        // 사용자가 찾고자 하는 지역에서 인기가 많은 6가지 국가를 추천한다.
         var region = String(regionCode).substr(0,2);
         
         if(region == "00")
@@ -15,14 +15,9 @@ module.exports = {
         result =  await pool.queryParam_None(`SELECT ${fields} FROM ${table2} WHERE regionCode LIKE '${region}%' AND regionCode NOT LIKE '${region}00%' AND regionCode NOT LIKE '${region}%00' ORDER BY count desc LIMIT 6`)
         return result;
     },
+    
     readMate: async (userIdx) => {
         const fields = 'name, userImg, withDate, withTime';
-        console.log(`SELECT ${fields} FROM Chat LEFT JOIN User ON Chat.senderIdx = User.userIdx 
-        WHERE (senderIdx = ${userIdx} OR receiverIdx = ${userIdx}) AND User.userIdx != ${userIdx} AND withFlag = 1
-        UNION
-        SELECT ${fields} FROM Chat LEFT JOIN User ON Chat.receiverIdx = User.userIdx 
-        WHERE (senderIdx = ${userIdx} OR receiverIdx = ${userIdx}) AND User.userIdx != ${userIdx} AND withFlag = 1
-        ORDER BY withDate DESC, withTime DESC`);
         const result = await pool.queryParam_None(`
         SELECT ${fields} FROM Chat LEFT JOIN User ON Chat.senderIdx = User.userIdx 
         WHERE (senderIdx = ${userIdx} OR receiverIdx = ${userIdx}) AND User.userIdx != ${userIdx} AND withFlag = 1
@@ -32,11 +27,13 @@ module.exports = {
         ORDER BY withDate DESC, withTime DESC`);
         return result;    
     },
+
     readBoard: async (boardIdx) => {
         const fields = 'boardIdx, name, userImg, regionName, title';
-        const result = await pool.queryParam_None(`SELECT ${fields}  FROM ${table3} LEFT JOIN ${table1} ON Board.userIdx = User.userIdx WHERE boardIdx = '${boardIdx}'`);
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table3} LEFT JOIN ${table1} ON Board.userIdx = User.userIdx WHERE boardIdx = '${boardIdx}'`);
         return result;    
     },
+
     readRegion: async (regionCode) => {
         // regionCode Parsing
         var region = regionCode.substr(0,2);
