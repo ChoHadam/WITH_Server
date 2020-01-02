@@ -90,7 +90,7 @@ Server 개고수들의 개발저장📗📘
 
 ## Architecture
 
-사진 첨부 예정
+<img src="https://github.com/TEAM-WITH/WITH_Server/blob/master/images/server_structure.png" width="700px" height="600px"></img><br/>
 
 ## ERD
 
