@@ -19,6 +19,7 @@ module.exports = {
         }        
         const questions = `"${json.regionCode}", "${regionName[0].regionName}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.filter}"`;
         let result = await pool.queryParam_None(`INSERT INTO ${table1}(${fields}) VALUES(${questions})`);
+
         return result;
     },
 
@@ -101,10 +102,12 @@ module.exports = {
         var postTerm = moment().diff(result[0].uploadTime,"Minutes");
 
         // 게시글 작성자, 방문자 그리고 게시글을 모두 매칭시켜 작성자와 방문자와의 동행 매칭 여부를 반환하는 코드.
-        if(result[0].userIdx)
+        if(result[0].userIdx && userIdx)
         {
-            const getWithFlag = await pool.queryParam_None(`SELECT withFlag FROM Chat WHERE senderIdx = ${userIdx} AND receiverIdx = ${result[0].userIdx} AND boardIdx = ${result[0].boardIdx}`)
+            const getWithFlag = await pool.queryParam_None(`SELECT withFlag FROM Chat WHERE userIdx = ${userIdx} AND boardIdx = ${result[0].boardIdx}`);
 
+            // 수정 필요할 수도 있음 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             if(getWithFlag.length != 0)
             {
                 result[0].withFlag = getWithFlag[0].withFlag;
