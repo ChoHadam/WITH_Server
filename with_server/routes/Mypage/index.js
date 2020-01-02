@@ -75,7 +75,7 @@ router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
     if(req.files['userBgImg'])
         var userBgImg = req.files['userBgImg'][0].location;
     
-    var json = {intro,  userImg, userBgImg};
+    var json = {intro, userImg, userBgImg};
 
     // 인자가 하나도 없는 경우
     if(!json.intro && !json.userImg && !json.userBgImg)

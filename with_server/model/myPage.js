@@ -16,9 +16,9 @@ module.exports = {
         //console.log(json.intro.intro);
         //console.log(json);
 
-        if (json.intro) conditions.push(`intro = '${json.intro}'`);
-        if (json.userImg) conditions.push(`userImg = '${json.userImg}'`);
         if (json.userBgImg) conditions.push(`userBgImg = '${json.userBgImg}'`);
+        if (json.userImg) conditions.push(`userImg = '${json.userImg}'`);
+        if (json.intro) conditions.push(`intro = '${json.intro}'`);
         
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
         const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE userIdx = '${userIdx}'`)
