@@ -29,14 +29,16 @@ module.exports = {
         FROM Chat 
             LEFT JOIN Board ON Chat.boardIdx = Board.boardIdx 
             LEFT JOIN User ON Chat.userIdx = User.userIdx 
-        WHERE roomId LIKE '%${userIdx}%' AND Chat.userIdx != ${userIdx}`);
+        WHERE roomId LIKE '____%${userIdx}%' AND Chat.userIdx != ${userIdx}
+        ORDER BY Chat.boardIdx ASC`);
+        console.log(result);
         for(var i in result){
             board_list.push(result[i].boardIdx);
             result[i].startDate = moment(result[i].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
             result[i].endDate = moment(result[i].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
             result[i].withDate = moment(result[i].withDate, 'YYYY-MM-DD').format('YY.MM.DD');
         }
-        const result_sub = await pool.queryParam_None(`
+        var result_sub = await pool.queryParam_None(`
         SELECT userImg, regionImgE FROM Board 
         NATURAL JOIN User NATURAL JOIN Region
         WHERE boardIdx in (${board_list})`);
