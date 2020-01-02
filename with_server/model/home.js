@@ -11,7 +11,7 @@ module.exports = {
         if(region == "00")
             region = "0";
             
-        const fields = 'regionNameEng, count, regionImgS';
+        const fields = ' regionCode,regionName, regionNameEng, count, regionImgS';
         result =  await pool.queryParam_None(`SELECT ${fields} FROM ${table2} WHERE regionCode LIKE '${region}%' AND regionCode NOT LIKE '${region}00%' AND regionCode NOT LIKE '${region}%00' ORDER BY count desc LIMIT 6`)
         return result;
     },

@@ -4,7 +4,7 @@ const table2 = 'Board';
 
 module.exports = {
     readProfile: async(userIdx) => {
-        const fields = 'name, birth, gender, userImg, intro, likeNum, dislikeNum'
+        const fields = 'name, birth, gender, userImg, userBgImg, intro, likeNum, dislikeNum'
         const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = '${userIdx}'`);
         return result;
         
