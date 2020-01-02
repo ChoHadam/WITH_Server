@@ -71,11 +71,6 @@ router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
     if(req.files['userBgImg'])
         var userBgImg = req.files['userBgImg'][0].location;
     
-    /*if(req.file == null){ //사용자가이미지 안넣으면 default이미지 넣어야됨
-        var userBgImg = "https://with-server.s3.ap-northeast-2.amazonaws.com/1577257294500.png";
-    }else{
-        var userBgImg = req.file.location; //s3에 저장된 이미지 url
-    }*/
     var json = {intro,  userImg, userBgImg};
 
     // 인자가 하나도 없는 경우
