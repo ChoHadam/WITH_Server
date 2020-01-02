@@ -35,6 +35,7 @@ router.post('/', async(req, res) => {
             const result = jwtUtils.sign(userResult[0]);
             const token  = result.token;
             const userIdx = userResult[0].userIdx;
+            const name  = userResult[0].name;
             
             if(!token){ //토큰 생성 못함
                 res
@@ -42,7 +43,7 @@ router.post('/', async(req, res) => {
                 .send(utils.successFalse(responseMessage.EMPTY_TOKEN));
                 return;
             } else{   //토큰 생성
-                const finalResult = {token, userIdx};
+                const finalResult = {token, userIdx, name};
                 res
                 .status(statusCode.OK)
                 .send(utils.successTrue(responseMessage.SIGN_IN_SUCCESS,finalResult));                
