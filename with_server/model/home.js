@@ -15,7 +15,7 @@ module.exports = {
         result =  await pool.queryParam_None(`SELECT ${fields} FROM ${table2} WHERE regionCode LIKE '${region}%' AND regionCode NOT LIKE '${region}00%' AND regionCode NOT LIKE '${region}%00' ORDER BY count desc LIMIT 6`)
         return result;
     },
-    
+    /*
     readMate: async (userIdx) => {
         const fields = 'name, userImg, withDate, withTime';
         const result = await pool.queryParam_None(`
@@ -27,10 +27,11 @@ module.exports = {
         ORDER BY withDate DESC, withTime DESC`);
         return result;    
     },
+    */
 
     readBoard: async (boardIdx) => {
         const fields = 'boardIdx, name, userImg, regionName, title';
-        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table3} LEFT JOIN ${table1} ON Board.userIdx = User.userIdx WHERE boardIdx = '${boardIdx}'`);
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table3} LEFT JOIN ${table1} ON Board.userIdx = User.userIdx WHERE boardIdx in (${boardIdx})`);
         return result;    
     },
 
@@ -60,7 +61,6 @@ module.exports = {
     },
     bgImage : async()  => {
         const result = await pool.queryParam_None(`SELECT regionImgH FROM ${table2} WHERE regionImgH is not null`);
-        return result;    
-
+        return result;
     }
 };

@@ -84,7 +84,7 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
   const boardIdx = req.params.boardIdx;
   const userIdx = req.decoded.userIdx;
 
-  if(!boardIdx)
+  if(!boardIdx || !userIdx)
   {
     res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
@@ -121,8 +121,6 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
   delete result[0].regionCode;
   delete result[0].withNum
   delete result[0].uploadTime;
-
-  console.log(result[0]);
 
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result[0]));
 });
