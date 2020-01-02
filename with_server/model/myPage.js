@@ -12,8 +12,10 @@ module.exports = {
 
     update: async(json, userIdx) => {
         const conditions = [];
+        //console.log(json.intro.intro);
+        //console.log(json);
 
-        if (json.intro) conditions.push(`intro = '${JSON.stringify(json.intro)}'`);
+        if (json.intro) conditions.push(`intro = '${json.intro}'`);
         if (json.userImg) conditions.push(`userImg = '${json.userImg}'`);
         if (json.userBgImg) conditions.push(`userBgImg = '${json.userBgImg}'`);
         

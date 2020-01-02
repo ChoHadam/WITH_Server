@@ -57,17 +57,19 @@ router.get("/",authUtil.validToken, async(req, res) => {
 var uploadImg = upload.fields([{name:'userImg', maxCount :1}, {name:'userBgImg', maxCount:1}]);
 router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
     const userIdx = req.decoded.userIdx;   
-
-    var intro = req.body;    
+    var intro = req.body.intro;    
 
     if(!userIdx)
     {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
         return;
     }
 
-    var userImg= req.files['userImg'][0].location;
-    var userBgImg = req.files['userBgImg'][0].location;
+    if(req.files['userImg'])
+        var userImg= req.files['userImg'][0].location;
+
+    if(req.files['userBgImg'])
+        var userBgImg = req.files['userBgImg'][0].location;
     
     /*if(req.file == null){ //사용자가이미지 안넣으면 default이미지 넣어야됨
         var userBgImg = "https://with-server.s3.ap-northeast-2.amazonaws.com/1577257294500.png";
@@ -76,6 +78,12 @@ router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
     }*/
     var json = {intro,  userImg, userBgImg};
 
+    // 인자가 하나도 없는 경우
+    if(!json.intro && !json.userImg && !json.userBgImg)
+    {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
+        return;
+    }
     const result = await Mypage.update(json, userIdx);
     
     if(result.length == 0)
