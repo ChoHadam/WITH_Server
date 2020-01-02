@@ -36,7 +36,8 @@ router.post('/', authUtil.validToken, async (req, res) => {
     const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, filter};
   
     var result = await Board.create(json);
-    result = await Board.read(result.insertId);
+    console.log( result);
+    result = await Board.read(result.insertId, userIdx);
     if(result.length == 0)
     {
       res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_CREATE_FAIL));
