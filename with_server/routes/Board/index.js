@@ -58,10 +58,11 @@ router.post('/', authUtil.validToken, async (req, res) => {
       badge = 0;
     }
     
-    result[0].badge = badge;
     result[0].withFlag = -1;
+    result[0].badge = badge;
 
     // 클라에서 필요없는 정보 제거
+    delete result[0].regionCode;
     delete result[0].likeNum;
     delete result[0].dislikeNum;
     delete result[0].withNum;
