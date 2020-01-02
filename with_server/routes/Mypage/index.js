@@ -120,12 +120,12 @@ router.put("/like", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
 
-    if(!userIdx)
-    {
+    if(!userIdx || !roomId) {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    return;
     }
-    const result = await Mypage.like(userIdx, roomId);
 
+    await Mypage.like(roomId, userIdx);
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
 
@@ -134,27 +134,26 @@ router.put("/dislike", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
 
-    if(!userIdx)
-    {
+    if(!userIdx || !roomId) {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
     return;
     }
 
-    const result = await Mypage.dislike(userIdx, roomId);
+    await Mypage.dislike(roomId, userIdx);
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
 
 //평가안함
 router.put("/noEvaluation", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
-    //const roomId = req.body.roomId;
+    const roomId = req.body.roomId;
 
-    if(!userIdx) {
+    if(!userIdx || !roomId) {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
     return;
     }
 
-    const result = await Mypage.noEvaluation(userIdx);
+    await Mypage.noEvaluation(roomId, userIdx);
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
 

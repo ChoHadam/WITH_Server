@@ -32,27 +32,17 @@ module.exports = {
     },
 
     like : async(userIdx, roomId) => {
-        var result = await pool.queryParam_None(`UPDATE ${table3} c INNER JOIN ${table1} u ON c.userIdx = u.userIdx SET c.evalFlag = 3, u.likeNum = u.likeNum + 1  WHERE NOT u.userIdx = '${userIdx}' AND c.roomId ='${roomId}'`);        
-        return result;
+        await pool.queryParam_None(`UPDATE ${table3} LEFT JOIN ${table1} ON ${table3}.userIdx = ${table1}.userIdx SET ${table3}.evalFlag = 3, ${table1}.likeNum = ${table1}.likeNum + 1 WHERE ${table3}.userIdx != ${userIdx} AND ${table3}.roomId ='${roomId}'`);        
+        return;
     },
     
     dislike : async(userIdx, roomId) => {
-        var result = await pool.queryParam_None(`UPDATE ${table3} c INNER JOIN ${table1} u ON c.userIdx = u.userIdx SET c.evalFlag = 3, u.dislikeNum = u.dislikeNum + 1  WHERE NOT u.userIdx = '${userIdx}' AND c.roomId ='${roomId}'`);
-        return result;
+        await pool.queryParam_None(`UPDATE ${table3} LEFT JOIN ${table1} ON ${table3}.userIdx = ${table1}.userIdx SET ${table3}.evalFlag = 3, ${table1}.dislikeNum = ${table1}.dislikeNum + 1 WHERE ${table3}.userIdx != ${userIdx} AND ${table3}.roomId ='${roomId}'`);
+        return;
     },
-    noEvaluation : async(userIdx) => {
+    noEvaluation : async(userIdx, roomId) => {
         //const fields = 'name, birth, gender, userImg, userBgImg, intro, likeNum, dislikeNum'
-        const result = await pool.queryParam_None(`SELECT roomId FROM ${table3} WHERE roomId LIKE '%${userIdx}'`);
-        console.log(result);
-
-        var other = [];
-        for ( var i in result ) {
-            arr = result[i].roomId.split('_');
-            other.push(arr[2]);       
-        }
-        var others = other.join(',')
-
-        await pool.queryParam_None(`UPDATE ${table3} SET evalFlag =3 WHERE userIdx IN(${others}) and roomId LIKE '%${userIdx}'`);       
-        return result; 
+        await pool.queryParam_None(`UPDATE ${table3} LEFT JOIN ${table1} ON ${table3}.userIdx = ${table1}.userIdx SET ${table3}.evalFlag = 3 WHERE ${table3}.userIdx != ${userIdx} AND ${table3}.roomId ='${roomId}'`);      
+        return;
     },
 };

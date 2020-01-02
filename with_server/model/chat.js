@@ -25,7 +25,7 @@ module.exports = {
         */
         var board_list = [];
         var result = await pool.queryParam_None(`
-        SELECT Chat.boardIdx, roomId, userImg, name, regionName, title, withDate, startDate, endDate, withFlag, evalFlag 
+        SELECT Chat.userIdx, Chat.boardIdx, roomId, userImg, name, regionName, title, withDate, startDate, endDate, withFlag, evalFlag 
         FROM Chat 
             LEFT JOIN Board ON Chat.boardIdx = Board.boardIdx 
             LEFT JOIN User ON Chat.userIdx = User.userIdx 
