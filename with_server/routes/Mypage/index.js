@@ -9,7 +9,7 @@ const moment = require('moment');
 const moment_timezone = require('moment-timezone');
 const upload = require('../../config/multer');
 
-// 마이페이지 보기
+// 마이페이지 조회
 router.get("/",authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     var badge;
@@ -35,7 +35,7 @@ router.get("/",authUtil.validToken, async(req, res) => {
 
     result[0].birth = age;
 
-    //뱃지 계산   
+    // 뱃지 계산   
     const prop = (result[0].likeNum / (result[0].likeNum + result[0].dislikeNum)) * 100;
     
     if(parseInt(prop)>=70 && parseInt(prop)<80 ){
@@ -49,8 +49,7 @@ router.get("/",authUtil.validToken, async(req, res) => {
     }
     result[0].badge = badge;   
 
-
-    //클라에서 필요없는 정보 제거
+    // 클라이언트에서 필요없는 정보 제거
     delete result[0].likeNum;
     delete result[0].dislikeNum;
     
@@ -85,6 +84,7 @@ router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
     }
     const result = await Mypage.update(json, userIdx);
     
+    // 쿼리 결과가 없는 경우
     if(result.length == 0)
     {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.MYPAGE_UPDATE_FAIL));
@@ -92,8 +92,8 @@ router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
     }
     
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.MYPAGE_UPDATE_SUCCESS));
-
 });
+
 // 내가 쓴 게시글 전체 보기
 router.get("/boards", authUtil.validToken,async (req, res) => {
     const userIdx = req.decoded.userIdx;
@@ -115,7 +115,7 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
-// 동행 평가하기 - 좋아요+1
+// 동행 평가하기 - 좋아요
 router.put("/like", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
@@ -126,7 +126,8 @@ router.put("/like", authUtil.validToken, async(req, res) => {
         return;
     }
 
-    if(!roomId) {
+    if(!roomId)
+    {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
@@ -135,7 +136,7 @@ router.put("/like", authUtil.validToken, async(req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
 
-// 동행 평가하기 - 싫어요+1
+// 동행 평가하기 - 싫어요
 router.put("/dislike", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
@@ -155,7 +156,7 @@ router.put("/dislike", authUtil.validToken, async(req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
 
-//평가안함
+// 동행 평가하지 않는 경우
 router.put("/noEvaluation", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
@@ -166,7 +167,8 @@ router.put("/noEvaluation", authUtil.validToken, async(req, res) => {
         return;
     }
 
-    if(!roomId) {
+    if(!roomId)
+    {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
     }
