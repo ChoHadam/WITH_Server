@@ -99,7 +99,6 @@ module.exports = {
         var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE boardIdx = ${boardIdx}`);
         const result_sub = await pool.queryParam_None(`SELECT withFlag FROM Chat WHERE boardIdx = ${boardIdx} AND Chat.userIdx = ${userIdx}`);
         if(result_sub.length==0){
-            console.log('ok');
             result[0].withFlag = -1;
         }else{
             result[0].withFlag = result_sub[0].withFlag;
