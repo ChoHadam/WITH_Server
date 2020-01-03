@@ -48,7 +48,8 @@ module.exports = {
 
         // 날짜 필터 적용된 경우
         if(json.startDate != '0' && json.endDate != '0'){
-            query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
+            //query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
+            query += ` AND endDate >= '${json.startDate}'`;
         }
 
         // 검색 필터 적용된 경우
