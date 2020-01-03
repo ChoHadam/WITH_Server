@@ -119,7 +119,7 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
 router.put("/like", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
-    const otherIdx = '';
+    var otherIdx = '';
 
     if(!userIdx)
     {

@@ -35,7 +35,6 @@ module.exports = {
         var result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx != ${otherIdx} AND roomId ='${roomId}'`);      
         result = await pool.queryParam_None(`UPDATE ${table1} SET likeNum = likeNum + 1 WHERE userIdx = ${otherIdx}`);
         return result;
-
     },
     
     dislike : async(otherIdx, roomId) => {
