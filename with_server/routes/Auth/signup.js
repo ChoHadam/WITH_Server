@@ -30,6 +30,7 @@ router.post('/',upload.single('img'), async (req, res) => {
     }
     //중복되는 아이디가 없다면 회원가입 시작   
     var userImg = req.file.location; //s3에 저장된 이미지 url
+    console.log(userImg);
 
     const buf = await crypto.randomBytes(32); //64비트의 salt값 생성
     const salt = buf.toString('hex'); //비트를 문자열로 바꿈
