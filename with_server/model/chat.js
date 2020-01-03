@@ -24,8 +24,9 @@ module.exports = {
         동행날짜, 시작날짜, 끝나는 날짜, 동행 플래그) 출력한다.
         */
         var board_list = [];
+        var user_list = [];
         var result = await pool.queryParam_None(`
-        SELECT Chat.userIdx, Chat.boardIdx, roomId, userImg, name, regionName, title, withDate, startDate, endDate, withFlag, evalFlag 
+        SELECT Chat.userIdx, Chat.boardIdx, roomId, userImg, name, regionName, title, withDate, startDate, endDate, withFlag 
         FROM Chat 
             LEFT JOIN Board ON Chat.boardIdx = Board.boardIdx 
             LEFT JOIN User ON Chat.userIdx = User.userIdx 
@@ -42,7 +43,13 @@ module.exports = {
         SELECT userImg, regionImgE FROM Board 
         NATURAL JOIN User NATURAL JOIN Region
         WHERE boardIdx in (${board_list})`);
+        var result_sub2 = await pool.queryParam_None(`
+        SELECT evalFlag, boardIdx FROM Chat
+        WHERE userIdx = ${userIdx}
+        ORDER BY boardIdx ASC
+        `)
         for(var i in result){
+            result[i].evalFlag = result_sub2[i].evalFlag;
             result[i].writerImg = result_sub[i].userImg;
             result[i].regionImgE = result_sub[i].regionImgE;
         }
