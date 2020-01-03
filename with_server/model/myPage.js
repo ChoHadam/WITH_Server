@@ -44,6 +44,6 @@ module.exports = {
     },
     noEvaluation : async(userIdx, roomId) => {
         const result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx = ${userIdx} AND roomId ='${roomId}'`);      
-        return;
+        return result;
     },
 };
