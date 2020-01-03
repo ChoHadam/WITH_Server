@@ -16,7 +16,7 @@ router.get("/",authUtil.validToken, async(req, res) => {
 
     if(!userIdx)
     {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
         return;
     }
 
@@ -100,7 +100,7 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
     
     if(!userIdx)
     {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
         return;
     }
 
@@ -120,9 +120,15 @@ router.put("/like", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
 
-    if(!userIdx || !roomId) {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
-    return;
+    if(!userIdx)
+    {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+        return;
+    }
+
+    if(!roomId) {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
+        return;
     }
 
     await Mypage.like(roomId, userIdx);
@@ -134,9 +140,15 @@ router.put("/dislike", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
 
-    if(!userIdx || !roomId) {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
-    return;
+    if(!userIdx)
+    {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+        return;
+    }
+
+    if(!roomId) {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
+        return;
     }
 
     await Mypage.dislike(roomId, userIdx);
@@ -148,8 +160,14 @@ router.put("/noEvaluation", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
 
-    if(!userIdx || !roomId) {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
+    if(!userIdx)
+    {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+        return;
+    }
+
+    if(!roomId) {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
     }
 
