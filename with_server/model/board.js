@@ -187,6 +187,6 @@ module.exports = {
 cron.schedule('0 12 * * *', async function(){     
     // 매일 자정에 날짜를 확인해 마감처리 한다.      
     var currentTime = moment().format('YYYY-MM-DD');    
-    const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '-1' WHERE endDate <= '${currentTime}'`);    
+    const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '-1' WHERE endDate < '${currentTime}'`);    
 });
 
