@@ -59,7 +59,7 @@ module.exports = {
 
     checkRoom : async (json) => {
         // 이미 채팅방이 존재하는지 확인한다.
-        const result = await pool.queryParam_None(`SELECT chatIdx FROM ${table1} WHERE boardIdx = '${json.roomId}'`)
+        const result = await pool.queryParam_None(`SELECT chatIdx FROM ${table1} WHERE roomId = '${json.roomId}'`)
         return result;     
     },
 

@@ -34,7 +34,7 @@ router.post('/', authUtil.validToken, async (req, res) => {
     const check = await Chat.checkRoom(json); // 채팅방 중복 확인
 
     // DB 쿼리 오류 시, 에러 처리
-    if(check.length!==0)
+    if(check.length)
     {
         res.status(statusCode.OK).send(utils.successFalse(responseMessage.ALREADY_CHAT));
         return;
