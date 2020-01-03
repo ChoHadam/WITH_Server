@@ -119,13 +119,27 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
 router.put("/like", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
+    const otherIdx = '';
 
     if(!userIdx || !roomId) {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
     return;
     }
 
-    await Mypage.like(roomId, userIdx);
+    arr = roomId.split('_');
+    for(var i =1;i< arr.length;i++ ){
+        if(arr[i] != userIdx){
+            otherIdx = arr[i];
+            break;
+        }
+    }
+    const result = await Mypage.like(otherIdx,roomId);
+
+    if(result.length == 0)
+    {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.EVALUATE_FAIL));
+        return;
+    }    
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
 
@@ -133,13 +147,27 @@ router.put("/like", authUtil.validToken, async(req, res) => {
 router.put("/dislike", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const roomId = req.body.roomId;
+    var otherIdx = '';
 
     if(!userIdx || !roomId) {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.OUT_OF_VALUE));
     return;
     }
 
-    await Mypage.dislike(roomId, userIdx);
+    arr = roomId.split('_');   
+    for(var i =1;i< arr.length;i++ ){
+        if(arr[i] != userIdx){
+            otherIdx = arr[i];
+            break;
+        }
+    }    
+    const result = await Mypage.dislike(otherIdx,roomId);
+
+    if(result.length == 0)
+    {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.EVALUATE_FAIL));
+        return;
+    }    
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
 
@@ -153,7 +181,12 @@ router.put("/noEvaluation", authUtil.validToken, async(req, res) => {
     return;
     }
 
-    await Mypage.noEvaluation(roomId, userIdx);
+    const result = await Mypage.noEvaluation(userIdx, roomId);
+    if(result.length == 0)
+    {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.EVALUATE_FAIL));
+        return;
+    }    
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
 
