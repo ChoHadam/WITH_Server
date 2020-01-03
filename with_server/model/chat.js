@@ -71,6 +71,7 @@ module.exports = {
         conditions.push(` withFlag = 1`)
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
         const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE roomId = '${json.roomId}'`);
+        await pool.queryParam_None(`UPDATE ${table2} SET withNum = withNum + 1 WHERE boardIdx = ${json.boardIdx}`);
         return result;
     }
 }

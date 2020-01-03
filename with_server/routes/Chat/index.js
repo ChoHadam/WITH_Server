@@ -77,7 +77,10 @@ router.put('/', authUtil.validToken, async (req, res) => {
         return;
     }
 
-    const json = {roomId, withDate, withTime};
+    const boardIdxArr = roomId.split('_')
+    const boardIdx = boardIdxArr[0];
+
+    const json = {roomId, withDate, withTime, boardIdx};
     let result = await Chat.update(json); // 동행 처리
 
     // DB 쿼리 오류 시, 에러 처리
