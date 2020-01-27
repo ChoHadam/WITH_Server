@@ -48,7 +48,8 @@ module.exports = {
 
         // 날짜 필터 적용된 경우
         if(json.startDate != '0' && json.endDate != '0'){
-            query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
+            //query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
+            query += ` AND (startDate <= '${json.endDate}' AND endDate >= '${json.startDate}')`;
         }
 
         // 검색 필터 적용된 경우
@@ -187,6 +188,6 @@ module.exports = {
 cron.schedule('0 12 * * *', async function(){     
     // 매일 자정에 날짜를 확인해 마감처리 한다.      
     var currentTime = moment().format('YYYY-MM-DD');    
-    const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '-1' WHERE endDate <= '${currentTime}'`);    
+    const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '-1' WHERE endDate < '${currentTime}'`);    
 });
 

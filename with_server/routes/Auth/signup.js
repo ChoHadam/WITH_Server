@@ -30,8 +30,7 @@ router.post('/',upload.single('img'), async (req, res) => {
     //중복되는 아이디가 없다면 회원가입 시작   
     var userImg = req.file.location; //s3에 저장된 이미지 url
     console.log(userImg);    
-    /*
-
+    
     const buf = await crypto.randomBytes(32); //64비트의 salt값 생성
     const salt = buf.toString('hex'); //비트를 문자열로 바꿈
     const hashedPw = await crypto.pbkdf2(password.toString(),salt,1000,32,'SHA512'); //버퍼 형태로 리턴해주기 때문에 base64 방식으로 문자열
@@ -47,7 +46,7 @@ router.post('/',upload.single('img'), async (req, res) => {
     }
     res
     .status(statusCode.OK)
-    .send(utils.successTrue(responseMessage.SIGN_UP_SUCCESS)); */
+    .send(utils.successTrue(responseMessage.SIGN_UP_SUCCESS)); 
 });
 
 module.exports = router;
