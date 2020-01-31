@@ -13,7 +13,12 @@ const user = {
         //존재하는 회원인지 확인    
         const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE userId = "${userId}"`)
         return result;     
-    }   
+    },
+    findPW : async(userIdx) => {
+        //(로그인시) 비밀번호 분실시 임시비밀번호 발행
+        const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE userIdx = "${userIdx}"`)
+        return result;
+    }
 }
 
 module.exports = user;

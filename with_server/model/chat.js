@@ -71,5 +71,5 @@ module.exports = {
 cron.schedule('0 12 * * *', async function(){     
     // 매일 자정에 날짜를 확인해 마감처리 한다.      
     var currentTime = moment().format('YYYY-MM-DD');    
-    await pool.queryParam_None(`UPDATE ${table1} LEFT JOIN Board ON ${table1}.boardIdx = ${table2}.boardIdx SET evalFlag = '2' WHERE endDate < '${currentTime}' AND evalFlag = '1'`);    
+    await pool.queryParam_None(`UPDATE ${table1} LEFT JOIN Board ON ${table1}.boardIdx = ${table2}.boardIdx SET evalFlag = '2' WHERE endDate < '${currentTime}' AND Flag = '1'`);    
 });
