@@ -7,6 +7,7 @@ const user = {
         const fields = 'userId, password, salt, name, birth, gender, userImg';
         const questions = `"${json.userId}","${json.finalPw}","${json.salt}","${json.name}","${json.birth}","${json.gender}","${json.userImg}"`;        
         const result = await pool.queryParam_None(`INSERT INTO ${table}(${fields})VALUES(${questions})`)
+        console.log(result);
         return result;
     },
     checkUser : async (userId) => {
