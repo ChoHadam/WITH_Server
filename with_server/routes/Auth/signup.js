@@ -6,7 +6,7 @@ const responseMessage = require('../../module/utils/responseMessage');
 const utils = require('../../module/utils/utils');
 const upload = require('../../config/multer');
 const User = require('../../model/user');
-/* 
+
 router.post('/',upload.single('img'), async (req, res) => {   
 
     //필수항목 안채웠으면 오류메세지 전송
@@ -49,6 +49,5 @@ router.post('/',upload.single('img'), async (req, res) => {
     .status(statusCode.OK)
     .send(utils.successTrue(responseMessage.SIGN_UP_SUCCESS)); 
 });
-*/
 
 module.exports = router;

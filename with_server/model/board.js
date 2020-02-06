@@ -158,6 +158,7 @@ module.exports = {
             conditions.push(`regionCode = '${json.regionCode}'`);
             const result = await pool.queryParam_None(`SELECT regionName FROM Region WHERE regionCode = ${json.regionCode}`);
             conditions.push(`regionName = '${result[0].regionName}'`);
+            //conditions.push(`regionName = (SELECT regionName FROM Region WHERE regionCode = ${json.regionCode})`);
         }
         // 변경 파라미터가 존재하면 push 한다.
         if (json.title) conditions.push(`title = '${json.title}'`);
@@ -172,15 +173,28 @@ module.exports = {
     },
 
     activate : async (boardIdx, userIdx) => {
-        var activeState;
-        const query = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);    
-        if(query[0].active == 1){
-            activeState  = -1;
-        }
-        else{
-            activeState  = 1;
-        }
-        const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '${activeState}' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
+        // var activeState;
+        // const query = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);    
+        // if(query[0].active == 1){
+        //     activeState  = -1;
+        // }
+        // else{
+        //     activeState  = 1;
+        // }
+        // const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '${activeState}' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
+        // return result;
+
+        // pool.query('CALL activate_board()', function(err, rows) {
+        //     if (err)
+        //         throw err;
+        //     console.log('procedure success\n');
+        //     console.log(rows);
+            
+        //     return rows;
+        // })
+
+        const result = await pool.queryParam_None(`CALL activate_board(${boardIdx}, ${userIdx})`);
+        console.log(result);
         return result;
     }
 }
