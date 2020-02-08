@@ -23,8 +23,8 @@ router.post('/', async(req, res) => {
     const userResult = await User.checkUser(userId);
     if(userResult.length == 0) { //존재하지 않는 데이터
         res
-        .status(statusCode.OK)
-        .send(utils.successTrue(statusCode.OK, responseMessage.NO_USER));
+        .status(statusCode.BAD_REQUEST)
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_USER));
         return;
     } else {
         const salt = userResult[0].salt;      
@@ -50,8 +50,8 @@ router.post('/', async(req, res) => {
             }   
         } else { //비밀번호 불일지, 로그인 실패
             res
-            .status(statusCode.OK)
-            .send(utils.successTrue(statusCode.OK, responseMessage.MISS_MATCH_PW));
+            .status(statusCode.BAD_REQUEST)
+            .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_PW));
             return;
     }
     }

@@ -8,11 +8,12 @@ const Utils = {
             data: data
         }
     },
-    successFalse: (statusCode, message) => {
+    successFalse: (statusCode, message, data) => {
         return {
             success: false,
             statusCode : statusCode,
-            message: message
+            message: message,
+            data: null
         }
     },
 }
