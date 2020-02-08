@@ -16,7 +16,7 @@ router.post('/', async(req, res) => {
         
         res
         .status(statusCode.BAD_REQUEST)
-        .send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE(missParameters)));
         return;
     }
 
@@ -24,7 +24,7 @@ router.post('/', async(req, res) => {
     if(userResult.length == 0) { //존재하지 않는 데이터
         res
         .status(statusCode.OK)
-        .send(utils.successTrue(responseMessage.NO_USER));
+        .send(utils.successTrue(statusCode.OK, responseMessage.NO_USER));
         return;
     } else {
         const salt = userResult[0].salt;      
@@ -40,18 +40,18 @@ router.post('/', async(req, res) => {
             if(!token){ //토큰 생성 못함
                 res
                 .status(statusCode.INTERNAL_SERVER_ERROR)
-                .send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+                .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.EMPTY_TOKEN));
                 return;
             } else{   //토큰 생성
                 const finalResult = {token, userIdx, name};
                 res
                 .status(statusCode.OK)
-                .send(utils.successTrue(responseMessage.SIGN_IN_SUCCESS,finalResult));                
+                .send(utils.successTrue(statusCode.OK, responseMessage.SIGN_IN_SUCCESS,finalResult));                
             }   
         } else { //비밀번호 불일지, 로그인 실패
             res
             .status(statusCode.OK)
-            .send(utils.successTrue(responseMessage.MISS_MATCH_PW));
+            .send(utils.successTrue(statusCode.OK, responseMessage.MISS_MATCH_PW));
             return;
     }
     }
