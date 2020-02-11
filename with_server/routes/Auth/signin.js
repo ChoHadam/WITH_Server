@@ -53,9 +53,11 @@ router.post('/', async(req, res) => {
             .status(statusCode.OK)
             .send(utils.successTrue(responseMessage.MISS_MATCH_PW));
             return;
+        }
     }
-    }
-    
 });
+
+
+
 
 module.exports = router;
