@@ -206,6 +206,28 @@ router.delete("/:boardIdx", async(req, res) => {
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_DELETE_SUCCESS, result));
 });
 
+// 마감 하기
+router.put("/deactivate/:boardIdx", authUtil.validToken, async(req, res) => {
+  const userIdx = req.decoded.userIdx;
+  const boardIdx = req.params.boardIdx;
+
+  if(!userIdx || !boardIdx)
+  {
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
+    return;
+  }  
+  
+  const result = await Board.activate(boardIdx, userIdx);
+  if(result.length == 0)
+  {
+    res
+    .status(statusCode.INTERNAL_SERVER_ERROR)
+    .send(utils.successFalse(responseMessage.BOARD_DEACTIVATE_FAIL));
+    return;
+  }
+  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_DEACTIVATE_SUCCESS, result));
+});
+
 // 마감 풀기
 router.put("/activate/:boardIdx", authUtil.validToken, async(req, res) => {
   const userIdx = req.decoded.userIdx;

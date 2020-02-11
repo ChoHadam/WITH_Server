@@ -172,6 +172,21 @@ module.exports = {
         return result;
     },
 
+    deactivate : async (boardIdx, userIdx) => {
+        var activeState;
+        const query = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);    
+        if(query[0].active == 1){ // 활성화된 상태: 1, 마감된 상태 :-1
+            activeState = -1; 
+        }
+        else{
+            activeState = -1;
+        }
+        const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '${activeState}' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
+        console.log(result);
+        return result;
+    },
+
+
     activate : async (boardIdx, userIdx) => {
         // var activeState;
         // const query = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);    

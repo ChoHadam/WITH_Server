@@ -44,6 +44,8 @@ module.exports = {
     MATE_READ_SUCCESS: "위드 메이트 조회 성공",
     MATE_READ_FAIL: "위드 메이트 조회 실패",
 
+    DEACTIVATE_SUCCESS:"마감 하기 성공",
+    DEACTIVATE_FALSE:"마감 하기 실패",
     ACTIVATE_SUCCESS:"마감 풀기 성공",
     ACTIVATE_FALSE:"마감 풀기 실패",
 
