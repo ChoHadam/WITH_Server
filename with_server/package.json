@@ -12,6 +12,7 @@
     "crypto": "^1.0.1",
     "crypto-promise": "^2.1.0",
     "debug": "~2.6.9",
+    "dotenv": "^8.2.0",
     "express": "^4.16.4",
     "http-errors": "^1.6.3",
     "iconv": "^2.3.5",
