@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
-const secretOrPrivateKey = "jwtSecretKey";
+require('dotenv').config();
+//const secretOrPrivateKey = 'jwtSecretKey'; 원래꺼
+//const secretOrPrivateKey = process.env.JWT_SECRET_KEY;   ************확인필요**************
 
 const options = {
     algorithm: "HS256",
@@ -20,7 +22,7 @@ module.exports = {
             gender : user.gender
         };
         const result = {
-            token: jwt.sign(payload, secretOrPrivateKey, options)           
+            token: jwt.sign(payload, process.env.JWT_SECRET_KEY, options)           
         };
 
         return result;
@@ -30,7 +32,7 @@ module.exports = {
 
         let decoded;
         try{
-            decoded = jwt.verify(token,secretOrPrivateKey);
+            decoded = jwt.verify(token,process.env.JWT_SECRET_KEY);
         } catch (err){
             if (err.message === 'jwt expired') {//유효기간 만료
                 console.log('expired token');

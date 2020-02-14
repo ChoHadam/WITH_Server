@@ -19,6 +19,7 @@ router.post('/',upload.single('img'), async (req, res) => {
         return;
     }
     //빈 항목이 없다면 그 아이디 중복되는지 확인
+    console.log("들어와라");
     checkDup = await User.checkUser(userId);
     if(!checkDup.length==0)
     {
@@ -27,7 +28,8 @@ router.post('/',upload.single('img'), async (req, res) => {
         .send(utils.successFalse(responseMessage.ALREADY_ID));
         return;
     }
-    //중복되는 아이디가 없다면 회원가입 시작   
+    //중복되는 아이디가 없다면 회원가입 시작 
+    
     var userImg = req.file.location; //s3에 저장된 이미지 url
     console.log(userImg);    
     
