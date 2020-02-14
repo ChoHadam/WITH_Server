@@ -23,13 +23,13 @@ router.post('/', async(req, res) => {
     if(!token){ //토큰 생성 못함
         res
         .status(statusCode.INTERNAL_SERVER_ERROR)
-        .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.EMPTY_TOKEN));
+        .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.LOOK_AROUND_FAIL));
         return;
     } else{   //토큰 생성
         const finalResult = {token, userIdx, name};
         res
         .status(statusCode.OK)
-        .send(utils.successTrue(statusCode.OK, responseMessage.SIGN_IN_SUCCESS,finalResult));                
+        .send(utils.successTrue(statusCode.OK, responseMessage.LOOK_AROUND_SUCCESS,finalResult));                
     }
 });
 
