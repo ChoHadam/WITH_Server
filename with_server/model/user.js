@@ -4,8 +4,8 @@ const table = 'User';
 const user = {
     signup : async (json) => {
         //아이디, 비번, 이름, 생일, 성별, 프로필사진
-        const fields = 'userId, password, salt, name, birth, gender, userImg';
-        const questions = `"${json.userId}","${json.finalPw}","${json.salt}","${json.name}","${json.birth}","${json.gender}","${json.userImg}"`;        
+        const fields = 'userId, password, salt, name, birth, gender, userImg, interest1, interest2, interest3';
+        const questions = `"${json.userId}","${json.finalPw}","${json.salt}","${json.name}","${json.birth}","${json.gender}","${json.userImg}", "${json.interest1}", "${json.interest2}", "${json.interest3}" `;        
         const result = await pool.queryParam_None(`INSERT INTO ${table}(${fields})VALUES(${questions})`)
         return result;
     },
