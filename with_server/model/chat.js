@@ -25,7 +25,7 @@ module.exports = {
         */
         var board_list = [];
         var result = await pool.queryParam_None(`
-        SELECT Chat.userIdx, Chat.boardIdx, roomId, userImg, name, regionName, title, withDate, startDate, endDate, withFlag, evalFlag 
+        SELECT Chat.userIdx, Chat.boardIdx, roomId, userImg, name, regionName, title, withDate, startDate, endDate, withFlag 
         FROM Chat 
             LEFT JOIN Board ON Chat.boardIdx = Board.boardIdx 
             LEFT JOIN User ON Chat.userIdx = User.userIdx 
@@ -38,13 +38,19 @@ module.exports = {
             result[i].endDate = moment(result[i].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
             result[i].withDate = moment(result[i].withDate, 'YYYY-MM-DD').format('YY.MM.DD');
         }
-        var result_sub = await pool.queryParam_None(`
-        SELECT userImg, regionImgE FROM Board 
-        NATURAL JOIN User NATURAL JOIN Region
-        WHERE boardIdx in (${board_list})`);
+        var result_sub2 = await pool.queryParam_None(`
+        SELECT evalFlag, boardIdx FROM Chat
+        WHERE userIdx = ${userIdx}
+        ORDER BY boardIdx ASC
+        `)
         for(var i in result){
-            result[i].writerImg = result_sub[i].userImg;
-            result[i].regionImgE = result_sub[i].regionImgE;
+            var result_sub = await pool.queryParam_None(`
+            SELECT userImg, regionImgE FROM Board 
+            NATURAL JOIN User NATURAL JOIN Region
+            WHERE boardIdx = ${board_list[i]}`);
+            result[i].evalFlag = result_sub2[i].evalFlag;
+            result[i].writerImg = result_sub[0].userImg;
+            result[i].regionImgE = result_sub[0].regionImgE;
         }
 
         return result;
@@ -52,7 +58,7 @@ module.exports = {
 
     checkRoom : async (json) => {
         // 이미 채팅방이 존재하는지 확인한다.
-        const result = await pool.queryParam_None(`SELECT chatIdx FROM ${table1} WHERE boardIdx = '${json.roomId}'`)
+        const result = await pool.queryParam_None(`SELECT chatIdx FROM ${table1} WHERE roomId = '${json.roomId}'`)
         return result;     
     },
 
@@ -64,6 +70,7 @@ module.exports = {
         conditions.push(` withFlag = 1`)
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
         const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE roomId = '${json.roomId}'`);
+        await pool.queryParam_None(`UPDATE ${table2} SET withNum = withNum + 1 WHERE boardIdx = ${json.boardIdx}`);
         return result;
     }
 }
@@ -71,5 +78,5 @@ module.exports = {
 cron.schedule('0 12 * * *', async function(){     
     // 매일 자정에 날짜를 확인해 마감처리 한다.      
     var currentTime = moment().format('YYYY-MM-DD');    
-    await pool.queryParam_None(`UPDATE ${table1} LEFT JOIN Board ON ${table1}.boardIdx = ${table2}.boardIdx SET evalFlag = '2' WHERE endDate < '${currentTime}' AND Flag = '1'`);    
+    await pool.queryParam_None(`UPDATE ${table1} LEFT JOIN Board ON ${table1}.boardIdx = ${table2}.boardIdx SET evalFlag = '2' WHERE withFlag = 1 AND endDate < '${currentTime}' AND evalFlag = '1'`);    
 });

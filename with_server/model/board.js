@@ -48,7 +48,8 @@ module.exports = {
 
         // 날짜 필터 적용된 경우
         if(json.startDate != '0' && json.endDate != '0'){
-            query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
+            //query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
+            query += ` AND (startDate <= '${json.endDate}' AND endDate >= '${json.startDate}')`;
         }
 
         // 검색 필터 적용된 경우
@@ -95,11 +96,10 @@ module.exports = {
     },
 
     read : async (boardIdx, userIdx) => {
-        const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, active, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro, likeNum, dislikeNum';
+        const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, active, withNum, filter, Board.userIdx, name, birth, gender, userBgImg, userImg, intro, likeNum, dislikeNum';
         var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE boardIdx = ${boardIdx}`);
         const result_sub = await pool.queryParam_None(`SELECT withFlag FROM Chat WHERE boardIdx = ${boardIdx} AND Chat.userIdx = ${userIdx}`);
         if(result_sub.length==0){
-            console.log('ok');
             result[0].withFlag = -1;
         }else{
             result[0].withFlag = result_sub[0].withFlag;
@@ -158,6 +158,7 @@ module.exports = {
             conditions.push(`regionCode = '${json.regionCode}'`);
             const result = await pool.queryParam_None(`SELECT regionName FROM Region WHERE regionCode = ${json.regionCode}`);
             conditions.push(`regionName = '${result[0].regionName}'`);
+            //conditions.push(`regionName = (SELECT regionName FROM Region WHERE regionCode = ${json.regionCode})`);
         }
         // 변경 파라미터가 존재하면 push 한다.
         if (json.title) conditions.push(`title = '${json.title}'`);
@@ -172,15 +173,28 @@ module.exports = {
     },
 
     activate : async (boardIdx, userIdx) => {
-        var activeState;
-        const query = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);    
-        if(query[0].active == 1){
-            activeState  = -1;
-        }
-        else{
-            activeState  = 1;
-        }
-        const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '${activeState}' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
+        // var activeState;
+        // const query = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);    
+        // if(query[0].active == 1){
+        //     activeState  = -1;
+        // }
+        // else{
+        //     activeState  = 1;
+        // }
+        // const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '${activeState}' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
+        // return result;
+
+        // pool.query('CALL activate_board()', function(err, rows) {
+        //     if (err)
+        //         throw err;
+        //     console.log('procedure success\n');
+        //     console.log(rows);
+            
+        //     return rows;
+        // })
+
+        const result = await pool.queryParam_None(`CALL activate_board(${boardIdx}, ${userIdx})`);
+        console.log(result);
         return result;
     }
 }
@@ -188,6 +202,6 @@ module.exports = {
 cron.schedule('0 12 * * *', async function(){     
     // 매일 자정에 날짜를 확인해 마감처리 한다.      
     var currentTime = moment().format('YYYY-MM-DD');    
-    const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '-1' WHERE endDate <= '${currentTime}'`);    
+    const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '-1' WHERE endDate < '${currentTime}'`);    
 });
 

@@ -31,18 +31,19 @@ module.exports = {
         return result;
     },
 
-    like : async(userIdx, roomId) => {
-        await pool.queryParam_None(`UPDATE ${table3} LEFT JOIN ${table1} ON ${table3}.userIdx = ${table1}.userIdx SET ${table3}.evalFlag = 3, ${table1}.likeNum = ${table1}.likeNum + 1 WHERE ${table3}.userIdx != ${userIdx} AND ${table3}.roomId ='${roomId}'`);        
-        return;
+    like : async(otherIdx, roomId) => {  
+        var result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx != ${otherIdx} AND roomId ='${roomId}'`);      
+        result = await pool.queryParam_None(`UPDATE ${table1} SET likeNum = likeNum + 1 WHERE userIdx = ${otherIdx}`);
+        return result;
     },
     
-    dislike : async(userIdx, roomId) => {
-        await pool.queryParam_None(`UPDATE ${table3} LEFT JOIN ${table1} ON ${table3}.userIdx = ${table1}.userIdx SET ${table3}.evalFlag = 3, ${table1}.dislikeNum = ${table1}.dislikeNum + 1 WHERE ${table3}.userIdx != ${userIdx} AND ${table3}.roomId ='${roomId}'`);
-        return;
+    dislike : async(otherIdx, roomId) => {
+        var result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx != ${otherIdx} AND roomId ='${roomId}'`);      
+        result = await pool.queryParam_None(`UPDATE ${table1} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${otherIdx}`);       
+        return result;
     },
     noEvaluation : async(userIdx, roomId) => {
-        //const fields = 'name, birth, gender, userImg, userBgImg, intro, likeNum, dislikeNum'
-        await pool.queryParam_None(`UPDATE ${table3} LEFT JOIN ${table1} ON ${table3}.userIdx = ${table1}.userIdx SET ${table3}.evalFlag = 3 WHERE ${table3}.userIdx != ${userIdx} AND ${table3}.roomId ='${roomId}'`);      
-        return;
+        const result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx = ${userIdx} AND roomId ='${roomId}'`);      
+        return result;
     },
 };
