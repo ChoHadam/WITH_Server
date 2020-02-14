@@ -21,6 +21,7 @@ router.post('/', async(req, res) => {
     }
 
     const userResult = await User.checkUser(userId);
+    
     if(userResult.length == 0) { //존재하지 않는 데이터
         res
         .status(statusCode.BAD_REQUEST)
@@ -53,10 +54,8 @@ router.post('/', async(req, res) => {
             .status(statusCode.BAD_REQUEST)
             .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_PW));
             return;
+        }
     }
-    }
-    
-    
 });
 
 module.exports = router;
