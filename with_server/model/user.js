@@ -7,13 +7,14 @@ const user = {
         const fields = 'userId, password, salt, name, birth, gender, userImg, interest1, interest2, interest3';
         const questions = `"${json.userId}","${json.finalPw}","${json.salt}","${json.name}","${json.birth}","${json.gender}","${json.userImg}", "${json.interest1}", "${json.interest2}", "${json.interest3}" `;        
         const result = await pool.queryParam_None(`INSERT INTO ${table}(${fields})VALUES(${questions})`)
+        console.log(result);
         return result;
     },
     checkUser : async (userId) => {
         //존재하는 회원인지 확인    
         const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE userId = "${userId}"`)
         return result;     
-    }
+    }   
 }
 
 module.exports = user;

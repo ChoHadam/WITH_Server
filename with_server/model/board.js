@@ -1,7 +1,3 @@
-const statusCode = require('../module/utils/statusCode');
-const responseMessage = require('../module/utils/responseMessage');
-const authUtil = require('../module/utils/utils');
-
 const pool = require('../module/db/pool');
 
 const cron = require('node-cron');
@@ -9,58 +5,55 @@ const moment = require('moment');
 const moment_timezone = require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 
-const table = 'Board';
+const table1 = 'Board';
 const table2 = 'User';
 const table3 = 'Region';
 
 module.exports = {
-    create : async(json) => {
+    create : async (json) => {
         // 나라, 대륙, 제목, 내용, 작성시간, 동행시작시간, 동행종료시간, 작성자인덱스, 활성화유무, 동행자 수, 동성필터여부
         const fields = 'regionCode, regionName, title, content, uploadTime, startDate, endDate, userIdx, filter';
         const regionName = await pool.queryParam_None(`SELECT regionName FROM ${table3} WHERE regionCode = '${json.regionCode}'`);
-        const countIncrease = await pool.queryParam_None(`UPDATE ${table3} SET count = count + 1  WHERE regionCode = '${json.regionCode}'`);
+        if(json.regionCode.substr(4,2) != 00){
+            const countIncrease = await pool.queryParam_None(`UPDATE ${table3} SET count = count + 1  WHERE regionCode = '${json.regionCode}'`);
+        }        
         const questions = `"${json.regionCode}", "${regionName[0].regionName}", "${json.title}", "${json.content}", "${json.uploadTime}", "${json.startDate}", "${json.endDate}", "${json.userIdx}", "${json.filter}"`;
-        let result = await pool.queryParam_None(`INSERT INTO ${table}(${fields}) VALUES(${questions})`);
+        let result = await pool.queryParam_None(`INSERT INTO ${table1}(${fields}) VALUES(${questions})`);
+
         return result;
     },
 
-    readAll : async(json) => {
+    readAll : async (json) => {
         // regionCode Parsing
         var region = json.regionCode.substr(0,2);
         var semi_region = json.regionCode.substr(2,2);
         var country = json.regionCode.substr(4,2);
         var query;
-
         const fields = 'boardIdx, regionCode, regionName, title, uploadTime, startDate, endDate, withNum, filter, userImg';
 
-        if(country == "00")
-        {
-            if(semi_region == "00")
-            {
+        if(country == "00"){
+            if(semi_region == "00"){
                 // 대분류에서 찾기
-                query = `SELECT ${fields} FROM ${table} WHERE regionCode LIKE '${region}%' AND active = 1`;
+                query = `SELECT ${fields} FROM ${table1} WHERE regionCode LIKE '${region}%' AND active = 1`;
             }
-            else
-            {
+            else{
                 // 중분류에서 찾기
-                query = `SELECT ${fields} FROM ${table} WHERE regionCode LIKE '${region}${semi_region}%' AND active = 1`;
+                query = `SELECT ${fields} FROM ${table1} WHERE regionCode LIKE '${region}${semi_region}%' AND active = 1`;
             }
         }
-        else
-        {
+        else{
             // 나라에서 찾기
-            query = `SELECT ${fields} FROM ${table} WHERE regionCode = '${regionCode}' AND active = 1`;
+            query = `SELECT ${fields} FROM ${table1} WHERE regionCode = '${json.regionCode}' AND active = 1`;
         }
 
         // 날짜 필터 적용된 경우
-        if(json.startDate!='0' && json.endDate!='0')
-        {
-            query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
+        if(json.startDate != '0' && json.endDate != '0'){
+            //query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
+            query += ` AND (startDate <= '${json.endDate}' AND endDate >= '${json.startDate}')`;
         }
 
         // 검색 필터 적용된 경우
-        if(json.keyword!='0')
-        {
+        if(json.keyword != '0'){
             const decode_keyword = decodeURI(json.keyword);
             query += ` AND (title LIKE '%${decode_keyword}%' OR content LIKE '%${decode_keyword}%')`;
         }
@@ -69,81 +62,82 @@ module.exports = {
         var back_query = query.substr(115, query.length);
         query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;
 
-        // 동성 필터 적용된 경우
-        if(json.filter!='0')
-        {
+        if(json.filter!='0'){
+            // 동성 필터 적용된 경우
             query += ` AND gender = ${json.gender} ORDER BY uploadTime desc`;
         }
-        // 동성 필터 적용되지 않은 경우
-        else
-        {
+        else{
+            // 동성 필터 적용되지 않은 경우
             query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender})) ORDER BY uploadTime desc`;
         }
 
-        console.log(query);
         const result = await pool.queryParam_None(query);
         
-        for(var i in result)
-        {
-            // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
+        // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
+        for(var i in result){
             var postTerm = moment().diff(result[i].uploadTime,"Minutes");
 
-            if(postTerm < 1)
-            {
-                //console.log("방금");
+            if(postTerm < 1){
                 result[i].uploadTime = "방금";
             }
-            else if(postTerm < 60)
-            {
-                //console.log(`${postTerm}분 전`);
+            else if(postTerm < 60){
                 result[i].uploadTime = `${postTerm}분 전`;
             }
-            else if(postTerm < 1440)
-            {
+            else if(postTerm < 1440){
                 postTerm = moment().diff(result[i].uploadTime,"Hours");
-                //console.log(`${postTerm}시간 전`);
                 result[i].uploadTime = `${postTerm}시간 전`;
             }
-            else
-            {
+            else{
                 postTerm = moment().diff(result[i].uploadTime,"Days");
-                //console.log(`${postTerm}일 전`);
                 result[i].uploadTime = `${postTerm}일 전`;
             }
         }
-
         return result;
     },
 
-    read : async(boardIdx) => {
-        const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, active, withNum, filter, Board.userIdx, name, birth, gender, userImg, intro';
-        const idx = String(boardIdx);
-        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE boardIdx = '${idx}'`);
-        console.log(idx);
-        console.log(result);
+    read : async (boardIdx, userIdx) => {
+        const fields = 'boardIdx, regionCode, regionName, title, content, uploadTime, startDate, endDate, active, withNum, filter, Board.userIdx, name, birth, gender, userBgImg, userImg, intro, likeNum, dislikeNum';
+        var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE boardIdx = ${boardIdx}`);
+        const result_sub = await pool.queryParam_None(`SELECT withFlag FROM Chat WHERE boardIdx = ${boardIdx} AND Chat.userIdx = ${userIdx}`);
+        if(result_sub.length==0){
+            result[0].withFlag = -1;
+        }else{
+            result[0].withFlag = result_sub[0].withFlag;
+        }
         // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
         var postTerm = moment().diff(result[0].uploadTime,"Minutes");
-
-        if(postTerm < 1)
+        
+/*
+        // 게시글 작성자, 방문자 그리고 게시글을 모두 매칭시켜 작성자와 방문자와의 동행 매칭 여부를 반환하는 코드.
+        if(result[0].userIdx && userIdx)
         {
-            //console.log("방금");
+            const getWithFlag = await pool.queryParam_None(`SELECT withFlag FROM Chat WHERE userIdx = ${userIdx} AND boardIdx = ${result[0].boardIdx}`);
+
+            // 수정 필요할 수도 있음 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            if(getWithFlag.length != 0)
+            {
+                result[0].withFlag = getWithFlag[0].withFlag;
+            }
+
+            else
+            {
+                result[0].withFlag = -1;
+            }
+        }
+*/
+        if(postTerm < 1){
             result[0].uploadTime = "방금";
         }
-        else if(postTerm < 60)
-        {
-            //console.log(`${postTerm}분 전`);
+        else if(postTerm < 60){
             result[0].uploadTime = `${postTerm}분 전`;
         }
-        else if(postTerm < 1440)
-        {
+        else if(postTerm < 1440){
             postTerm = moment().diff(result[0].uploadTime,"Hours");
-            //console.log(`${postTerm}시간 전`);
             result[0].uploadTime = `${postTerm}시간 전`;
         }
-        else
-        {
+        else{
             postTerm = moment().diff(result[0].uploadTime,"Days");
-            //console.log(`${postTerm}일 전`);
             result[0].uploadTime = `${postTerm}일 전`;
         }
 
@@ -153,19 +147,20 @@ module.exports = {
         const age = currentYear - birthYear[0] + 1;
 
         result[0].birth = age;
-
         return result;
     },
 
-    update : async(json, boardIdx) => {
+    update : async (json, boardIdx) => {
         const conditions = [];
 
-        if (json.regionCode)
-        {
+        // regionCode에 맞는 regionName을 query에 추가한다.
+        if (json.regionCode){
             conditions.push(`regionCode = '${json.regionCode}'`);
             const result = await pool.queryParam_None(`SELECT regionName FROM Region WHERE regionCode = ${json.regionCode}`);
             conditions.push(`regionName = '${result[0].regionName}'`);
+            //conditions.push(`regionName = (SELECT regionName FROM Region WHERE regionCode = ${json.regionCode})`);
         }
+        // 변경 파라미터가 존재하면 push 한다.
         if (json.title) conditions.push(`title = '${json.title}'`);
         if (json.content) conditions.push(`content = '${json.content}'`);
         if (json.startDate) conditions.push(`startDate = '${json.startDate}'`);
@@ -173,35 +168,40 @@ module.exports = {
         if (json.filter) conditions.push(`filter = '${json.filter}'`);
 
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
-        const result = await pool.queryParam_None(`UPDATE ${table} ${setStr} WHERE boardIdx = ${boardIdx}`);
+        const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE boardIdx = ${boardIdx}`);
         return result;
     },
 
-    activate : async(boardIdx, userIdx) => {
-        var activeState;
-        const query = await pool.queryParam_None(`SELECT * FROM ${table} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);    
-        if(query[0].active == 1){
-            activeState  = -1;
-        }else{
-            activeState  = 1;
-        }
-        const result = await pool.queryParam_None(`UPDATE ${table} SET active = '${activeState}' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
-        return result;
-    },
+    activate : async (boardIdx, userIdx) => {
+        // var activeState;
+        // const query = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);    
+        // if(query[0].active == 1){
+        //     activeState  = -1;
+        // }
+        // else{
+        //     activeState  = 1;
+        // }
+        // const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '${activeState}' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
+        // return result;
 
-    like : async(userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table} SET likeNum = likeNum +1 WHERE userIdx = ${userIdx}`);
-        return result;
-    },
-    
-    dislike : async(userIdx) => {
-        const result = await pool.queryParam_None(`UPDATE ${table} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${userIdx}`);
+        // pool.query('CALL activate_board()', function(err, rows) {
+        //     if (err)
+        //         throw err;
+        //     console.log('procedure success\n');
+        //     console.log(rows);
+            
+        //     return rows;
+        // })
+
+        const result = await pool.queryParam_None(`CALL activate_board(${boardIdx}, ${userIdx})`);
+        console.log(result);
         return result;
     }
 }
 
-cron.schedule('0 12 * * *', async function(){           
+cron.schedule('0 12 * * *', async function(){     
+    // 매일 자정에 날짜를 확인해 마감처리 한다.      
     var currentTime = moment().format('YYYY-MM-DD');    
-    const result = await pool.queryParam_None(`UPDATE ${table} SET active = '-1' WHERE endDate <= '${currentTime}'`);    
+    const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '-1' WHERE endDate < '${currentTime}'`);    
 });
 

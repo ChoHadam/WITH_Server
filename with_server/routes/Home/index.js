@@ -6,7 +6,10 @@ const statusCode = require('../../module/utils/statusCode');
 const Home = require('../../model/home');
 const authUtil = require('../../module/utils/authUtil');
 
-// 추천 동행지 보여주기
+
+require('dotenv').config();
+
+// 추천 여행지 보여주기
 router.get("/recommendations/:regionCode", async (req, res) => {
     const regionCode = req.params.regionCode;
     
@@ -24,6 +27,7 @@ router.get("/recommendations/:regionCode", async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.RECOMMEND_READ_SUCCESS, result));
 });
 
+/*
 // 위드 메이트 보여주기
 router.get("/mates", authUtil.validToken, async (req, res) => {
     const userIdx = req.decoded.userIdx;
@@ -41,22 +45,18 @@ router.get("/mates", authUtil.validToken, async (req, res) => {
 
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.MATE_READ_SUCCESS, result));
 });
+*/
 
-//최근 본 계시물 보기
+// 최근 본 게시물 조회하기
 router.get("/boards/:boardIdx", async (req, res) => {
-    const boardIdx = req.params.boardIdx;
+    const boardIdx = req.params.boardIdx.split('+');
     if(!boardIdx)
     {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
 
-    board_arr = boardIdx.split('+');
-    var result = [];
-    for ( var i in board_arr ) {
-        var board_list = await Home.readBoard(board_arr[i]);
-        result.push(board_list[0]);
-    }
+    const result = await Home.readBoard(boardIdx);
     if(result.length == 0)
     {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_ALL_FAIL));
@@ -66,11 +66,12 @@ router.get("/boards/:boardIdx", async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
-//국가 리스트 뿌려주기
+// 국가 리스트 출력하기
 router.get("/regions/:regionCode", async (req, res) => {
     const regionCode = req.params.regionCode;
 
-    if(!regionCode){
+    if(!regionCode)
+    {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
     }
@@ -86,7 +87,7 @@ router.get("/regions/:regionCode", async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_REGION_LIST_SUCCESS, result));
 });
 
-//홈 배경이미지 랜덤으로 1개 보내주기
+// 홈 배경이미지 출력하기 (랜덤 1개)
 router.get("/bgImg", async (req, res) => {
     
     const result = await Home.bgImage();
@@ -96,10 +97,12 @@ router.get("/bgImg", async (req, res) => {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.READ_HOME_BGIMG_FAIL));
         return;
     }
-    //console.log(result.length);
-    let rand = Math.floor(Math.random() * result.length);
-    //console.log(rand);
+    //console.log(process.env); // 잘나옴
 
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_HOME_BGIMG_SUCCESS, result[rand]));
+    let rand = Math.floor(Math.random() * result.length);
+
+    res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_HOME_BGIMG_SUCCESS, result[rand]));    
 });
+
+
 module.exports = router;

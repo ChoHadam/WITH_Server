@@ -1,16 +1,17 @@
 // authUtil.js
 const Utils = {
-    successTrue: (message, data) => {
+    successTrue: (statusCode, message, data) => {
         return {
-            success: true,
+            statusCode : statusCode,
             message: message,
             data: data
         }
     },
-    successFalse: (message) => {
+    successFalse: (statusCode, message, data) => {
         return {
-            success: false,
-            message: message
+            statusCode : statusCode,
+            message: message,
+            data: null
         }
     },
 }
