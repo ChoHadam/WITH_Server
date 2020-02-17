@@ -9,7 +9,7 @@ const User = require('../../model/user');
 
 router.post('/',upload.single('img'), async (req, res) => {    
     //필수항목 안채웠으면 오류메세지 전송
-    const {userId, password, name, birth, gender} = req.body;
+    const {userId, password, name, birth, gender, interest1, interest2, interest3} = req.body;
 
     if(!userId || !password || !name || !birth || !gender){
         const missParameters = Object.entries({userId, password, name, birth, gender})
