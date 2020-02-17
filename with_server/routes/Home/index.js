@@ -6,6 +6,9 @@ const statusCode = require('../../module/utils/statusCode');
 const Home = require('../../model/home');
 const authUtil = require('../../module/utils/authUtil');
 
+
+require('dotenv').config();
+
 // 추천 여행지 보여주기
 router.get("/recommendations/:regionCode", async (req, res) => {
     const regionCode = req.params.regionCode;
@@ -94,10 +97,11 @@ router.get("/bgImg", async (req, res) => {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.READ_HOME_BGIMG_FAIL));
         return;
     }
+    //console.log(process.env); // 잘나옴
 
     let rand = Math.floor(Math.random() * result.length);
 
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_HOME_BGIMG_SUCCESS, result[rand]));
+    res.status(statusCode.OK).send(utils.successTrue(responseMessage.READ_HOME_BGIMG_SUCCESS, result[rand]));    
 });
 
 
