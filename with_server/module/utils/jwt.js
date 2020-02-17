@@ -9,6 +9,12 @@ const options = {
     issuer: "withDev"
 }
 
+const auto_options = {
+    algorithm: "HS256",
+    expiresIn: "1y",
+    issuer: "withDev"
+}
+
 const refreshOptions = {
     algorithm: "HS256",
     expiresIn: "1d",
@@ -26,7 +32,21 @@ module.exports = {
         };
 
         return result;
-    },    
+    },
+
+    auto_sign:(user) => {
+        const payload = {
+            userIdx : user.userIdx,
+            name : user.name,
+            gender : user.gender
+        };
+
+        const result = {
+            token: jwt.sign(payload, secretOrPrivateKey, auto_options)           
+        };
+
+        return result;
+    },
 
     verify: (token) => {
 
@@ -35,13 +55,13 @@ module.exports = {
             decoded = jwt.verify(token,process.env.JWT_SECRET_KEY);
         } catch (err){
             if (err.message === 'jwt expired') {//유효기간 만료
-                console.log('expired token');
+                //console.log('expired token');
                 return -3;
             } else if (err.message === 'invalid token') {//잘못된 token
-                console.log('invalid token');
+                //console.log('invalid token');
                 return -2;
             } else {
-                console.log("error");
+                //console.log("error");
                 return -2;
             }
         }
