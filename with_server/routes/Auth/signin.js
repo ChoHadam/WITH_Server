@@ -31,7 +31,7 @@ router.post('/', async(req, res) => {
         const salt = userResult[0].salt;      
         const hashedEnterPw = await crypto.pbkdf2(password.toString(),salt,1000,32,'sha512');
         const inputPw = hashedEnterPw.toString('hex');
-        //console.log(inputPw);
+        
         if(inputPw == userResult[0].password){
             const result = jwtUtils.sign(userResult[0]);
             const token  = result.token;
