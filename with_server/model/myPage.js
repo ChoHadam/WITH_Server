@@ -5,7 +5,7 @@ const table3 = 'Chat';
 
 module.exports = {
     readProfile: async(userIdx) => {
-        const fields = 'name, birth, gender, userImg, userBgImg, intro, likeNum, dislikeNum'
+        const fields = 'name, birth, gender, userImg, userBgImg, interest1, interest2, interest3'
         const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = '${userIdx}'`);
         return result;
         
@@ -15,10 +15,37 @@ module.exports = {
         const conditions = [];
         //console.log(json.intro.intro);
         //console.log(json);
-
+        
         if (json.userBgImg) conditions.push(`userBgImg = '${json.userBgImg}'`);
         if (json.userImg) conditions.push(`userImg = '${json.userImg}'`);
-        if (json.intro) conditions.push(`intro = '${json.intro}'`);
+        //if (json.intro) conditions.push(`intro = '${json.intro}'`);
+        
+        if (json.interest1)
+        {
+            conditions.push(`interest1 = '${json.interest1}'`);
+        }
+        else
+        {
+            conditions. push(`interest1 = Null`)
+        }
+        
+        if (json.interest2)
+        {
+            conditions.push(`interest2 = '${json.interest2}'`);
+        }
+        else
+        {
+            conditions. push(`interest2 = Null`)
+        }
+        
+        if (json.interest3)
+        {
+            conditions.push(`interest3 = '${json.interest3}'`);
+        }
+        else
+        {
+            conditions. push(`interest3 = Null`)
+        }
         
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
         const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE userIdx = '${userIdx}'`)
