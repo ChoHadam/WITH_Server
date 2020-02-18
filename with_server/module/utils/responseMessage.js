@@ -11,6 +11,7 @@ module.exports = {
     EMPTY_TOKEN: "토큰이 없습니다",
     LOOK_AROUND_SUCCESS: "둘러보기 성공",
     LOOK_AROUND_FAIL: "둘러보기 실패",
+    PW_CHANGE_SUCCESS : "비밀번호 변경 성공",
 
     BOARD_CREATE_SUCCESS: "게시글 작성 성공",
     BOARD_CREATE_FAIL: "게시글 작성 실패",

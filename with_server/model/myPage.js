@@ -46,4 +46,15 @@ module.exports = {
         const result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx = ${userIdx} AND roomId ='${roomId}'`);      
         return result;
     },
+    confirmUser : async (userIdx) => {
+        //존재하는 회원인지 확인    
+        const result = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE userIdx = "${userIdx}"`)
+        return result;     
+    },
+    changePw : async(json) =>{
+        const setStr = `SET password = '${json.finalPw}', salt = '${json.salt}'`
+        const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE userIdx = ${json.userIdx}`); 
+        
+        return result;
+    }
 };
