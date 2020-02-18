@@ -31,21 +31,6 @@ module.exports = {
         return result;
     },
 
-    like : async(otherIdx, roomId) => {  
-        var result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx != ${otherIdx} AND roomId ='${roomId}'`);      
-        result = await pool.queryParam_None(`UPDATE ${table1} SET likeNum = likeNum + 1 WHERE userIdx = ${otherIdx}`);
-        return result;
-    },
-    
-    dislike : async(otherIdx, roomId) => {
-        var result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx != ${otherIdx} AND roomId ='${roomId}'`);      
-        result = await pool.queryParam_None(`UPDATE ${table1} SET dislikeNum = dislikeNum + 1 WHERE userIdx = ${otherIdx}`);       
-        return result;
-    },
-    noEvaluation : async(userIdx, roomId) => {
-        const result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx = ${userIdx} AND roomId ='${roomId}'`);      
-        return result;
-    },
     confirmUser : async (userIdx) => {
         //존재하는 회원인지 확인    
         const result = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE userIdx = "${userIdx}"`)
