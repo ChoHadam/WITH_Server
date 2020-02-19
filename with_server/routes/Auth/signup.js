@@ -7,7 +7,7 @@ const utils = require('../../module/utils/utils');
 const upload = require('../../config/multer');
 const User = require('../../model/user');
 
-router.post('/',upload.single('img'), async (req, res) => {    
+router.post('/',upload.single('userImg'), async (req, res) => {    
     //필수항목 안채웠으면 오류메세지 전송
     const {userId, password, name, birth, gender, interest1, interest2, interest3} = req.body;
 
@@ -19,7 +19,6 @@ router.post('/',upload.single('img'), async (req, res) => {
         return;
     }
     //빈 항목이 없다면 그 아이디 중복되는지 확인
-    console.log("들어와라");
     checkDup = await User.checkUser(userId);
     if(!checkDup.length==0)
     {

@@ -5,7 +5,7 @@ const table3 = 'Chat';
 
 module.exports = {
     readProfile: async(userIdx) => {
-        const fields = 'name, birth, gender, userImg, userBgImg, interest1, interest2, interest3'
+        const fields = 'userImg, name, birth, gender, userId, interest1, interest2, interest3'
         const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = '${userIdx}'`);
         return result;
         
@@ -13,12 +13,9 @@ module.exports = {
 
     update: async(json, userIdx) => {
         const conditions = [];
-        //console.log(json.intro.intro);
         //console.log(json);
         
-        if (json.userBgImg) conditions.push(`userBgImg = '${json.userBgImg}'`);
         if (json.userImg) conditions.push(`userImg = '${json.userImg}'`);
-        //if (json.intro) conditions.push(`intro = '${json.intro}'`);
         
         if (json.interest1)
         {
@@ -58,6 +55,8 @@ module.exports = {
         return result;
     },
 
+    /* 사용안함
+
     like : async(otherIdx, roomId) => {  
         var result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx != ${otherIdx} AND roomId ='${roomId}'`);      
         result = await pool.queryParam_None(`UPDATE ${table1} SET likeNum = likeNum + 1 WHERE userIdx = ${otherIdx}`);
@@ -73,4 +72,6 @@ module.exports = {
         const result = await pool.queryParam_None(`UPDATE ${table3} SET evalFlag = 3 WHERE userIdx = ${userIdx} AND roomId ='${roomId}'`);      
         return result;
     },
+
+    */
 };
