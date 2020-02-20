@@ -12,6 +12,7 @@ const refreshOptions = {
     expiresIn: "1y",
     issuer: "withDev"
 }
+
 module.exports = {
     sign: (user) => {
         const accessPayload = {
