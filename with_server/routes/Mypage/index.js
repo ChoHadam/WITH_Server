@@ -35,27 +35,6 @@ router.get("/",authUtil.validToken, async(req, res) => {
     const age = currentYear - birthYear[0] + 1;
 
     result[0].birth = age;
-
-/* 사용안함
-
-    // 뱃지 계산 
-    const prop = (result[0].likeNum / (result[0].likeNum + result[0].dislikeNum)) * 100;
-    
-    if(parseInt(prop)>=70 && parseInt(prop)<80 ){
-        badge = 1;
-    }else if(parseInt(prop)>=80 && parseInt(prop)<90 ){
-        badge = 2;
-    }else if(parseInt(prop)>=90 && parseInt(prop)<=100 ){
-        badge = 3;
-    }else{
-        badge = 0;
-    }
-    result[0].badge = badge;   
-
-    // 클라이언트에서 필요없는 정보 제거
-    delete result[0].likeNum;
-    delete result[0].dislikeNum;
-*/
     
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.MYPAGE_READ_SUCCESS, result[0]));
 });

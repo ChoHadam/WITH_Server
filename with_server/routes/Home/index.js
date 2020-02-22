@@ -6,29 +6,7 @@ const statusCode = require('../../module/utils/statusCode');
 const Home = require('../../model/home');
 const authUtil = require('../../module/utils/authUtil');
 
-
 require('dotenv').config();
-
-/*
-// 위드 메이트 보여주기
-router.get("/mates", authUtil.validToken, async (req, res) => {
-    const userIdx = req.decoded.userIdx;
-    if(!userIdx)
-    {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
-        return;
-    }
-    const result = await Home.readMate(userIdx);
-    if(result.length == 0)
-    {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.MATE_READ_FAIL));
-        return;
-    }
-
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.MATE_READ_SUCCESS, result));
-});
-*/
-
 
 // 국가 리스트 출력하기
 router.get("/regions/:regionCode", async (req, res) => {

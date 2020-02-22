@@ -5,7 +5,43 @@ const statusCode = require('../../module/utils/statusCode');
 const responseMessage = require('../../module/utils/responseMessage');
 const utils = require('../../module/utils/utils');
 const User = require('../../model/user');
+const authUtil = require('../../module/utils/authUtil');
 const jwtUtils= require('../../module/utils/jwt')
+
+router.post('/renew', authUtil.validRefreshToken, async(req, res) => {
+    const {userIdx} = req.decoded;
+    const userResult = await User.returnUser(userIdx);
+
+    if(userResult.length == 0) { //존재하지 않는 데이터
+        res
+        .status(statusCode.BAD_REQUEST)
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_USER));
+        return;
+    }
+    else {
+        const name = userResult[0].name;
+        const gender = userResult[0].gender;
+        console.log(name);
+        console.log(gender);
+
+        const user = {userIdx, name, gender};
+        const result = jwtUtils.renew(user);
+
+        const accessToken = result.accessToken;
+        
+        if(!accessToken){ //토큰 생성 못함
+            res
+            .status(statusCode.INTERNAL_SERVER_ERROR)
+            .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.EMPTY_TOKEN));
+            return;
+        } else{   //토큰 생성
+            const finalResult = {accessToken};
+            res
+            .status(statusCode.OK)
+            .send(utils.successTrue(statusCode.OK, responseMessage.RENEW_TOKEN_SUCCESS, finalResult));
+        }
+    }
+});
 
 router.post('/', async(req, res) => {
     const {userId, password} = req.body;
@@ -34,21 +70,22 @@ router.post('/', async(req, res) => {
         
         if(inputPw == userResult[0].password){
             const result = jwtUtils.sign(userResult[0]);
-            const token  = result.token;
+            const accessToken  = result.accessToken;
+            const refreshToken = result.refreshToken;
             const userIdx = userResult[0].userIdx;
             const name  = userResult[0].name;
             
-            if(!token){ //토큰 생성 못함
+            if(!accessToken || !refreshToken){ //토큰 생성 못함
                 res
                 .status(statusCode.INTERNAL_SERVER_ERROR)
                 .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.EMPTY_TOKEN));
                 return;
             } else{   //토큰 생성
-                const finalResult = {token, userIdx, name};
+                const finalResult = {accessToken, refreshToken, userIdx, name};
                 res
                 .status(statusCode.OK)
                 .send(utils.successTrue(statusCode.OK, responseMessage.SIGN_IN_SUCCESS,finalResult));                
-            }   
+            }
         } else { //비밀번호 불일지, 로그인 실패
             res
             .status(statusCode.BAD_REQUEST)

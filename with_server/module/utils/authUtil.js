@@ -22,7 +22,26 @@ const authMiddleware = {
             req.decoded = user;            
             next();
         }
-    }   
+    },
+
+    validRefreshToken: async(req, res, next) => {
+        const token = req.headers.token;
+        if(!token){
+            return res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.EMPTY_TOKEN));
+        } else{
+            const user = jwt.verifyRefresh(token);
+              
+            if(user == -3) {
+                return res.status(statusCode.FORBIDDEN).send(utils.successFalse(statusCode.FORBIDDEN, responseMessage.EXPIRED_TOKEN));
+            }
+            else if(user == -2) {
+                return res.status(statusCode.FORBIDDEN).send(utils.successFalse(statusCode.FORBIDDEN, responseMessage.INVALID_TOKEN));
+            }
+
+            req.decoded = user;            
+            next();
+        }
+    }
 };
 
 module.exports = authMiddleware;
