@@ -36,7 +36,9 @@ router.get("/",authUtil.validToken, async(req, res) => {
 
     result[0].birth = age;
 
-    // 뱃지 계산   
+/* 사용안함
+
+    // 뱃지 계산 
     const prop = (result[0].likeNum / (result[0].likeNum + result[0].dislikeNum)) * 100;
     
     if(parseInt(prop)>=70 && parseInt(prop)<80 ){
@@ -53,15 +55,17 @@ router.get("/",authUtil.validToken, async(req, res) => {
     // 클라이언트에서 필요없는 정보 제거
     delete result[0].likeNum;
     delete result[0].dislikeNum;
+*/
     
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.MYPAGE_READ_SUCCESS, result[0]));
 });
 
 // 마이페이지 수정하기
-var uploadImg = upload.fields([{name:'userImg', maxCount :1}, {name:'userBgImg', maxCount:1}]);
-router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
-    const userIdx = req.decoded.userIdx;   
-    var intro = req.body.intro;    
+router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) => {
+    const userIdx = req.decoded.userIdx; 
+    var interest1 = req.body.interest1;
+    var interest2 = req.body.interest2;
+    var interest3 = req.body.interest3;    
 
     if(!userIdx)
     {
@@ -69,16 +73,13 @@ router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
         return;
     }
 
-    if(req.files['userImg'])
-        var userImg= req.files['userImg'][0].location;
+    if(req.file)
+        var userImg= req.file.location;
 
-    if(req.files['userBgImg'])
-        var userBgImg = req.files['userBgImg'][0].location;
-    
-    var json = {intro, userImg, userBgImg};
+    var json = {userImg, interest1, interest2, interest3};
 
     // 인자가 하나도 없는 경우
-    if(!json.intro && !json.userImg && !json.userBgImg)
+    if(!json.userImg)
     {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
         return;
@@ -115,7 +116,6 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
 
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
-
 
 
 //유저 비밀번호 변경

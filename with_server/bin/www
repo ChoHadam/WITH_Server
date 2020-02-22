@@ -9,6 +9,19 @@ var debug = require('debug')('with-server:server');
 var http = require('http');
 
 /**
+ * Use SSL protocol
+ */
+// var https = require('https');
+// var fs = require('fs');
+// const options = {  
+//   key: fs.readFileSync('경로~/key.pem'),
+//   cert: fs.readFileSync('경로~/cert.pem')
+// };
+
+// const port1 = 80; // http 포트
+// const port2 = 443; // https 포트
+
+/**
  * Get port from environment and store in Express.
  */
 
@@ -20,6 +33,12 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+/**
+ * Create HTTP server.
+ */
+
+ //var server = https.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
