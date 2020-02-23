@@ -131,7 +131,7 @@ module.exports = {
         return result;
     },
 
-    update : async (json, boardIdx) => {
+    update : async (json, boardIdx, userIdx) => {
         const conditions = [];
 
         // regionCode에 맞는 regionName을 query에 추가한다.
@@ -139,7 +139,6 @@ module.exports = {
             conditions.push(`regionCode = '${json.regionCode}'`);
             const result = await pool.queryParam_None(`SELECT regionName FROM Region WHERE regionCode = ${json.regionCode}`);
             conditions.push(`regionName = '${result[0].regionName}'`);
-            //conditions.push(`regionName = (SELECT regionName FROM Region WHERE regionCode = ${json.regionCode})`);
         }
         // 변경 파라미터가 존재하면 push 한다.
         if (json.title) conditions.push(`title = '${json.title}'`);
@@ -149,34 +148,14 @@ module.exports = {
         if (json.filter) conditions.push(`filter = '${json.filter}'`);
 
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
-        const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE boardIdx = ${boardIdx}`);
-        return result;
+        const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
+
+        return result.affectedRows;
     },
 
     activate : async (boardIdx, userIdx) => {
-        // var activeState;
-        // const query = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);    
-        // if(query[0].active == 1){
-        //     activeState  = -1;
-        // }
-        // else{
-        //     activeState  = 1;
-        // }
-        // const result = await pool.queryParam_None(`UPDATE ${table1} SET active = '${activeState}' WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
-        // return result;
-
-        // pool.query('CALL activate_board()', function(err, rows) {
-        //     if (err)
-        //         throw err;
-        //     console.log('procedure success\n');
-        //     console.log(rows);
-            
-        //     return rows;
-        // })
-
         const result = await pool.queryParam_None(`CALL activate_board(${boardIdx}, ${userIdx})`);
-        console.log(result);
-        return result;
+        return result[1].affectedRows;
     }
 }
 
