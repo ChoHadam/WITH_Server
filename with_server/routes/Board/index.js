@@ -155,9 +155,10 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
 
 // 게시글 수정하기
 router.put("/edit/:boardIdx", authUtil.validToken, async(req, res) => {
+  const userIdx = req.decoded.userIdx;
   const boardIdx = req.params.boardIdx;
   
-  if(!boardIdx)
+  if(!boardIdx || !userIdx)
   {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
@@ -175,15 +176,15 @@ router.put("/edit/:boardIdx", authUtil.validToken, async(req, res) => {
     endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
   }
 
-  const result = await Board.update(req.body, boardIdx);
+  const result = await Board.update(req.body, boardIdx, userIdx);
 
-  if(result.length == 0)
+  if(result == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_UPDATE_FAIL));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_UPDATE_FAIL));
     return;
   }
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_UPDATE_SUCCESS));
+  res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
 
 // 게시글 삭제하기 (error....)
@@ -213,20 +214,20 @@ router.put("/activate/:boardIdx", authUtil.validToken, async(req, res) => {
 
   if(!userIdx || !boardIdx)
   {
-    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
     return;
   }  
   
   const result = await Board.activate(boardIdx, userIdx);
-  if(result.length == 0)
+  if(!result || result == 0)
   {
     res
     .status(statusCode.INTERNAL_SERVER_ERROR)
-    .send(utils.successFalse(responseMessage.BOARD_ACTIVATE_FAIL));
+    .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_ACTIVATE_FAIL));
     return;
   }
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_ACTIVATE_SUCCESS, result));
+  res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_ACTIVATE_SUCCESS, result));
 });
 
 module.exports = router;
