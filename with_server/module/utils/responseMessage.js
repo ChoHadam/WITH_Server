@@ -8,11 +8,13 @@ module.exports = {
     SIGN_IN_SUCCESS: "로그인 성공",
     SIGN_IN_FAIL: "로그인 실패",
     ALREADY_ID: "존재하는 ID 입니다",
+    AVAILABLE_ID : "사용가능한 ID 입니다",
     NO_USER: "존재하지 않는 유저 입니다",
     MISS_MATCH_PW: "비밀번호가 일치하지 않습니다",
     LOOK_AROUND_SUCCESS: "둘러보기 성공",
     LOOK_AROUND_FAIL: "둘러보기 실패",
     PW_CHANGE_SUCCESS : "비밀번호 변경 성공",
+    USER_IMG_MISS : "유저 프로필 이미지가 필요합니다",
 
     EMPTY_TOKEN: "토큰이 없습니다.",
     INVALID_TOKEN: "올바르지 않은 토큰입니다",

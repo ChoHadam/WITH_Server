@@ -7,6 +7,32 @@ const utils = require('../../module/utils/utils');
 const upload = require('../../config/multer');
 const User = require('../../model/user');
 
+router.get('/checkDup/:userId', async(req, res) => {
+    const userId = req.params.userId;
+    console.log(userId);
+
+    if(!userId){
+        res.status(statusCode.BAD_REQUEST)
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE(userId)));
+        return;
+    }
+
+    checkDup = await User.checkUser(userId);   
+
+    if(!checkDup.length==0)
+    {
+        res
+        .status(statusCode.BAD_REQUEST)
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.ALREADY_ID));
+        return;
+    }
+        
+    res
+    .status(statusCode.OK)
+    .send(utils.successTrue(statusCode.OK, responseMessage.AVAILABLE_ID,checkDup)); 
+    
+});
+
 router.post('/',upload.single('userImg'), async (req, res) => {    
     //필수항목 안채웠으면 오류메세지 전송
     const {userId, password, name, birth, gender, interest1, interest2, interest3} = req.body;
@@ -25,6 +51,13 @@ router.post('/',upload.single('userImg'), async (req, res) => {
         res
         .status(statusCode.BAD_REQUEST)
         .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.ALREADY_ID));
+        return;
+    }
+    if(!req.file)
+    {
+        res
+        .status(statusCode.BAD_REQUEST)
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.USER_IMG_MISS));
         return;
     }
     //중복되는 아이디가 없다면 회원가입 시작 
