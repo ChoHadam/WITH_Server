@@ -128,33 +128,39 @@ router.put("/edit/:boardIdx", authUtil.validToken, async(req, res) => {
   const userIdx = req.decoded.userIdx;
   const boardIdx = req.params.boardIdx;
   
-  if(!boardIdx || !userIdx)
-  {
+  if(!userIdx || !boardIdx) {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }
 
   var {regionCode, title, content, startDate, endDate, filter} = req.body;
 
-  if(startDate)
-  {
+  if(startDate) {
     startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
   }
 
-  if(endDate)
-  {
+  if(endDate) {
     endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
   }
 
   const result = await Board.update(req.body, boardIdx, userIdx);
 
-  if(result == 0)
-  {
+  if(result == -1) {
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_BOARD));
+    return;
+  }
+  else if(result == -2) {
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_ID));
+    return;
+  }
+  else if(result == 1) {
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_UPDATE_SUCCESS, result));
+    return;
+  }
+  else {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_UPDATE_FAIL));
     return;
   }
-
-  res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_UPDATE_SUCCESS, result));
 });
 
 // 게시글 삭제하기 (error....)
@@ -182,22 +188,29 @@ router.put("/activate/:boardIdx", authUtil.validToken, async(req, res) => {
   const userIdx = req.decoded.userIdx;
   const boardIdx = req.params.boardIdx;
 
-  if(!userIdx || !boardIdx)
-  {
+  if(!userIdx || !boardIdx) {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
     return;
   }  
   
   const result = await Board.activate(boardIdx, userIdx);
-  if(!result || result == 0)
-  {
-    res
-    .status(statusCode.INTERNAL_SERVER_ERROR)
-    .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_ACTIVATE_FAIL));
+
+  if(result == -1) {
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_BOARD));
     return;
   }
-
-  res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_ACTIVATE_SUCCESS, result));
+  else if(result == -2) {
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_ID));
+    return;
+  }
+  else if (result == 1) {
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_ACTIVATE_SUCCESS, result));
+    return;
+  }
+  else {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_ACTIVATE_FAIL));
+    return;
+  }
 });
 
 module.exports = router;

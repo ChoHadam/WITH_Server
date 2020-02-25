@@ -132,30 +132,13 @@ module.exports = {
     },
 
     update : async (json, boardIdx, userIdx) => {
-        const conditions = [];
-
-        // regionCode에 맞는 regionName을 query에 추가한다.
-        if (json.regionCode){
-            conditions.push(`regionCode = '${json.regionCode}'`);
-            const result = await pool.queryParam_None(`SELECT regionName FROM Region WHERE regionCode = ${json.regionCode}`);
-            conditions.push(`regionName = '${result[0].regionName}'`);
-        }
-        // 변경 파라미터가 존재하면 push 한다.
-        if (json.title) conditions.push(`title = '${json.title}'`);
-        if (json.content) conditions.push(`content = '${json.content}'`);
-        if (json.startDate) conditions.push(`startDate = '${json.startDate}'`);
-        if (json.endDate) conditions.push(`endDate = '${json.endDate}'`);
-        if (json.filter) conditions.push(`filter = '${json.filter}'`);
-
-        const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
-        const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE boardIdx = ${boardIdx} AND userIdx = ${userIdx}`);
-
-        return result.affectedRows;
+        const result = await pool.queryParam_None(`CALL update_board(${userIdx}, ${boardIdx}, '${json.regionCode}', '${json.title}', '${json.content}', '${json.startDate}', '${json.endDate}', '${json.filter}')`);
+        return result[0][0].result;
     },
 
     activate : async (boardIdx, userIdx) => {
         const result = await pool.queryParam_None(`CALL activate_board(${boardIdx}, ${userIdx})`);
-        return result[1].affectedRows;
+        return result[0][0].result;
     }
 }
 
