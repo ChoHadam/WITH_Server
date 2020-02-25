@@ -204,7 +204,7 @@ router.put("/activate/:boardIdx", authUtil.validToken, async(req, res) => {
     return;
   }
   else if (result == 1) {
-    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_ACTIVATE_SUCCESS, result));
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_ACTIVATE_SUCCESS, null));
     return;
   }
   else {
