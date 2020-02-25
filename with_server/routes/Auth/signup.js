@@ -70,7 +70,7 @@ router.post('/',upload.single('userImg'), async (req, res) => {
     const finalPw = hashedPw.toString('hex');    
     var json = {userId, finalPw, salt, name, birth, gender, userImg, interest1, interest2, interest3 };
     json.gender = Number(json.gender);
-    result = User.signup(json);
+    result =  User.signup(json);
     if(!result){
         res
         .status(statusCode.INTERNAL_SERVER_ERROR)
