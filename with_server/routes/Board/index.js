@@ -182,22 +182,29 @@ router.put("/activate/:boardIdx", authUtil.validToken, async(req, res) => {
   const userIdx = req.decoded.userIdx;
   const boardIdx = req.params.boardIdx;
 
-  if(!userIdx || !boardIdx)
-  {
+  if(!userIdx || !boardIdx) {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
     return;
   }  
   
   const result = await Board.activate(boardIdx, userIdx);
-  if(!result || result == 0)
-  {
-    res
-    .status(statusCode.INTERNAL_SERVER_ERROR)
-    .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_ACTIVATE_FAIL));
+
+  if(result == -1) {
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_BOARD));
     return;
   }
-
-  res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_ACTIVATE_SUCCESS, result));
+  else if(result == -2) {
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_ID));
+    return;
+  }
+  else if (result == 1) {
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_ACTIVATE_SUCCESS, result));
+    return;
+  }
+  else {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_ACTIVATE_FAIL));
+    return;
+  }
 });
 
 module.exports = router;

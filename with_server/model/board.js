@@ -155,7 +155,7 @@ module.exports = {
 
     activate : async (boardIdx, userIdx) => {
         const result = await pool.queryParam_None(`CALL activate_board(${boardIdx}, ${userIdx})`);
-        return result[1].affectedRows;
+        return result[0][0].result;
     }
 }
 
