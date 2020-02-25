@@ -18,6 +18,7 @@ router.get('/checkDup/:userId', async(req, res) => {
     }
 
     checkDup = await User.checkUser(userId);   
+    console.log(checkDup);
 
     if(!checkDup.length==0)
     {
@@ -80,7 +81,7 @@ router.post('/',upload.single('userImg'), async (req, res) => {
     console.log(result);
     res
     .status(statusCode.OK)
-    .send(utils.successTrue(statusCode.OK, responseMessage.SIGN_UP_SUCCESS, result)); 
+    .send(utils.successTrue(statusCode.OK, responseMessage.SIGN_UP_SUCCESS,result)); 
 });
 
 module.exports = router;
