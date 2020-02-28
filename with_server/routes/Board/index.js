@@ -47,9 +47,7 @@ router.post('/', authUtil.validToken, async (req, res) => {
     result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');  
     
     // 클라이언트에서 필요없는 정보 제거
-    delete result[0].regionCode;
-    delete result[0].likeNum;
-    delete result[0].dislikeNum;
+    delete result[0].regionCode;  
     delete result[0].withNum;
     delete result[0].uploadTime;
         
@@ -113,9 +111,7 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
   result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
   result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');  
   
-  //클라에서 필요없는 정보 제거
-  delete result[0].likeNum;
-  delete result[0].dislikeNum;
+  //클라에서 필요없는 정보 제거 
   delete result[0].regionCode;
   delete result[0].withNum
   delete result[0].uploadTime;
