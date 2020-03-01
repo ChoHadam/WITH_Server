@@ -1,19 +1,40 @@
 const pool = require('../module/db/pool');
 const table = 'User';
+const table2 = 'Interest';
 
 const user = {
     signup : async (json) => {
         //아이디, 비번, 이름, 생일, 성별, 프로필사진
-        const fields = 'userId, password, salt, name, birth, gender, userImg, interest1, interest2, interest3';
-        var questions = `"${json.userId}","${json.finalPw}","${json.salt}","${json.name}","${json.birth}","${json.gender}","${json.userImg}" `;
-        if (json.interest1) questions +=`,"${json.interest1}"`
-        else questions += `, null `
-        if (json.interest2) questions +=`,"${json.interest2}"`
-        else questions += `, null `
-        if (json.interest3) questions +=`,"${json.interest3}"`
-        else questions += `, null`    
-        const result = await pool.queryParam_None(`INSERT INTO ${table}(${fields})VALUES(${questions})`)
-        return result;
+        let interest = 0;
+        if(json.interest != '0'){
+            var interestStr;            
+            if(String(json.interest).includes(',')){                  ////와인,야경,쇼핑 / 와인,쇼핑                 
+                interestStr = String(json.interest).split(',').join('","');
+            }
+            else{
+                interestStr = json.interest;      //와인 
+            }
+            interestStr = `"${interestStr}"`;  //쿼리 형식 맞추기            
+            const result = await pool.queryParam_None(`SELECT * FROM ${table2} WHERE interests IN(${interestStr})`); //select * 한게 select intIdx보다 빨라서 *로 바꿈
+            
+            var i = 0;
+            while(i < result.length){
+                interest += result[i].intIdx;
+                i++;
+                if(i == result.length) break;
+                interest += ',';
+            }
+            interest = `"${interest}"`;            
+            }
+        else{
+            interest = null;
+        }            
+        const fields = 'userId, password, salt, name, birth, gender, userImg, interest';
+        var questions = `"${json.userId}","${json.finalPw}","${json.salt}","${json.name}","${json.birth}","${json.gender}","${json.userImg}", ${interest} `;
+
+        const final = await pool.queryParam_None(`INSERT INTO ${table}(${fields})VALUES(${questions})`)
+        return final;
+    
     },
     checkUser : async (userId) => {
         //존재하는 회원인지 확인
@@ -28,3 +49,4 @@ const user = {
 }
 
 module.exports = user;
+

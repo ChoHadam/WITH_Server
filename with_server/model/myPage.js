@@ -5,20 +5,19 @@ const table3 = 'Chat';
 const table4 = 'Interest'
 
 module.exports = {
-    readProfile: async(userIdx) => {
-        const int1 = await pool.queryParam_None(`SELECT interests FROM ${table1} JOIN ${table4} ON ${table1}.interest1 = ${table4}.intIdx WHERE userIdx = '${userIdx}'`);
-        const int2 = await pool.queryParam_None(`SELECT interests FROM ${table1} JOIN ${table4} ON ${table1}.interest2 = ${table4}.intIdx WHERE userIdx = '${userIdx}'`);
-        const int3 = await pool.queryParam_None(`SELECT interests FROM ${table1} JOIN ${table4} ON ${table1}.interest3 = ${table4}.intIdx WHERE userIdx = '${userIdx}'`);
-
-        const fields = 'userImg, name, birth, gender, userId, interest1, interest2, interest3'
-        var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = '${userIdx}'`);
-        if (int1.length == 0) result[0].interest1 = null
-        else result[0].interest1 = int1[0].interests
-        if (int2.length == 0) result[0].interest2 = null
-        else result[0].interest2 = int2[0].interests
-        if (int3.length == 0) result[0].interest3 = null
-        else result[0].interest3 = int3[0].interests
-
+    readProfile: async(userIdx) => {        
+        const fields = 'userId, name, birth, gender, userImg, interest'
+        var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = ${userIdx}`); 
+        
+        if(result[0].interest != null){
+            var interestArr = [];
+            var interest = result[0].interest;
+            const interestQuery = await pool.queryParam_None(`SELECT interests FROM ${table4} WHERE intIdx IN(${interest})`);    
+            for(var i in interestQuery){
+                interestArr.push(interestQuery[i].interests);
+            }  
+            result[0].interest = interestArr.join(',');
+        }
         return result;
         
     },

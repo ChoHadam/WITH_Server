@@ -12,8 +12,7 @@ const crypto = require('crypto-promise');
 
 // 마이페이지 조회
 router.get("/",authUtil.validToken, async(req, res) => {
-    const userIdx = req.decoded.userIdx;
-    var badge;
+    const userIdx = req.decoded.userIdx;    
 
     if(!userIdx)
     {
