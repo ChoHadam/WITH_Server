@@ -14,44 +14,35 @@ const Board = require('../../model/board');
 // 게시글 생성하기
 router.post('/', authUtil.validToken, async (req, res) => {
     var {regionCode, title, content, startDate, endDate, filter} = req.body;
-    startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
-    endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
-    if(!regionCode || !title || !content || !startDate || !endDate || !filter)
-    {
-      const missParameters = Object.entries({regionCode, title, content, startDate, endDate, filter})
-        .filter(it => it[1] == undefined).map(it => it[0]).join(',');
-      console.log(missParameters)
 
-      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
+    if(!regionCode || !title || !content || !startDate || !endDate || !filter) {
+      const missParameters = Object.entries({regionCode, title, content, startDate, endDate, filter})
+      .filter(it => it[1] == undefined).map(it => it[0]).join(',');
+
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE(missParameters)));
       return;
     }
     
     // uploadTime에 현재 서울 시각 저장
     const uploadTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
+    endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
 
-    // Token 통해서 userIdx 취득
     const userIdx = req.decoded.userIdx;
-
     const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, filter};
   
     var result = await Board.create(json);
-    result = await Board.read(result.insertId, userIdx);
-
-    if(result.length == 0)
-    {
-      res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_CREATE_FAIL));
+    
+    if(result.result == -1) {
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_X("regionCode")));
+      return;
+    }
+    else if(result.length == 0) {
+      res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_CREATE_FAIL));
       return;
     }
 
-    result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
-    result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');  
-    
-    // 클라이언트에서 필요없는 정보 제거
-    delete result[0].regionCode;  
-    delete result[0].withNum;
-    delete result[0].uploadTime;
-        
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_CREATE_SUCCESS, result));
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_CREATE_SUCCESS, result));
 });
 
 // 게시글 전체 보기
@@ -163,16 +154,14 @@ router.put("/edit/:boardIdx", authUtil.validToken, async(req, res) => {
 router.delete("/:boardIdx", async(req, res) => {
   const boardIdx = req.params.boardIdx;
   
-  if(!boardIdx)
-  {
+  if(!boardIdx) {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
     return;
   }  
 
   const result = await Board.delete(boardIdx);
 
-  if(result.length == 0)
-  {
+  if(result.length == 0) {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_DELETE_FAIL));
     return;
   }
