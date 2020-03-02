@@ -2,11 +2,22 @@ const pool = require('../module/db/pool');
 const table1 = 'User';
 const table2 = 'Board';
 const table3 = 'Chat';
+const table4 = 'Interest'
 
 module.exports = {
-    readProfile: async(userIdx) => {
-        const fields = 'userImg, name, birth, gender, userId, interest1, interest2, interest3'
-        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = '${userIdx}'`);
+    readProfile: async(userIdx) => {        
+        const fields = 'userId, name, birth, gender, userImg, interest'
+        var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = ${userIdx}`); 
+        
+        if(result[0].interest != null){
+            var interestArr = [];
+            var interest = result[0].interest;
+            const interestQuery = await pool.queryParam_None(`SELECT interests FROM ${table4} WHERE intIdx IN(${interest})`);    
+            for(var i in interestQuery){
+                interestArr.push(interestQuery[i].interests);
+            }  
+            result[0].interest = interestArr.join(',');
+        }
         return result;
         
     },

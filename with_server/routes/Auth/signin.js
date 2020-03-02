@@ -6,7 +6,10 @@ const responseMessage = require('../../module/utils/responseMessage');
 const utils = require('../../module/utils/utils');
 const User = require('../../model/user');
 const authUtil = require('../../module/utils/authUtil');
-const jwtUtils= require('../../module/utils/jwt')
+const jwtUtils= require('../../module/utils/jwt');
+const moment = require('moment');
+const moment_timezone = require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
 
 router.post('/renew', authUtil.validRefreshToken, async(req, res) => {
     const {userIdx} = req.decoded;
@@ -21,12 +24,15 @@ router.post('/renew', authUtil.validRefreshToken, async(req, res) => {
     else {
         const name = userResult[0].name;
         const gender = userResult[0].gender;
-        console.log(name);
-        console.log(gender);
 
         const user = {userIdx, name, gender};
         const result = jwtUtils.renew(user);
 
+        const currentTime = moment();
+        const tempTime = moment(currentTime, "YY.MM.DD").add(1, 'days');
+        const date = tempTime.format('YY.MM.DD');
+        const time = tempTime.format('HH:mm');
+        const expireTime = date + ' ' + time;
         const accessToken = result.accessToken;
         
         if(!accessToken){ //토큰 생성 못함
@@ -35,7 +41,7 @@ router.post('/renew', authUtil.validRefreshToken, async(req, res) => {
             .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.EMPTY_TOKEN));
             return;
         } else{   //토큰 생성
-            const finalResult = {accessToken};
+            const finalResult = {accessToken, expireTime};
             res
             .status(statusCode.OK)
             .send(utils.successTrue(statusCode.OK, responseMessage.RENEW_TOKEN_SUCCESS, finalResult));
@@ -70,6 +76,11 @@ router.post('/', async(req, res) => {
         
         if(inputPw == userResult[0].password){
             const result = jwtUtils.sign(userResult[0]);
+            const currentTime = moment();
+            const tempTime = moment(currentTime, "YY.MM.DD").add(1, 'days');
+            const date = tempTime.format('YY.MM.DD');
+            const time = tempTime.format('HH:mm');
+            const expireTime = date + ' ' + time;
             const accessToken  = result.accessToken;
             const refreshToken = result.refreshToken;
             const userIdx = userResult[0].userIdx;
@@ -81,7 +92,7 @@ router.post('/', async(req, res) => {
                 .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.EMPTY_TOKEN));
                 return;
             } else{   //토큰 생성
-                const finalResult = {accessToken, refreshToken, userIdx, name};
+                const finalResult = {accessToken, refreshToken, expireTime, userIdx, name};
                 res
                 .status(statusCode.OK)
                 .send(utils.successTrue(statusCode.OK, responseMessage.SIGN_IN_SUCCESS,finalResult));                
