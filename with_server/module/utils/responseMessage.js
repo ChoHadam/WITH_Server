@@ -83,5 +83,5 @@ module.exports = {
     X_DELETE_SUCCESS: (x) => `${x} 삭제 성공`,
     X_DELETE_FAIL: (x) => `${x} 삭제 실패`,  
     NO_X: (x) => `존재하지 않는 ${x} 입니다`,
-    ALREADY_X: (x) => `존재하는 ${x} 입니다`,
+    ALREADY_X: (x) => `이미 존재하는 ${x} 입니다`,
 }
