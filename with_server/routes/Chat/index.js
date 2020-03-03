@@ -19,6 +19,13 @@ router.post('/', authUtil.validToken, async (req, res) => {
     const userIdx2 = req.decoded.userIdx;
     var userIdx = userIdx1;
 
+    const gender = req.decoded.gender;
+
+    if(gender == 0){
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+      return;
+    }
+
     // 파라미터 미입력 시, 오류 처리
     if(!userIdx1 || !userIdx2 || !boardIdx || !roomId)
     {
@@ -60,6 +67,12 @@ router.post('/', authUtil.validToken, async (req, res) => {
 
 // 동행 신청하기
 router.put('/', authUtil.validToken, async (req, res) => {
+    const gender = req.decoded.gender;
+
+    if(gender == 0){
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+      return;
+    }
     // receiverIdx, boardIdx, senderIdx를 이용해 동행 처리
     var {roomId, withDate} = req.body;
     const withTime = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -96,6 +109,12 @@ router.put('/', authUtil.validToken, async (req, res) => {
 // 채팅 목록 조회
 router.get('/', authUtil.validToken, async (req, res) => {
     const userIdx = req.decoded.userIdx;
+    const gender = req.decoded.gender;
+
+    if(gender == 0){
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+      return;
+    }
     // 파라미터 미입력 시, 오류 처리
     if(!userIdx)
     {

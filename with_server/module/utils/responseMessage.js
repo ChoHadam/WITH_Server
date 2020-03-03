@@ -19,6 +19,7 @@ module.exports = {
     EMPTY_TOKEN: "토큰이 없습니다.",
     INVALID_TOKEN: "올바르지 않은 토큰입니다",
     EXPIRED_TOKEN: "만료된 토큰입니다",
+    LOOK_AROUND_TOKEN: "둘러보기 토큰입니다",
     RENEW_TOKEN_SUCCESS: "토큰 갱신 성공",
 
     BOARD_CREATE_SUCCESS: "게시글 작성 성공",

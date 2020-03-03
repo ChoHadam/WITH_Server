@@ -12,7 +12,13 @@ const crypto = require('crypto-promise');
 
 // 마이페이지 조회
 router.get("/",authUtil.validToken, async(req, res) => {
-    const userIdx = req.decoded.userIdx;    
+    const userIdx = req.decoded.userIdx;
+    const gender = req.decoded.gender;
+
+    if(gender == 0){
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+      return;
+    }
 
     if(!userIdx)
     {
@@ -41,6 +47,12 @@ router.get("/",authUtil.validToken, async(req, res) => {
 // 마이페이지 수정하기
 router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) => {
     const userIdx = req.decoded.userIdx; 
+    const gender = req.decoded.gender;
+
+    if(gender == 0){
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+      return;
+    }
     var interest1 = req.body.interest1;
     var interest2 = req.body.interest2;
     var interest3 = req.body.interest3;    
@@ -77,7 +89,13 @@ router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) =
 // 내가 쓴 게시글 전체 보기
 router.get("/boards", authUtil.validToken,async (req, res) => {
     const userIdx = req.decoded.userIdx;
-    
+    const gender = req.decoded.gender;
+
+    if(gender == 0){
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+      return;
+    }
+
     if(!userIdx)
     {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
@@ -98,7 +116,13 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
 
 //유저 비밀번호 변경
 router.put("/changePw", authUtil.validToken, async(req, res) => {
-    const userIdx = req.decoded.userIdx;    
+    const userIdx = req.decoded.userIdx;
+    const gender = req.decoded.gender;
+
+    if(gender == 0){
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+      return;
+    } 
     console.log(userIdx);
     const {currPw, newPw} = req.body;
     
