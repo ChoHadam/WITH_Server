@@ -75,8 +75,6 @@ module.exports = {
     changePw : async(json) =>{
         const setStr = `SET password = '${json.finalPw}', salt = '${json.salt}'`
         const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE userIdx = ${json.userIdx}`); 
-        
         return result;
     }
-
 };

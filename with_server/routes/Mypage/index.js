@@ -9,6 +9,8 @@ const moment = require('moment');
 const moment_timezone = require('moment-timezone');
 const upload = require('../../config/multer');
 const crypto = require('crypto-promise');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 // 마이페이지 조회
 router.get("/",authUtil.validToken, async(req, res) => {
@@ -44,7 +46,7 @@ router.get("/",authUtil.validToken, async(req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.MYPAGE_READ_SUCCESS, result[0]));
 });
 
-// 마이페이지 수정하기
+// 마이페이지 수정
 router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) => {
     const userIdx = req.decoded.userIdx; 
     const gender = req.decoded.gender;
@@ -113,8 +115,7 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
-
-//유저 비밀번호 변경
+// 비밀번호 변경
 router.put("/changePw", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const gender = req.decoded.gender;
@@ -123,7 +124,6 @@ router.put("/changePw", authUtil.validToken, async(req, res) => {
       res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
       return;
     } 
-    console.log(userIdx);
     const {currPw, newPw} = req.body;
     
     if(!currPw || ! newPw){ //비어있는지 검사
@@ -180,5 +180,46 @@ router.put("/changePw", authUtil.validToken, async(req, res) => {
     }
 });
 
+// 본인인증
+router.post("/selfAuth", upload.single('img'), async(req, res) => {
+    const userName = req.body.userName;
+
+    if(!req.file) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE('img')));
+        return;
+    }
+    else if(!userName) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE('userName')));
+        return;
+    }
+
+    let transporter = nodemailer.createTransport({
+      service: process.env.E_MAIL_SERVICE,
+      host: process.env.E_MAIL_HOST,
+      port: process.env.E_MAIL_PORT,
+      auth: {
+        user: process.env.E_MAIL_ID,  // 계정 아이디
+        pass: process.env.E_MAIL_PW // 계정 비밀번호
+      }
+    });
+  
+    let mailOptions = {
+      from: process.env.E_MAIL_ID,    // 발송 메일 주소
+      to: process.env.E_MAIL_ID,    // 수신 메일 주소
+      subject: `${userName}님께서 본인인증을 요청하였습니다.`,   // 제목
+      text: `${userName}님께서 본인인증을 요청하였습니다.\n AWS S3에서 확인해주세요!\n https://s3.console.aws.amazon.com/s3/`  // 내용
+    };
+
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.SELF_AUTH_FAIL));
+        console.log(error);
+        return;
+      }
+      else {
+        res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.SELF_AUTH_SUCCESS, null));
+      }
+    });
+});
 
 module.exports = router;
