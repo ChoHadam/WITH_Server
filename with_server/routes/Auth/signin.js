@@ -12,7 +12,7 @@ const moment_timezone = require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 
 router.post('/renew', authUtil.validRefreshToken, async(req, res) => {
-    const {userIdx} = req.decoded;
+    const {userIdx, name} = req.decoded;
     const userResult = await User.returnUser(userIdx);
 
     if(userResult.length == 0) { //존재하지 않는 데이터
@@ -34,6 +34,8 @@ router.post('/renew', authUtil.validRefreshToken, async(req, res) => {
         const time = tempTime.format('HH:mm');
         const expireTime = date + ' ' + time;
         const accessToken = result.accessToken;
+        const refreshToken = req.headers.token;
+
         
         if(!accessToken){ //토큰 생성 못함
             res
@@ -41,7 +43,7 @@ router.post('/renew', authUtil.validRefreshToken, async(req, res) => {
             .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.EMPTY_TOKEN));
             return;
         } else{   //토큰 생성
-            const finalResult = {accessToken, expireTime};
+            const finalResult = {accessToken, refreshToken, expireTime, userIdx, name};
             res
             .status(statusCode.OK)
             .send(utils.successTrue(statusCode.OK, responseMessage.RENEW_TOKEN_SUCCESS, finalResult));
