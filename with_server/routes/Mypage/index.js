@@ -120,13 +120,14 @@ router.put("/changePw", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const gender = req.decoded.gender;
 
-    if(gender == 0){
+    if(gender == 0) {
       res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
       return;
     } 
     const {currPw, newPw} = req.body;
     
-    if(!currPw || ! newPw){ //비어있는지 검사
+    //비어있는지 검사
+    if(!currPw || ! newPw) {
         const missParameters = Object.entries({currPw, newPw})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
         
@@ -148,8 +149,7 @@ router.put("/changePw", authUtil.validToken, async(req, res) => {
         const hashedCurrPw = await crypto.pbkdf2(currPw.toString(),salt,1000,32,'sha512');
         const inputCurrPw = hashedCurrPw.toString('hex');
         
-        if(inputCurrPw == userResult[0].password){ //기존 비번이랑 같다면 비번 변경
-
+        if(inputCurrPw == userResult[0].password) { //기존 비번이랑 같다면 비번 변경
             const buf = await crypto.randomBytes(32); //64비트의 salt값 생성
             const salt = buf.toString('hex'); //비트를 문자열로 바꿈
             const hashedPw = await crypto.pbkdf2(newPw.toString(),salt,1000,32,'SHA512'); //버퍼 형태로 리턴해주기 때문에 base64 방식으로 문자열
@@ -157,18 +157,16 @@ router.put("/changePw", authUtil.validToken, async(req, res) => {
             var json = {userIdx, finalPw, salt};
 
             result = Mypage.changePw(json);
-            if(result.length == 0)
-            {
+            if(result.length == 0) {
                 res
                 .status(statusCode.INTERNAL_SERVER_ERROR)
-                .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR,responseMessage.NO_USER));
+                .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.NO_USER));
                 return;
             }
-            else
-            {
+            else {
                 res
                 .status(statusCode.OK)
-                .send(utils.successTrue(statusCode.OK,responseMessage.PW_CHANGE_SUCCESS));
+                .send(utils.successTrue(statusCode.OK, responseMessage.PW_CHANGE_SUCCESS, null));
                 return;
             }        
         } else { //기존 비번이랑 다르다면 비번 변경 실패
