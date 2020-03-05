@@ -14,6 +14,13 @@ const Board = require('../../model/board');
 // 게시글 생성하기
 router.post('/', authUtil.validToken, async (req, res) => {
     var {regionCode, title, content, startDate, endDate, filter} = req.body;
+    const userIdx = req.decoded.userIdx;
+    const gender = req.decoded.gender;
+
+    if(gender == 0){
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+      return;
+    }
 
     if(!regionCode || !title || !content || !startDate || !endDate || !filter) {
       const missParameters = Object.entries({regionCode, title, content, startDate, endDate, filter})
@@ -28,7 +35,6 @@ router.post('/', authUtil.validToken, async (req, res) => {
     startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
     endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
 
-    const userIdx = req.decoded.userIdx;
     const json = {regionCode, title, content, uploadTime, startDate, endDate, userIdx, filter};
   
     var result = await Board.create(json);
@@ -84,6 +90,12 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
 router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
   const boardIdx = req.params.boardIdx;
   const userIdx = req.decoded.userIdx;
+  const gender = req.decoded.gender;
+
+  if(gender == 0){
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+    return;
+  }
 
   if(!boardIdx || !userIdx)
   {
@@ -114,6 +126,12 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
 router.put("/edit/:boardIdx", authUtil.validToken, async(req, res) => {
   const userIdx = req.decoded.userIdx;
   const boardIdx = req.params.boardIdx;
+  const gender = req.decoded.gender;
+
+  if(gender == 0){
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+    return;
+  }
   
   if(!userIdx || !boardIdx) {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
@@ -132,15 +150,16 @@ router.put("/edit/:boardIdx", authUtil.validToken, async(req, res) => {
 
   const result = await Board.update(req.body, boardIdx, userIdx);
 
-  if(result == -1) {
+  if(result.result == -1) {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_BOARD));
     return;
   }
-  else if(result == -2) {
+  else if(result.result == -2) {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_ID));
     return;
   }
-  else if(result == 1) {
+  else if(result.result == 1) {
+    delete result.result;
     res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_UPDATE_SUCCESS, result));
     return;
   }
@@ -172,6 +191,12 @@ router.delete("/:boardIdx", async(req, res) => {
 router.put("/activate/:boardIdx", authUtil.validToken, async(req, res) => {
   const userIdx = req.decoded.userIdx;
   const boardIdx = req.params.boardIdx;
+  const gender = req.decoded.gender;
+
+  if(gender == 0){
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+    return;
+  }
 
   if(!userIdx || !boardIdx) {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));

@@ -22,13 +22,6 @@ router.get("/regions", authUtil.validToken, async (req, res) => {
 
 // 홈 배경이미지 출력하기 (랜덤 1개)
 router.get("/bgImg", authUtil.validToken, async (req, res) => {
-    const {name} = req.decoded;
-
-    if(!name) {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-        return;
-      }  
-
     const image = await Home.bgImage();
 
     if(image.length == 0) {
@@ -38,7 +31,7 @@ router.get("/bgImg", authUtil.validToken, async (req, res) => {
 
     let rand = Math.floor(Math.random() * image.length);
     const imgUrl = image[rand].imgUrl;
-    const result = {imgUrl, name};
+    const result = {imgUrl};
 
     res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.READ_HOME_BGIMG_SUCCESS, result));    
 });
