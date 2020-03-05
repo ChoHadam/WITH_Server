@@ -17,33 +17,24 @@ router.get("/",authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
     const gender = req.decoded.gender;
 
-    if(gender == 0){
+    if(gender == 0) {
       res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
       return;
     }
 
-    if(!userIdx)
-    {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+    if(!userIdx) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.EMPTY_TOKEN));
         return;
     }
 
     const result = await Mypage.readProfile(userIdx);
     
-    if(result.length == 0)
-    {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NO_USER));
+    if(result.length == 0) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_USER));
         return;
     }
-
-    // birth field 값 나이로 변환하여 반환.
-    const birthYear = result[0].birth.split("-");
-    const currentYear = moment().format('YYYY');
-    const age = currentYear - birthYear[0] + 1;
-
-    result[0].birth = age;
     
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.MYPAGE_READ_SUCCESS, result[0]));
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.MYPAGE_READ_SUCCESS, result[0]));
 });
 
 // 마이페이지 수정
@@ -61,7 +52,7 @@ router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) =
 
     if(!userIdx)
     {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.EMPTY_TOKEN));
         return;
     }
 
@@ -73,7 +64,7 @@ router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) =
     // 인자가 하나도 없는 경우
     if(!json.userImg)
     {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
         return;
     }
     const result = await Mypage.update(json, userIdx);
@@ -81,7 +72,7 @@ router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) =
     // 쿼리 결과가 없는 경우
     if(result.length == 0)
     {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.MYPAGE_UPDATE_FAIL));
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.MYPAGE_UPDATE_FAIL));
         return;
     }
     
@@ -219,5 +210,6 @@ router.post("/selfAuth", upload.single('img'), async(req, res) => {
       }
     });
 });
+
 
 module.exports = router;

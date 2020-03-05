@@ -1,4 +1,6 @@
 const pool = require('../module/db/pool');
+const moment = require('moment');
+const moment_timezone = require('moment-timezone');
 const table1 = 'User';
 const table2 = 'Board';
 const table3 = 'Chat';
@@ -9,17 +11,28 @@ module.exports = {
         const fields = 'userId, name, birth, gender, userImg, interest'
         var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = ${userIdx}`); 
         
-        if(result[0].interest != null){
-            var interestArr = [];
-            var interest = result[0].interest;
-            const interestQuery = await pool.queryParam_None(`SELECT interests FROM ${table4} WHERE intIdx IN(${interest})`);    
-            for(var i in interestQuery){
-                interestArr.push(interestQuery[i].interests);
-            }  
-            result[0].interest = interestArr.join(',');
-        }
-        return result;
+        if(result.length != 0) {
+            if(result[0].interest != null){
+                var interestArr = [];
+                var interest = result[0].interest;
+                const interestQuery = await pool.queryParam_None(`SELECT interests FROM ${table4} WHERE intIdx IN(${interest})`);    
+                for(var i in interestQuery){
+                    interestArr.push(interestQuery[i].interests);
+                }  
+                result[0].interest = interestArr.join(',');
+            }
+    
+            // if(result[0].birth != null) {
+            //     const birthYear = result[0].birth.split("-");
+            //     const currentYear = moment().format('YYYY');
+            //     const age = currentYear - birthYear[0] + 1;
         
+            //     result[0].age = age;
+            //     delete result[0].birth;
+            // }
+        }
+
+        return result;
     },
 
     update: async(json, userIdx) => {
