@@ -16,7 +16,7 @@ module.exports = {
             for(var i in interestQuery){
                 interestArr.push(interestQuery[i].interests);
             }  
-            result[0].interest = interestArr.join(',');
+            result[0].interest = interestArr;//.join(',');
         }
         return result;
         
@@ -76,5 +76,11 @@ module.exports = {
         const setStr = `SET password = '${json.finalPw}', salt = '${json.salt}'`
         const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE userIdx = ${json.userIdx}`); 
         return result;
+    },
+
+    readInterest : async() =>{
+        const result = await pool.queryParam_None(`SELECT * FROM ${table4}`); 
+        return result;
+
     }
 };

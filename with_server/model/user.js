@@ -4,7 +4,7 @@ const table2 = 'Interest';
 
 const user = {
     signup : async (json) => {
-        //아이디, 비번, 이름, 생일, 성별, 프로필사진
+        //아이디, 비번, 이름, 생일, 성별, 프로필사진        
         let interest = 0;
         if(json.interest != '0'){
             var interestStr;            
@@ -16,7 +16,7 @@ const user = {
             }
             interestStr = `"${interestStr}"`;  //쿼리 형식 맞추기            
             const result = await pool.queryParam_None(`SELECT * FROM ${table2} WHERE interests IN(${interestStr})`); //select * 한게 select intIdx보다 빨라서 *로 바꿈
-            
+
             var i = 0;
             while(i < result.length){
                 interest += result[i].intIdx;
@@ -30,11 +30,11 @@ const user = {
             interest = null;
         }            
         const fields = 'userId, password, salt, name, birth, gender, userImg, interest';
-        var questions = `"${json.userId}","${json.finalPw}","${json.salt}","${json.name}","${json.birth}","${json.gender}","${json.userImg}", ${interest} `;
+        var questions = `"${json.userId}","${json.finalPw}","${json.salt}","${json.name}","${json.birth}","${json.gender}","${json.userImg}", ${interest}`;
 
         const final = await pool.queryParam_None(`INSERT INTO ${table}(${fields})VALUES(${questions})`)
         return final;
-    
+
     },
     checkUser : async (userId) => {
         //존재하는 회원인지 확인

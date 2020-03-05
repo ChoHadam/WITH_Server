@@ -66,7 +66,7 @@ router.post('/',upload.single('userImg'), async (req, res) => {
     const salt = buf.toString('hex'); //비트를 문자열로 바꿈
     const hashedPw = await crypto.pbkdf2(password.toString(),salt,1000,32,'SHA512'); //버퍼 형태로 리턴해주기 때문에 base64 방식으로 문자열
     const finalPw = hashedPw.toString('hex');    
-    var json = {userId, finalPw, salt, name, birth, gender, userImg, interest };
+    var json = {userId, finalPw, salt, name, birth, gender, userImg, interest};
     json.gender = Number(json.gender);
     result =  User.signup(json);
     if(!result){

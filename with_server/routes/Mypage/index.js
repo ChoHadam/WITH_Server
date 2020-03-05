@@ -18,8 +18,8 @@ router.get("/",authUtil.validToken, async(req, res) => {
     const gender = req.decoded.gender;
 
     if(gender == 0){
-      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
-      return;
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+        return;
     }
 
     if(!userIdx)
@@ -121,8 +121,10 @@ router.put("/changePw", authUtil.validToken, async(req, res) => {
     const gender = req.decoded.gender;
 
     if(gender == 0){
-      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
-      return;
+        res
+        .status(statusCode.BAD_REQUEST)
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+        return;
     } 
     const {currPw, newPw} = req.body;
     
@@ -220,6 +222,22 @@ router.post("/selfAuth", upload.single('img'), async(req, res) => {
         res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.SELF_AUTH_SUCCESS, null));
       }
     });
+});
+//관심사 리스트
+router.get("/interests",async(req,res) => {
+    const result = await Mypage.readInterest();
+
+    if(result.length == 0) {
+        res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage. READ_INTEREST_FAIL));
+        return;
+    }
+
+    res
+    .status(statusCode.OK)
+    .send(utils.successTrue(statusCode.OK, responseMessage. READ_INTEREST_SUCCESS, result));
+    
 });
 
 module.exports = router;
