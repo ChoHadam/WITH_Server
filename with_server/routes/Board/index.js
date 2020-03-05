@@ -150,15 +150,16 @@ router.put("/edit/:boardIdx", authUtil.validToken, async(req, res) => {
 
   const result = await Board.update(req.body, boardIdx, userIdx);
 
-  if(result == -1) {
+  if(result.result == -1) {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_BOARD));
     return;
   }
-  else if(result == -2) {
+  else if(result.result == -2) {
     res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_ID));
     return;
   }
-  else if(result == 1) {
+  else if(result.result == 1) {
+    delete result.result;
     res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_UPDATE_SUCCESS, result));
     return;
   }

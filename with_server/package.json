@@ -8,6 +8,7 @@
   "dependencies": {
     "aws-sdk": "^2.596.0",
     "charset": "^1.0.1",
+    "constantinople": "^4.0.1",
     "cookie-parser": "^1.4.4",
     "crypto": "^1.0.1",
     "crypto-promise": "^2.1.0",
