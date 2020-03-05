@@ -49,7 +49,7 @@ const user = {
     changePw : async (json) => {
         //임시 비밀번호 사용자 이메일로 전송후 디비 업데이트
         const setStr = `SET password = '${json.tempPw}', salt = '${json.salt}'`
-        const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE userIdx = '${json.userIdx}'`)
+        const result = await pool.queryParam_None(`UPDATE ${table} ${setStr} WHERE userId = '${json.userId}'`)
         return result;
     }
 }
