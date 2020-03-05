@@ -74,12 +74,12 @@ router.put('/', async(req, res) => {
 
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.SELF_AUTH_FAIL));
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.FIND_PW_FAIL));
         console.log(error);
         return;
         }
         else {
-            res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.SELF_AUTH_SUCCESS, null));
+            res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.FIND_PW_SUCCESS, null));
         }
     });
 });

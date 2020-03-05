@@ -15,6 +15,8 @@ module.exports = {
     LOOK_AROUND_FAIL: "둘러보기 실패",
     PW_CHANGE_SUCCESS : "비밀번호 변경 성공",
     USER_IMG_MISS : "유저 프로필 이미지가 필요합니다",
+    FIND_PW_SUCCESS : "비밀번호 찾기 성공",
+    FIND_PW_FAIL : "비밀번호 찾기 실패",
 
     EMPTY_TOKEN: "토큰이 없습니다.",
     INVALID_TOKEN: "올바르지 않은 토큰입니다",
