@@ -30,11 +30,11 @@ module.exports = {
             result[0][0].uploadTime = `${postTerm}분 전`;
         }
         else if(postTerm < 1440) {
-            postTerm = moment().diff(result[i].uploadTime,"Hours");
+            postTerm = moment().diff(result[0][0].uploadTime,"Hours");
             result[0][0].uploadTime = `${postTerm}시간 전`;
         }
         else {
-            postTerm = moment().diff(result[i].uploadTime,"Days");
+            postTerm = moment().diff(result[0][0].uploadTime,"Days");
             result[0][0].uploadTime = `${postTerm}일 전`;
         }
 
@@ -156,7 +156,38 @@ module.exports = {
 
     update : async (json, boardIdx, userIdx) => {
         const result = await pool.queryParam_None(`CALL update_board(${userIdx}, ${boardIdx}, "${json.regionCode}", "${json.title}", "${json.content}", "${json.startDate}", "${json.endDate}", "${json.filter}")`);
-        return result[0][0].result;
+
+        if(result[0][0].result == 1) {
+            result[0][0].startDate = moment(result[0][0].startDate, 'YYYY-MM-DD').format('YYYY년 MM월 DD일');
+            result[0][0].endDate = moment(result[0][0].endDate, 'YYYY-MM-DD').format('YYYY년 MM월 DD일');
+    
+            // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
+            var postTerm = moment().diff(result[0][0].uploadTime, "Minutes");
+    
+            if(postTerm < 1) {
+                result[0][0].uploadTime = "방금";
+            }
+            else if(postTerm < 60) {
+                result[0][0].uploadTime = `${postTerm}분 전`;
+            }
+            else if(postTerm < 1440) {
+                postTerm = moment().diff(result[0][0].uploadTime,"Hours");
+                result[0][0].uploadTime = `${postTerm}시간 전`;
+            }
+            else {
+                postTerm = moment().diff(result[0][0].uploadTime,"Days");
+                result[0][0].uploadTime = `${postTerm}일 전`;
+            }
+    
+            // birth를 나이로 변환하여 반환
+            postTerm = moment().diff(result[0][0].birth, "Year");
+            result[0][0].age = postTerm + 1;
+            delete result[0][0].birth;
+    
+            return result[0][0];
+        }
+
+        return result[0][0];
     },
 
     activate : async (boardIdx, userIdx) => {
