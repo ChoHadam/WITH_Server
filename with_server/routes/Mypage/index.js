@@ -211,5 +211,44 @@ router.post("/selfAuth", upload.single('img'), async(req, res) => {
     });
 });
 
+// 문의하기
+router.post("/contactUs", authUtil.validToken, async(req, res) => {
+    const userId = req.body.userId;
+    const content = req.body.content;
+
+    if(!userId || !content) {
+        const missParameters = Object.entries({userId, content}).filter(it => it[1] == undefined).map(it => it[0]).join(',');
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE(missParameters)));
+        return;
+    }
+
+    let transporter = nodemailer.createTransport({
+        service: process.env.E_MAIL_SERVICE,
+        host: process.env.E_MAIL_HOST,
+        port: process.env.E_MAIL_PORT,
+        auth: {
+          user: process.env.E_MAIL_ID,  // 계정 아이디
+          pass: process.env.E_MAIL_PW // 계정 비밀번호
+        }
+      });
+    
+    let mailOptions = {
+        from: process.env.E_MAIL_ID,    // 발송 메일 주소
+        to: process.env.E_MAIL_ID,    // 수신 메일 주소
+        subject: `${userId} 님으로부터의 문의입니다`,   // 제목
+        text: content  // 내용
+    };
+  
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.CONTACT_US_FAIL));
+          console.log(error);
+          return;
+        }
+        else {
+          res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.CONTACT_US_SUCCESS, null));
+        }
+    });
+});
 
 module.exports = router;

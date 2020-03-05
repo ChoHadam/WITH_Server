@@ -51,6 +51,9 @@ module.exports = {
     SELF_AUTH_SUCCESS: "본인인증 이메일 요청 성공",
     SELF_AUTH_FAIL: "본인인증 이메일 요청 실패",
 
+    CONTACT_US_SUCCESS: "문의하기 성공",
+    CONTACT_US_FAIL: "문의하기 실패",
+
     RECOMMEND_READ_SUCCESS: "추천 여행지 조회 성공",
     RECOMMEND_READ_FAIL: "추천 여행지 조회 실패",
 
