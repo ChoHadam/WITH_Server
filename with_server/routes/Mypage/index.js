@@ -41,15 +41,12 @@ router.get("/",authUtil.validToken, async(req, res) => {
 router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) => {
     const userIdx = req.decoded.userIdx; 
     const gender = req.decoded.gender;
+    var interest = req.body.interest;
 
     if(gender == 0){
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
         return;
-    }
-    var interest1 = req.body.interest1;
-    var interest2 = req.body.interest2;
-    var interest3 = req.body.interest3;    
-
+    }    
     if(!userIdx)
     {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.EMPTY_TOKEN));
@@ -59,10 +56,10 @@ router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) =
     if(req.file)
         var userImg= req.file.location;
 
-    var json = {userImg, interest1, interest2, interest3};
+    var json = {userImg, interest};
 
     // 인자가 하나도 없는 경우
-    if(!json.userImg)
+    if(!json.userImg && !interest)
     {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
         return;
@@ -76,7 +73,7 @@ router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) =
         return;
     }
     
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.MYPAGE_UPDATE_SUCCESS));
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK,responseMessage.MYPAGE_UPDATE_SUCCESS));
 });
 
 // 내가 쓴 게시글 전체 보기
@@ -265,6 +262,25 @@ router.post("/contactUs", authUtil.validToken, async(req, res) => {
           res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.CONTACT_US_SUCCESS, null));
         }
     });
+});
+
+//공지사항
+router.get("/notice",async(req,res) => {
+
+    const result = await Mypage.readNotice();
+
+    if(result.length == 0) {
+        res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage. READ_NOTICE_FAIL));
+        return;
+    }
+
+    res
+    .status(statusCode.OK)
+    .send(utils.successTrue(statusCode.OK, responseMessage. READ_NOTICE_SUCCESS, result));
+
+
 });
 
 module.exports = router;

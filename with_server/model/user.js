@@ -6,15 +6,11 @@ const user = {
     signup : async (json) => {
         //아이디, 비번, 이름, 생일, 성별, 프로필사진        
         let interest = 0;
-        if(json.interest != '0'){
-            var interestStr;            
+        if(json.interest != '0'){   
             if(String(json.interest).includes(',')){                  ////와인,야경,쇼핑 / 와인,쇼핑                 
-                interestStr = String(json.interest).split(',').join('","');
+                json.interest = String(json.interest).split(',').join('","');
             }
-            else{
-                interestStr = json.interest;      //와인 
-            }
-            interestStr = `"${interestStr}"`;  //쿼리 형식 맞추기            
+            json.interest = `"${json.interest}"`;  //쿼리 형식 맞추기            
             const result = await pool.queryParam_None(`SELECT * FROM ${table2} WHERE interests IN(${interestStr})`); //select * 한게 select intIdx보다 빨라서 *로 바꿈
 
             var i = 0;

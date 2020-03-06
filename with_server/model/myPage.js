@@ -4,7 +4,8 @@ const moment_timezone = require('moment-timezone');
 const table1 = 'User';
 const table2 = 'Board';
 const table3 = 'Chat';
-const table4 = 'Interest'
+const table4 = 'Interest';
+const table5 = 'Notice';
 
 module.exports = {
     readProfile: async(userIdx) => {        
@@ -37,40 +38,32 @@ module.exports = {
 
     update: async(json, userIdx) => {
         const conditions = [];
-        //console.log(json);
-        
+
         if (json.userImg) conditions.push(`userImg = '${json.userImg}'`);
-        
-        if (json.interest1)
-        {
-            conditions.push(`interest1 = '${json.interest1}'`);
+        if (json.interest){
+            let interest = 0;
+            if(json.interest != '0'){                           
+                if(String(json.interest).includes(',')){                  ////와인,야경,쇼핑 / 와인,쇼핑                 
+                    json.interest = String(json.interest).split(',').join('","');
+                }
+                json.interest = `"${json.interest}"`;  //쿼리 형식 맞추기
+                const result = await pool.queryParam_None(`SELECT * FROM ${table4} WHERE interests IN(${json.interest})`); //select * 한게 select intIdx보다 빨라서 *로 바꿈
+                var i = 0;
+                while(i < result.length){
+                    interest += result[i].intIdx;
+                    i++;
+                    if(i == result.length) break;
+                    interest += ',';
+                }
+            }
+            else{
+                interest = null;
+            } 
+            conditions.push(`interest = '${interest}'`);            
         }
-        else
-        {
-            conditions. push(`interest1 = Null`)
-        }
-        
-        if (json.interest2)
-        {
-            conditions.push(`interest2 = '${json.interest2}'`);
-        }
-        else
-        {
-            conditions. push(`interest2 = Null`)
-        }
-        
-        if (json.interest3)
-        {
-            conditions.push(`interest3 = '${json.interest3}'`);
-        }
-        else
-        {
-            conditions. push(`interest3 = Null`)
-        }
-        
         const setStr = conditions.length > 0 ? `SET ${conditions.join(',')}` : '';
-        const result = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE userIdx = '${userIdx}'`)
-        return result;
+        const final = await pool.queryParam_None(`UPDATE ${table1} ${setStr} WHERE userIdx = '${userIdx}'`)
+        return final;
             
     },
 
@@ -93,6 +86,12 @@ module.exports = {
 
     readInterest : async() =>{
         const result = await pool.queryParam_None(`SELECT * FROM ${table4}`); 
+        return result;
+
+    },
+
+    readNotice : async() =>{
+        const result = await pool.queryParam_None(`SELECT * FROM ${table5}`); 
         return result;
 
     }

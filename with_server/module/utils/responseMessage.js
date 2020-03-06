@@ -69,6 +69,9 @@ module.exports = {
     READ_INTEREST_SUCCESS : "관심사 목록 조회 성공",
     READ_INTEREST_FAIL : "관심사 목록 조회 실패",
 
+    READ_NOTICE_SUCCESS : "공지사항 조회 성공",
+    READ_NOTICE_FAIL : "공지사항 조회 실패",
+
     EVALUATE_SUCCESS:"동행 평가 성공",
     EVALUATE_FAIL:"동행 평가 실패",
     
