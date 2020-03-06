@@ -75,7 +75,6 @@ router.post('/',upload.single('userImg'), async (req, res) => {
         .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
         return;
     }
-    console.log(result);
     res
     .status(statusCode.OK)
     .send(utils.successTrue(statusCode.OK, responseMessage.SIGN_UP_SUCCESS, null)); 
