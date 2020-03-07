@@ -72,6 +72,12 @@ module.exports = {
         return result;
     },
 
+    countBoard: async (userIdx) => {
+        //작성한 게시물이 존재하는지 확인    
+        const result = await pool.queryParam_None(`SELECT COUNT(*) AS count FROM ${table2} WHERE userIdx = "${userIdx}"`)
+        return result;  
+    },   
+
     confirmUser : async (userIdx) => {
         //존재하는 회원인지 확인    
         const result = await pool.queryParam_None(`SELECT * FROM ${table1} WHERE userIdx = "${userIdx}"`)

@@ -74,7 +74,7 @@ router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) =
         return;
     }
     
-    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK,responseMessage.MYPAGE_UPDATE_SUCCESS));
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.MYPAGE_UPDATE_SUCCESS));
 });
 
 // 내가 쓴 게시글 전체 보기
@@ -89,7 +89,15 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
 
     if(!userIdx)
     {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.EMPTY_TOKEN));
+        return;
+    }
+
+    const boardCounts = await Mypage.countBoard(userIdx);
+
+    if(boardCounts[0].count == 0)
+    {
+        res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.NO_MY_BOARD, null));
         return;
     }
 
@@ -97,11 +105,11 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
     
     if(result.length == 0)
     {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_ALL_FAIL));
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_READ_ALL_FAIL));
         return;
     }    
 
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
 // 비밀번호 변경

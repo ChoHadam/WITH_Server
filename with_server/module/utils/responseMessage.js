@@ -39,6 +39,7 @@ module.exports = {
     BOARD_ACTIVATE_FAIL: "게시글 마감설정 변경 실패",
 
     NO_BOARD: "존재하지 않은 게시글 입니다",
+    NO_MY_BOARD: "현재 유저가 작성한 게시물이 없습니다",
     MISS_MATCH_ID: "현재 유저는 해당 게시물의 글쓴이가 아닙니다",
     SEARCH_SUCCESS: "검색 성공",
     SEARCH_FAIL: "검색 실패",
@@ -63,7 +64,7 @@ module.exports = {
     MATE_READ_FAIL: "위드 메이트 조회 실패",
 
     READ_REGION_LIST_SUCCESS: "국가 리스트 조회 성공",
-    READ_REGION_LIST_FAIL: "국가 리스트 조회 살패",
+    READ_REGION_LIST_FAIL: "국가 리스트 조회 실패",
 
     READ_HOME_BGIMG_SUCCESS: "홈배경 이미지 조회 성공",
     READ_HOME_BGIMG_FAIL: "홈배경 이미지 조회 실패",
