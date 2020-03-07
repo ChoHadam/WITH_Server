@@ -5,6 +5,7 @@ const statusCode = require('../../module/utils/statusCode');
 const responseMessage = require('../../module/utils/responseMessage');
 const utils = require('../../module/utils/utils');
 const User = require('../../model/user');
+const moment = require('moment')
 var nodemailer = require('nodemailer');
 require('dotenv').config();
 
@@ -19,6 +20,9 @@ router.put('/', async(req, res) => {
         return;
     }
 
+    // birth의 format을 DB의 birth와 비교하기 위해 수정
+    const _birth = moment(birth).format('YYYY-MM-DD');
+
     const checkUser = await User.checkUser(userId);
 
     if(checkUser.length==0) { //존재하지 않는 유저
@@ -28,7 +32,7 @@ router.put('/', async(req, res) => {
         return;
     }
 
-    if(checkUser[0].name != name || checkUser[0].birth != birth){ // 유저 정보가 일치하지 않는 경우
+    if(checkUser[0].name != name || checkUser[0].birth != _birth){ // 유저 정보가 일치하지 않는 경우
         res
         .status(statusCode.BAD_REQUEST)
         .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_USER));
