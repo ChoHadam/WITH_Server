@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+// var fs = require('fs');
+// ssl : https://tistory.lyasee.com/17
 
 var indexRouter = require('./routes/index');
 
@@ -35,5 +37,26 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+////////////////////////////////////////////////////////////////////////////////
+// const options = {  
+//   key: fs.readFileSync('경로~/key.pem'),
+//   cert: fs.readFileSync('경로~/cert.pem')
+// };
+
+
+// const port1 = 80; // http 포트
+// const port2 = 443; // https 포트
+
+
+// http.createServer(app).listen(port1, function(){  
+//   console.log("Http server listening on port " + port1);
+// });
+
+
+// https.createServer(options, app).listen(port2, function(){  
+//   console.log("Https server listening on port " + port2);
+// });
+////////////////////////////////////////////////////////////////////////////////
 
 module.exports = app;

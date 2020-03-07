@@ -16,17 +16,17 @@ const tempUser = {
 
 router.post('/', async(req, res) => {
     const result = jwtUtils.sign(tempUser);
-    const token  = result.token;
+    const accessToken  = result.accessToken;
     const userIdx = tempUser.userIdx;
     const name  = tempUser.name;
 
-    if(!token){ //토큰 생성 못함
+    if(!accessToken){ //토큰 생성 못함
         res
         .status(statusCode.INTERNAL_SERVER_ERROR)
         .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.LOOK_AROUND_FAIL));
         return;
     } else{   //토큰 생성
-        const finalResult = {token, userIdx, name};
+        const finalResult = {accessToken, userIdx, name};
         res
         .status(statusCode.OK)
         .send(utils.successTrue(statusCode.OK, responseMessage.LOOK_AROUND_SUCCESS,finalResult));                

@@ -25,10 +25,15 @@
     "multer": "^1.4.2",
     "multer-s3": "^2.9.0",
     "node-cron": "^2.0.3",
+<<<<<<< HEAD
     "nodemailer": "^6.4.2",
     "nodemailer-smtp-transport": "^2.7.4",
+=======
+    "nodemailer": "^6.4.4",
+>>>>>>> 6a6d4999540dbdf6b06782bd4ae79c9b9d2650c9
     "nodemon": "^2.0.2",
     "promise-mysql": "^4.1.1",
+    "rand-token": "^0.4.0",
     "urlencode": "^1.1.0",
     "util": "^0.12.1"
   }

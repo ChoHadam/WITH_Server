@@ -8,78 +8,61 @@ const authUtil = require('../../module/utils/authUtil');
 const moment = require('moment');
 const moment_timezone = require('moment-timezone');
 const upload = require('../../config/multer');
+const upload_auth = require('../../config/multer_auth');
+const crypto = require('crypto-promise');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 // 마이페이지 조회
 router.get("/",authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
-    var badge;
+    const gender = req.decoded.gender;
 
-    if(!userIdx)
-    {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+    if(gender == 0) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+        return;
+    }
+
+    if(!userIdx) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.EMPTY_TOKEN));
         return;
     }
 
     const result = await Mypage.readProfile(userIdx);
     
-    if(result.length == 0)
-    {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NO_USER));
+    if(result.length == 0) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_USER));
         return;
     }
-
-    // birth field 값 나이로 변환하여 반환.
-    const birthYear = result[0].birth.split("-");
-    const currentYear = moment().format('YYYY');
-    const age = currentYear - birthYear[0] + 1;
-
-    result[0].birth = age;
-
-    // 뱃지 계산   
-    const prop = (result[0].likeNum / (result[0].likeNum + result[0].dislikeNum)) * 100;
     
-    if(parseInt(prop)>=70 && parseInt(prop)<80 ){
-        badge = 1;
-    }else if(parseInt(prop)>=80 && parseInt(prop)<90 ){
-        badge = 2;
-    }else if(parseInt(prop)>=90 && parseInt(prop)<=100 ){
-        badge = 3;
-    }else{
-        badge = 0;
-    }
-    result[0].badge = badge;   
-
-    // 클라이언트에서 필요없는 정보 제거
-    delete result[0].likeNum;
-    delete result[0].dislikeNum;
-    
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.MYPAGE_READ_SUCCESS, result[0]));
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.MYPAGE_READ_SUCCESS, result[0]));
 });
 
-// 마이페이지 수정하기
-var uploadImg = upload.fields([{name:'userImg', maxCount :1}, {name:'userBgImg', maxCount:1}]);
-router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
-    const userIdx = req.decoded.userIdx;   
-    var intro = req.body.intro;    
+// 마이페이지 수정
+router.put("/", authUtil.validToken, upload.single('userImg') ,async(req, res) => {
+    const userIdx = req.decoded.userIdx; 
+    const gender = req.decoded.gender;
+    var interest = req.body.interest;
 
+    if(gender == 0){
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+        return;
+    }    
     if(!userIdx)
     {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.EMPTY_TOKEN));
         return;
     }
 
-    if(req.files['userImg'])
-        var userImg= req.files['userImg'][0].location;
+    if(req.file)
+        var userImg= req.file.location;
 
-    if(req.files['userBgImg'])
-        var userBgImg = req.files['userBgImg'][0].location;
-    
-    var json = {intro, userImg, userBgImg};
+    var json = {userImg, interest};
 
     // 인자가 하나도 없는 경우
-    if(!json.intro && !json.userImg && !json.userBgImg)
+    if(!json.userImg && !interest)
     {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
         return;
     }
     const result = await Mypage.update(json, userIdx);
@@ -87,17 +70,23 @@ router.put("/", authUtil.validToken, uploadImg ,async(req, res) => {
     // 쿼리 결과가 없는 경우
     if(result.length == 0)
     {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.MYPAGE_UPDATE_FAIL));
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.MYPAGE_UPDATE_FAIL));
         return;
     }
     
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.MYPAGE_UPDATE_SUCCESS));
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK,responseMessage.MYPAGE_UPDATE_SUCCESS));
 });
 
 // 내가 쓴 게시글 전체 보기
 router.get("/boards", authUtil.validToken,async (req, res) => {
     const userIdx = req.decoded.userIdx;
-    
+    const gender = req.decoded.gender;
+
+    if(gender == 0){
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+        return;
+    }
+
     if(!userIdx)
     {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
@@ -115,99 +104,185 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
-// 동행 평가하기 - 좋아요
-router.put("/like", authUtil.validToken, async(req, res) => {
+// 비밀번호 변경
+router.put("/changePw", authUtil.validToken, async(req, res) => {
     const userIdx = req.decoded.userIdx;
-    const roomId = req.body.roomId;
-    var otherIdx = '';
+    const gender = req.decoded.gender;
 
-    if(!userIdx)
-    {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+    if(gender == 0) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+        return;
+    } 
+    const {currPw, newPw} = req.body;
+    
+    //비어있는지 검사
+    if(!currPw || ! newPw) {
+        const missParameters = Object.entries({currPw, newPw})
+        .filter(it => it[1] == undefined).map(it => it[0]).join(',');
+        
+        res
+        .status(statusCode.BAD_REQUEST)
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE(missParameters)));
         return;
     }
 
-    if(!roomId)
-    {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
+    const userResult = await Mypage.confirmUser(userIdx);
+    
+    if(userResult.length == 0) { //존재하지 않는 데이터
+        res
+        .status(statusCode.BAD_REQUEST)
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_USER));
         return;
-    }
+    } else { //기존비밀번호랑 같은지 비교
+        const salt = userResult[0].salt;      
+        const hashedCurrPw = await crypto.pbkdf2(currPw.toString(),salt,1000,32,'sha512');
+        const inputCurrPw = hashedCurrPw.toString('hex');
+        
+        if(inputCurrPw == userResult[0].password) { //기존 비번이랑 같다면 비번 변경
+            const buf = await crypto.randomBytes(32); //64비트의 salt값 생성
+            const salt = buf.toString('hex'); //비트를 문자열로 바꿈
+            const hashedPw = await crypto.pbkdf2(newPw.toString(),salt,1000,32,'SHA512'); //버퍼 형태로 리턴해주기 때문에 base64 방식으로 문자열
+            const finalPw = hashedPw.toString('hex'); 
+            var json = {userIdx, finalPw, salt};
 
-    arr = roomId.split('_');
-    for(var i =1;i< arr.length;i++ ){
-        if(arr[i] != userIdx){
-            otherIdx = arr[i];
-            break;
+            result = Mypage.changePw(json);
+            if(result.length == 0) {
+                res
+                .status(statusCode.INTERNAL_SERVER_ERROR)
+                .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.NO_USER));
+                return;
+            }
+            else {
+                res
+                .status(statusCode.OK)
+                .send(utils.successTrue(statusCode.OK, responseMessage.PW_CHANGE_SUCCESS, null));
+                return;
+            }        
+        } else { //기존 비번이랑 다르다면 비번 변경 실패
+            res
+            .status(statusCode.BAD_REQUEST)
+            .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_PW));
+            return;
         }
     }
-    const result = await Mypage.like(otherIdx,roomId);
-
-    if(result.length == 0)
-    {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.EVALUATE_FAIL));
-        return;
-    }    
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
 });
 
-// 동행 평가하기 - 싫어요
-router.put("/dislike", authUtil.validToken, async(req, res) => {
-    const userIdx = req.decoded.userIdx;
-    const roomId = req.body.roomId;
-    var otherIdx = '';
+// 본인인증
+router.post("/selfAuth", upload_auth.single('img'), async(req, res) => {
+    const userName = req.body.userName;
 
-    if(!userIdx)
-    {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+    if(!req.file) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE('img')));
+        return;
+    }
+    else if(!userName) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE('userName')));
         return;
     }
 
-    if(!roomId) {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
+    let transporter = nodemailer.createTransport({
+      service: process.env.E_MAIL_SERVICE,
+      host: process.env.E_MAIL_HOST,
+      port: process.env.E_MAIL_PORT,
+      auth: {
+        user: process.env.E_MAIL_ID,  // 계정 아이디
+        pass: process.env.E_MAIL_PW // 계정 비밀번호
+      }
+    });
+  
+    let mailOptions = {
+      from: process.env.E_MAIL_ID,    // 발송 메일 주소
+      to: process.env.E_MAIL_ID,    // 수신 메일 주소
+      subject: `${userName}님께서 본인인증을 요청하였습니다.`,   // 제목
+      text: `${userName}님께서 본인인증을 요청하였습니다.\n AWS S3에서 확인해주세요!\n https://s3.console.aws.amazon.com/s3/`  // 내용
+    };
+
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.SELF_AUTH_FAIL));
+        console.log(error);
+        return;
+      }
+      else {
+        res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.SELF_AUTH_SUCCESS, null));
+      }
+    });
+});
+//관심사 리스트
+router.get("/interests",async(req,res) => {
+    const result = await Mypage.readInterest();
+
+    if(result.length == 0) {
+        res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage. READ_INTEREST_FAIL));
         return;
     }
 
-    arr = roomId.split('_');   
-    for(var i =1;i< arr.length;i++ ){
-        if(arr[i] != userIdx){
-            otherIdx = arr[i];
-            break;
+    res
+    .status(statusCode.OK)
+    .send(utils.successTrue(statusCode.OK, responseMessage. READ_INTEREST_SUCCESS, result));
+    
+});
+
+// 문의하기
+router.post("/contactUs", authUtil.validToken, async(req, res) => {
+    const userId = req.body.userId;
+    const content = req.body.content;
+    console.log(userId)
+
+    if(!userId || !content) {
+        const missParameters = Object.entries({userId, content}).filter(it => it[1] == undefined).map(it => it[0]).join(',');
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE(missParameters)));
+        return;
+    }
+
+    let transporter = nodemailer.createTransport({
+        service: process.env.E_MAIL_SERVICE,
+        host: process.env.E_MAIL_HOST,
+        port: process.env.E_MAIL_PORT,
+        auth: {
+          user: process.env.E_MAIL_ID,  // 계정 아이디
+          pass: process.env.E_MAIL_PW // 계정 비밀번호
         }
-    }    
-    const result = await Mypage.dislike(otherIdx,roomId);
-
-    if(result.length == 0)
-    {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.EVALUATE_FAIL));
-        return;
-    }    
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
+      });
+    
+    let mailOptions = {
+        from: process.env.E_MAIL_ID,    // 발송 메일 주소
+        to: process.env.E_MAIL_ID,    // 수신 메일 주소
+        subject: `${userId} 님으로부터의 문의입니다`,   // 제목
+        text: content  // 내용
+    };
+  
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.CONTACT_US_FAIL));
+          console.log(error);
+          return;
+        }
+        else {
+          res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.CONTACT_US_SUCCESS, null));
+        }
+    });
 });
 
-// 동행 평가하지 않는 경우
-router.put("/noEvaluation", authUtil.validToken, async(req, res) => {
-    const userIdx = req.decoded.userIdx;
-    const roomId = req.body.roomId;
+//공지사항
+router.get("/notice",async(req,res) => {
 
-    if(!userIdx)
-    {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.EMPTY_TOKEN));
+    const result = await Mypage.readNotice();
+
+    if(result.length == 0) {
+        res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage. READ_NOTICE_FAIL));
         return;
     }
 
-    if(!roomId)
-    {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NULL_VALUE));
-    return;
-    }
+    res
+    .status(statusCode.OK)
+    .send(utils.successTrue(statusCode.OK, responseMessage. READ_NOTICE_SUCCESS, result));
 
-    const result = await Mypage.noEvaluation(userIdx, roomId);
-    if(result.length == 0)
-    {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.EVALUATE_FAIL));
-        return;
-    }    
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.EVALUATE_SUCCESS));
+
 });
 
 module.exports = router;
