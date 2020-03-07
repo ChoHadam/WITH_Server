@@ -53,20 +53,21 @@ module.exports = {
         var country = json.regionCode.substr(4,2);
         var query;
         const fields = 'boardIdx, regionCode, regionName, title, uploadTime, startDate, endDate, withNum, filter, userImg';
+        query = `SELECT ${fields} FROM ${table1} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE active = 1 AND regionCode LIKE`;
 
         if(country == "00"){
             if(semi_region == "00"){
                 // 대분류에서 찾기
-                query = `SELECT ${fields} FROM ${table1} WHERE regionCode LIKE '${region}%' AND active = 1`;
+                query += ` '${region}%'`;
             }
             else{
                 // 중분류에서 찾기
-                query = `SELECT ${fields} FROM ${table1} WHERE regionCode LIKE '${region}${semi_region}%' AND active = 1`;
+                query += ` '${region}${semi_region}%'`;
             }
         }
         else{
             // 나라에서 찾기
-            query = `SELECT ${fields} FROM ${table1} WHERE regionCode = '${json.regionCode}' AND active = 1`;
+            query = `' ${json.regionCode}'`;
         }
 
         // 날짜 필터 적용된 경우
@@ -81,9 +82,9 @@ module.exports = {
             query += ` AND (title LIKE '%${decode_keyword}%' OR content LIKE '%${decode_keyword}%')`;
         }
 
-        var front_query = query.substr(0, 116);
+        /*var front_query = query.substr(0, 116);
         var back_query = query.substr(115, query.length);
-        query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;
+        query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;*/
 
         if(json.filter!='0'){
             // 동성 필터 적용된 경우
