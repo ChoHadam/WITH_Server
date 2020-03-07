@@ -40,7 +40,7 @@ router.post('/renew', authUtil.validRefreshToken, async(req, res) => {
         if(!accessToken){ //토큰 생성 못함
             res
             .status(statusCode.INTERNAL_SERVER_ERROR)
-            .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.EMPTY_TOKEN));
+            .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.RENEW_TOKEN_FAIL));
             return;
         } else{   //토큰 생성
             const finalResult = {accessToken, refreshToken, expireTime, userIdx, name};

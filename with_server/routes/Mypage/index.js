@@ -157,7 +157,7 @@ router.put("/changePw", authUtil.validToken, async(req, res) => {
             if(result.length == 0) {
                 res
                 .status(statusCode.INTERNAL_SERVER_ERROR)
-                .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.NO_USER));
+                .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.PW_CHANGE_FAIL));
                 return;
             }
             else {

@@ -14,10 +14,11 @@ module.exports = {
     MISS_MATCH_PW: "올바르지 않은 비밀번호입니다",
     LOOK_AROUND_SUCCESS: "둘러보기 성공",
     LOOK_AROUND_FAIL: "둘러보기 실패",
-    PW_CHANGE_SUCCESS : "비밀번호 변경 성공",
-    USER_IMG_MISS : "유저 프로필 이미지가 필요합니다",
-    FIND_PW_SUCCESS : "비밀번호 찾기 성공",
-    FIND_PW_FAIL : "비밀번호 찾기 실패",
+    PW_CHANGE_SUCCESS: "비밀번호 변경 성공",
+    PW_CHANGE_FAIL: "비밀번호 변경 실패",
+    USER_IMG_MISS: "유저 프로필 이미지가 필요합니다",
+    FIND_PW_SUCCESS: "비밀번호 찾기 성공",
+    FIND_PW_FAIL: "비밀번호 찾기 실패",
 
     EMPTY_TOKEN: "토큰이 없습니다.",
     INVALID_TOKEN: "올바르지 않은 토큰입니다",
@@ -25,6 +26,7 @@ module.exports = {
     EXPIRED_REFRESH_TOKEN: "만료된 리프레쉬 토큰입니다. 재 로그인이 필요합니다",
     LOOK_AROUND_TOKEN: "둘러보기 토큰입니다",
     RENEW_TOKEN_SUCCESS: "토큰 갱신 성공",
+    RENEW_TOKEN_FAIL: "토큰 갱신 실패",
 
     BOARD_CREATE_SUCCESS: "게시글 작성 성공",
     BOARD_CREATE_FAIL: "게시글 작성 실패",
