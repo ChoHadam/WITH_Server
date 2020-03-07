@@ -96,8 +96,14 @@ module.exports = {
 
     },
 
-    readNotice : async() =>{
-        const result = await pool.queryParam_None(`SELECT * FROM ${table5}`); 
+    NoticeAll : async() =>{
+        const fields = 'noticeIdx, title, uploadDate'
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table5}`); 
+        return result;
+
+    },
+    NoticeDetail : async(noticeIdx) =>{
+        const result = await pool.queryParam_None(`SELECT * FROM ${table5} WHERE noticeIdx = ${noticeIdx}`); 
         return result;
 
     }
