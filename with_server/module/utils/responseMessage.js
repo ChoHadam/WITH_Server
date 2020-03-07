@@ -80,9 +80,11 @@ module.exports = {
     CHAT_CREATE_SUCCESS:"채팅방 생성 성공",
     CHAT_CREATE_FAIL:"채팅방 생성 실패",
     ALREADY_CHAT: "이미 채팅방이 존재합니다",
+    CHAT_MYSELF: "유저가 서로 동일인물입니다",
 
     CHAT_READ_ALL_SUCCESS:"채팅방 전체 조회 성공",
     CHAT_READ_ALL_FAIL:"채팅방 전체 조회 실패",
+    CHAT_EMPTY:"채팅방이 존재하지 않습니다",
 
     WITH_SUCCESS: "동행 성공",
     WITH_FAIL: "동행 실패",

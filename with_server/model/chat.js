@@ -12,8 +12,8 @@ const table3 = 'User';
 module.exports = {
     create : async (json) => {
         // 채팅 신청자, 게시글 작성자, 게시글 idx, room ID를 받고 채팅방 정보를 생성한다.
-        const fields = 'userIdx, boardIdx, roomId';
-        const questions = `"${json.userIdx}", "${json.boardIdx}", "${json.roomId}"`;
+        const fields = 'userIdx, boardIdx, roomId, invitationIdx';
+        const questions = `"${json.userIdx1}", "${json.boardIdx}", "${json.roomId}", ${json.rand}`;
         let result = await pool.queryParam_None(`INSERT INTO ${table1}(${fields}) VALUES(${questions})`);
         return result;
     },
@@ -24,42 +24,39 @@ module.exports = {
         동행날짜, 시작날짜, 끝나는 날짜, 동행 플래그) 출력한다.
         */
         var board_list = [];
-        var result = await pool.queryParam_None(`
-        SELECT Chat.userIdx, Chat.boardIdx, roomId, userImg, name, regionName, title, withDate, startDate, endDate, withFlag 
-        FROM Chat 
-            LEFT JOIN Board ON Chat.boardIdx = Board.boardIdx 
-            LEFT JOIN User ON Chat.userIdx = User.userIdx 
-        WHERE roomId LIKE '____%${userIdx}%' AND Chat.userIdx != ${userIdx}
-        ORDER BY Chat.boardIdx ASC`);
-        console.log(result);
-        for(var i in result){
-            board_list.push(result[i].boardIdx);
-            result[i].startDate = moment(result[i].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
-            result[i].endDate = moment(result[i].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
-            result[i].withDate = moment(result[i].withDate, 'YYYY-MM-DD').format('YY.MM.DD');
-        }
-        var result_sub2 = await pool.queryParam_None(`
-        SELECT evalFlag, boardIdx FROM Chat
-        WHERE userIdx = ${userIdx}
-        ORDER BY boardIdx ASC
-        `)
-        for(var i in result){
-            var result_sub = await pool.queryParam_None(`
-            SELECT userImg, regionImgE FROM Board 
-            NATURAL JOIN User NATURAL JOIN Region
-            WHERE boardIdx = ${board_list[i]}`);
-            result[i].evalFlag = result_sub2[i].evalFlag;
-            result[i].writerImg = result_sub[0].userImg;
-            result[i].regionImgE = result_sub[0].regionImgE;
-        }
 
-        return result;
+        var result = await pool.queryParam_None(`SELECT * FROM Chat WHERE userIdx = ${userIdx}`);
+
+        if(result.length == 0)
+            return -1;
+
+        else {
+            result = await pool.queryParam_None(`
+            SELECT Chat.userIdx, Chat.boardIdx, roomId, userImg, name, regionName, title, withDate, startDate, endDate, withFlag 
+            FROM Chat 
+                LEFT JOIN Board ON Chat.boardIdx = Board.boardIdx 
+                LEFT JOIN User ON Chat.userIdx = User.userIdx 
+            WHERE roomId LIKE '____%${userIdx}%' AND Chat.userIdx != ${userIdx}
+            ORDER BY Chat.boardIdx ASC`);
+
+            for(var i in result) {
+                board_list.push(result[i].boardIdx);
+                result[i].startDate = moment(result[i].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
+                result[i].endDate = moment(result[i].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
+                if(result[i].withDate == null)
+                    result[i].withDate = null;
+                else
+                    result[i].withDate = moment(result[i].withDate, 'YYYY-MM-DD').format('YY.MM.DD');
+            }
+
+            return result;
+        }
     },
 
     checkRoom : async (json) => {
         // 이미 채팅방이 존재하는지 확인한다.
-        const result = await pool.queryParam_None(`SELECT chatIdx FROM ${table1} WHERE roomId = '${json.roomId}'`)
-        return result;     
+        const result = await pool.queryParam_None(`SELECT invitationIdx FROM ${table1} WHERE roomId = '${json.roomId}' LIMIT 1`)
+        return result;
     },
 
     update : async (json) => {
