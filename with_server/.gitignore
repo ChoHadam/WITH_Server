@@ -11,6 +11,7 @@ config/dbConfig.js
 config/awsconfig.json
 config/secretKey.js
 config/multer.js
+config/mailConfig.js
 
 # Runtime data
 pids

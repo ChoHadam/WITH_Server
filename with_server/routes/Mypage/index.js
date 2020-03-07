@@ -8,6 +8,7 @@ const authUtil = require('../../module/utils/authUtil');
 const moment = require('moment');
 const moment_timezone = require('moment-timezone');
 const upload = require('../../config/multer');
+const upload_auth = require('../../config/multer_auth');
 const crypto = require('crypto-promise');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -167,7 +168,7 @@ router.put("/changePw", authUtil.validToken, async(req, res) => {
 });
 
 // 본인인증
-router.post("/selfAuth", upload.single('img'), async(req, res) => {
+router.post("/selfAuth", upload_auth.single('img'), async(req, res) => {
     const userName = req.body.userName;
 
     if(!req.file) {
@@ -228,6 +229,7 @@ router.get("/interests",async(req,res) => {
 router.post("/contactUs", authUtil.validToken, async(req, res) => {
     const userId = req.body.userId;
     const content = req.body.content;
+    console.log(userId)
 
     if(!userId || !content) {
         const missParameters = Object.entries({userId, content}).filter(it => it[1] == undefined).map(it => it[0]).join(',');

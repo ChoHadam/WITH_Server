@@ -41,6 +41,12 @@ const user = {
         // userIdx에 해당하는 유저 정보 반환
         const result = await pool.queryParam_None(`SELECT * FROM ${table} WHERE userIdx = ${userIdx}`);
         return result;
+    },
+    changePw : async (json) => {
+        //임시 비밀번호 사용자 이메일로 전송후 디비 업데이트
+        const setStr = `SET password = '${json.tempPw}', salt = '${json.salt}'`
+        const result = await pool.queryParam_None(`UPDATE ${table} ${setStr} WHERE userId = '${json.userId}'`)
+        return result;
     }
 }
 
