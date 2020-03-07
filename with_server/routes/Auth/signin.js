@@ -69,7 +69,7 @@ router.post('/', async(req, res) => {
     if(userResult.length == 0) { //존재하지 않는 데이터
         res
         .status(statusCode.BAD_REQUEST)
-        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_USER));
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_ID));
         return;
     } else {
         const salt = userResult[0].salt;      
