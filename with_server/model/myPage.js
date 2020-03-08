@@ -23,14 +23,14 @@ module.exports = {
                 result[0].interest = interestArr;
             }
     
-            // if(result[0].birth != null) {
-            //     const birthYear = result[0].birth.split("-");
-            //     const currentYear = moment().format('YYYY');
-            //     const age = currentYear - birthYear[0] + 1;
-        
-            //     result[0].age = age;
-            //     delete result[0].birth;
-            // }
+            if(result[0].birth != null) {
+                const birthYear = result[0].birth.split("-");
+                const currentYear = moment().format('YYYY');
+                const age = currentYear - birthYear[0] + 1;
+                
+                result[0].age = age;
+                delete result[0].birth;
+            }
         }
 
         return result;
