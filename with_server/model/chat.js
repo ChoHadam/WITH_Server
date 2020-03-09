@@ -56,7 +56,7 @@ module.exports = {
     },
 
     readWithMate : async (userIdx) => {
-        var result = await pool.queryParam_None(`SELECT * FROM Chat WHERE userIdx = ${userIdx} and withFlag = 1`);
+        var result = await pool.queryParam_None(`SELECT * FROM Chat WHERE userIdx = ${userIdx} AND withFlag = 1`);
 
         if(result.length == 0)
             return -1;
@@ -67,7 +67,7 @@ module.exports = {
             FROM Chat 
                 LEFT JOIN Board ON Chat.boardIdx = Board.boardIdx 
                 LEFT JOIN User ON Chat.userIdx = User.userIdx 
-            WHERE roomId LIKE '____%${userIdx}%' AND Chat.userIdx != ${userIdx}
+            WHERE roomId LIKE '____%${userIdx}%' AND Chat.userIdx != ${userIdx} AND withFlag = 1
             ORDER BY Chat.boardIdx ASC`);
 
             return result;
