@@ -56,6 +56,11 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
   var {regionCode, startDate, endDate, keyword, filter} = req.params;
   const {userIdx, gender} = req.decoded;
 
+  if(gender == 0) {
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+    return;
+  } 
+
   if(startDate !='0' && endDate != '0')
   {
     startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
@@ -64,7 +69,7 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
 
   if(!regionCode)
   {
-    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(responseMessage.NULL_VALUE));
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE("regionCode")));
     return;
   }
 
@@ -73,7 +78,7 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
 
   if(result.length == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.BOARD_READ_ALL_FAIL));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_READ_ALL_FAIL));
     return;
   }
 
@@ -83,7 +88,7 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
     result[i].endDate = moment(result[i].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
   }
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_ALL_SUCCESS, result));
+  res.status(statusCode.OK).send(utils.successTrue(statusCode.OK,responseMessage.BOARD_READ_ALL_SUCCESS, result));
 });
 
 // 게시글 하나 보기
@@ -107,7 +112,7 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
 
   if(result.length == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.NO_BOARD));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.NO_BOARD));
     return;
   }
 
@@ -116,10 +121,9 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
   
   //클라에서 필요없는 정보 제거 
   delete result[0].regionCode;
-  delete result[0].withNum
-  delete result[0].uploadTime;
 
-  res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_READ_SUCCESS, result[0]));
+
+  res.status(statusCode.OK).send(utils.successTrue(statusCode.OK,responseMessage.BOARD_READ_SUCCESS, result[0]));
 });
 
 // 게시글 수정하기

@@ -101,7 +101,7 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
         return;
     }
 
-    const result = await Mypage.readAll(userIdx);
+    const result = await Mypage.readBoard(userIdx);
     
     if(result.length == 0)
     {
