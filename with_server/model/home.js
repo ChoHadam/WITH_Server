@@ -102,9 +102,10 @@ module.exports = {
         var jsonData = JSON.stringify(continent);
         const result = await pool.queryParam_None(`SELECT regionName, regionCode FROM ${table2}`);
         
-        for(var i = 0; i < result.length; i++) {
-            //console.log(result[i].regionCode);
+        if(result.length == 0)
+            return -1;
 
+        for(var i = 0; i < result.length; i++) {
             var input = new Object();
             input.name = result[i].regionName;
             input.code = result[i].regionCode;
@@ -189,7 +190,6 @@ module.exports = {
             }
         }
         
-        //console.log(continent);
         return continent; 
     },
 

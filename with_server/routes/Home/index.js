@@ -12,7 +12,7 @@ require('dotenv').config();
 router.get("/regions", authUtil.validToken, async (req, res) => {
     const result = await Home.readRegion();
 
-    if(result.length == 0) {
+    if(result == -1) {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.READ_REGION_LIST_FAIL));
         return;
     }
