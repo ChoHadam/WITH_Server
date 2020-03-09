@@ -275,7 +275,7 @@ router.post("/contactUs", authUtil.validToken, async(req, res) => {
 });
 
 //공지사항 전체보기
-router.get("/noticeAll",async(req,res) => {
+router.get("/noticeAll",authUtil.validToken,async(req,res) => {
 
     const result = await Mypage.NoticeAll();
 
@@ -294,7 +294,7 @@ router.get("/noticeAll",async(req,res) => {
 });
 
 //공지사항 세부내용 보기
-router.get("/notice/:noticeIdx",async(req,res) => {
+router.get("/notice/:noticeIdx",authUtil.validToken,async(req,res) => {
 
     const noticeIdx = req.params.noticeIdx;
 
