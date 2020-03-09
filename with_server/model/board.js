@@ -86,7 +86,7 @@ module.exports = {
         var back_query = query.substr(115, query.length);
         query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;*/
 
-        if(json.filter!='0'){
+        if(json.filter != -1){
             // 동성 필터 적용된 경우
             query += ` AND gender = ${json.gender} ORDER BY uploadTime desc`;
         }
