@@ -73,42 +73,82 @@ router.post('/', authUtil.validToken, async (req, res) => {
 // 동행 신청하기
 router.put('/', authUtil.validToken, async (req, res) => {
     const gender = req.decoded.gender;
+    const userIdx = req.decoded.userIdx;
 
-    if(gender == 0){
+    if(gender == 0) {
       res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
       return;
     }
+    
     // receiverIdx, boardIdx, senderIdx를 이용해 동행 처리
     var {roomId, withDate} = req.body;
     const withTime = moment().format('YYYY-MM-DD HH:mm:ss');
     withDate = moment(withDate, 'YY.MM.DD').format('YYYY-MM-DD');
-    console.log(withDate);
 
     // 파라미터 미입력 시, 오류 처리
-    if(!roomId || !withDate)
-    {
+    if(!roomId || !withDate) {
         const missParameters = Object.entries({roomId, withDate})
         .filter(it => it[1] == undefined).map(it => it[0]).join(',');
-        res
-        .status(statusCode.BAD_REQUEST)
-        .send(utils.successFalse(responseMessage.X_NULL_VALUE(missParameters)));
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE(missParameters)));
         return;
     }
 
-    const boardIdxArr = roomId.split('_')
-    const boardIdx = boardIdxArr[0];
+    const parsingArr = roomId.split('-')
+    const boardIdx = parsingArr[0];
+    const writerIdx = parsingArr[1];
+
+    // 글쓴이 이외의 유저가 초대장을 보내려 하는 경우
+    if(userIdx != writerIdx) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_ID));
+        return;
+    }
 
     const json = {roomId, withDate, withTime, boardIdx};
-    let result = await Chat.update(json); // 동행 처리
+    const result = await Chat.update(json); // 동행 처리
 
     // DB 쿼리 오류 시, 에러 처리
-    if(result.length == 0)
-    {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(responseMessage.WITH_FAIL));
+    if(result.length == 0) {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.WITH_FAIL));
         return;
     }
+    else if(result == -1) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.CHAT_EMPTY));
+        return;
+    }
+    else if(result == -2) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.WITH_ALREADY));
+        return;
+    }
+    
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.WITH_SUCCESS, null));
+});
 
-    res.status(statusCode.OK).send(utils.successTrue(responseMessage.WITH_SUCCESS));
+// 위드 메이트 채팅 목록 조회
+router.get('/withmate', authUtil.validToken, async (req, res) => {
+    const userIdx = req.decoded.userIdx;
+    const gender = req.decoded.gender;
+
+    // 둘러보기 토큰인 경우
+    if(gender == 0) {
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+      return;
+    }
+
+    // 사용자와 관계된 위드메이트 채팅방 정보들 받아오기
+    const result = await Chat.readWithMate(userIdx);
+
+    // DB 쿼리 오류 시, 에러 처리
+    if(result.length == 0) {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.CHAT_READ_WITHMATE_FAIL));
+        return;
+    }
+    
+    else if(result == -1) {
+        res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.CHAT_EMPTY, null));
+        return;
+    }
+    
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.CHAT_READ_WITHMATE_SUCCESS, result));
 });
 
 // 채팅 목록 조회
@@ -123,7 +163,7 @@ router.get('/', authUtil.validToken, async (req, res) => {
     }
 
     // 사용자와 관계된 모든 채팅방 정보들 받아오기
-    let result = await Chat.readAll(userIdx);
+    const result = await Chat.readAll(userIdx);
 
     // DB 쿼리 오류 시, 에러 처리
     if(result.length == 0) {
@@ -138,5 +178,7 @@ router.get('/', authUtil.validToken, async (req, res) => {
     
     res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.CHAT_READ_ALL_SUCCESS, result));
 });
+
+
 
 module.exports = router;

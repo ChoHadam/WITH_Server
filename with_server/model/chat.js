@@ -55,6 +55,25 @@ module.exports = {
         }
     },
 
+    readWithMate : async (userIdx) => {
+        var result = await pool.queryParam_None(`SELECT * FROM Chat WHERE userIdx = ${userIdx} and withFlag = 1`);
+
+        if(result.length == 0)
+            return -1;
+
+        else {
+            result = await pool.queryParam_None(`
+            SELECT Chat.userIdx, Chat.boardIdx, roomId, userImg, name, title, withFlag, auth 
+            FROM Chat 
+                LEFT JOIN Board ON Chat.boardIdx = Board.boardIdx 
+                LEFT JOIN User ON Chat.userIdx = User.userIdx 
+            WHERE roomId LIKE '____%${userIdx}%' AND Chat.userIdx != ${userIdx}
+            ORDER BY Chat.boardIdx ASC`);
+
+            return result;
+        }
+    },
+
     checkRoom : async (json) => {
         // 이미 채팅방이 존재하는지 확인한다.
         const result = await pool.queryParam_None(`SELECT invitationIdx FROM ${table1} WHERE roomId = '${json.roomId}' LIMIT 1`)
@@ -63,6 +82,15 @@ module.exports = {
 
     update : async (json) => {
         // 동행을 수락하면 채팅방 내용을 수정한다.
+        const check = await pool.queryParam_None(`SELECT withFlag FROM ${table1} WHERE roomId = '${json.roomId}'`);
+
+        // 해당 채팅방이 존재하지 않는 경우
+        if(check.length == 0)
+            return -1;
+        // 이미 동행신청을 한 경우
+        else if(check[0].withFlag == 1)
+            return -2;
+
         const conditions = [];
         if (json.withDate) conditions.push(`withDate = '${json.withDate}'`);
         if (json.withTime) conditions.push(` withTime = '${json.withTime}'`)

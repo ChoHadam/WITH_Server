@@ -88,10 +88,13 @@ module.exports = {
 
     CHAT_READ_ALL_SUCCESS:"채팅방 전체 조회 성공",
     CHAT_READ_ALL_FAIL:"채팅방 전체 조회 실패",
+    CHAT_READ_WITHMATE_SUCCESS:"위드메이트 채팅방 전체 조회 성공",
+    CHAT_READ_WITHMATE_FAIL:"위드메이트 채팅방 전체 조회 실패",
     CHAT_EMPTY:"채팅방이 존재하지 않습니다",
 
     WITH_SUCCESS: "동행 성공",
     WITH_FAIL: "동행 실패",
+    WITH_ALREADY: "이미 동행을 신청하였습니다",
 
     X_NULL_VALUE: (x) => `${x}가 존재하지 않습니다`,
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,
