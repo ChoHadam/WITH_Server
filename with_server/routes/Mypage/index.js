@@ -101,7 +101,7 @@ router.get("/boards", authUtil.validToken,async (req, res) => {
         return;
     }
 
-    const result = await Mypage.readAll(userIdx);
+    const result = await Mypage.readBoard(userIdx);
     
     if(result.length == 0)
     {
@@ -274,10 +274,10 @@ router.post("/contactUs", authUtil.validToken, async(req, res) => {
     });
 });
 
-//공지사항
-router.get("/notice",async(req,res) => {
+//공지사항 전체보기
+router.get("/noticeAll",async(req,res) => {
 
-    const result = await Mypage.readNotice();
+    const result = await Mypage.NoticeAll();
 
     if(result.length == 0) {
         res
@@ -289,6 +289,34 @@ router.get("/notice",async(req,res) => {
     res
     .status(statusCode.OK)
     .send(utils.successTrue(statusCode.OK, responseMessage. READ_NOTICE_SUCCESS, result));
+
+
+});
+
+//공지사항 세부내용 보기
+router.get("/notice/:noticeIdx",async(req,res) => {
+
+    const noticeIdx = req.params.noticeIdx;
+
+    if(!noticeIdx)
+    {
+        res.status(statusCode.BAD_REQUEST)
+        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE("noticeIdx")));
+        return;
+    }
+
+    const result = await Mypage.NoticeDetail(noticeIdx);
+
+    if(result.length == 0) {
+        res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage. READ_NOTICE_FAIL));
+        return;
+    }
+
+    res
+    .status(statusCode.OK)
+    .send(utils.successTrue(statusCode.OK, responseMessage. READ_NOTICE_SUCCESS, result[0]));
 
 
 });

@@ -23,7 +23,7 @@ module.exports = {
         나와 연결된 채팅방의 정보들을(게시글 idx, room ID, 상대 이미지, 이름, 지역명, 제목, 내용, 
         동행날짜, 시작날짜, 끝나는 날짜, 동행 플래그) 출력한다.
         */
-        var board_list = [];
+        //var board_list = [];
 
         var result = await pool.queryParam_None(`SELECT * FROM Chat WHERE userIdx = ${userIdx}`);
 
@@ -32,13 +32,14 @@ module.exports = {
 
         else {
             result = await pool.queryParam_None(`
-            SELECT Chat.userIdx, Chat.boardIdx, roomId, userImg, name, regionName, title, withDate, startDate, endDate, withFlag 
+            SELECT Chat.userIdx, Chat.boardIdx, roomId, userImg, name, title, withFlag, auth 
             FROM Chat 
                 LEFT JOIN Board ON Chat.boardIdx = Board.boardIdx 
                 LEFT JOIN User ON Chat.userIdx = User.userIdx 
             WHERE roomId LIKE '____%${userIdx}%' AND Chat.userIdx != ${userIdx}
             ORDER BY Chat.boardIdx ASC`);
 
+            /*
             for(var i in result) {
                 board_list.push(result[i].boardIdx);
                 result[i].startDate = moment(result[i].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
@@ -48,6 +49,7 @@ module.exports = {
                 else
                     result[i].withDate = moment(result[i].withDate, 'YYYY-MM-DD').format('YY.MM.DD');
             }
+            */
 
             return result;
         }

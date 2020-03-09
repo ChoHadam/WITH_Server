@@ -9,7 +9,7 @@ const table5 = 'Notice';
 
 module.exports = {
     readProfile: async(userIdx) => {        
-        const fields = 'userId, name, birth, gender, userImg, interest'
+        const fields = 'userId, name, birth, gender, userImg, interest, auth'
         var result = await pool.queryParam_None(`SELECT ${fields} FROM ${table1} WHERE userIdx = ${userIdx}`); 
         
         if(result.length != 0) {
@@ -21,16 +21,7 @@ module.exports = {
                     interestArr.push(interestQuery[i].interests);
                 }  
                 result[0].interest = interestArr;
-            }
-    
-            // if(result[0].birth != null) {
-            //     const birthYear = result[0].birth.split("-");
-            //     const currentYear = moment().format('YYYY');
-            //     const age = currentYear - birthYear[0] + 1;
-        
-            //     result[0].age = age;
-            //     delete result[0].birth;
-            // }
+            }    
         }
 
         return result;
@@ -67,8 +58,9 @@ module.exports = {
             
     },
 
-    readAll: async(userIdx) => {
-        const result = await pool.queryParam_None(`SELECT * FROM ${table2} WHERE userIdx = '${userIdx}'`)
+    readBoard: async(userIdx) => {
+        const fields = 'boardIdx, regionName, title, uploadTime, startDate, endDate, withNum';
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table2} WHERE userIdx = '${userIdx}'`)
         return result;
     },
 
@@ -96,8 +88,14 @@ module.exports = {
 
     },
 
-    readNotice : async() =>{
-        const result = await pool.queryParam_None(`SELECT * FROM ${table5}`); 
+    NoticeAll : async() =>{
+        const fields = 'noticeIdx, title, uploadDate'
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table5}`); 
+        return result;
+
+    },
+    NoticeDetail : async(noticeIdx) =>{
+        const result = await pool.queryParam_None(`SELECT * FROM ${table5} WHERE noticeIdx = ${noticeIdx}`); 
         return result;
 
     }
