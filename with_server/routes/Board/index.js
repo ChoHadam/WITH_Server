@@ -56,11 +56,6 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
   var {regionCode, startDate, endDate, keyword, filter} = req.params;
   const {userIdx, gender} = req.decoded;
 
-  if(gender == 0) {
-    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
-    return;
-  } 
-
   if(startDate !='0' && endDate != '0')
   {
     startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
