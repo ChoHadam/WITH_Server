@@ -111,12 +111,16 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
     return;
   }
 
+  if(userIdx == result[0].userIdx)
+    result[0].writer = 1;
+  else
+    result[0].writer = 0;
+
   result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
   result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');  
   
   //클라에서 필요없는 정보 제거 
   delete result[0].regionCode;
-
 
   res.status(statusCode.OK).send(utils.successTrue(statusCode.OK,responseMessage.BOARD_READ_SUCCESS, result[0]));
 });
