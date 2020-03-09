@@ -99,7 +99,7 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
 
   if(!boardIdx || !userIdx)
   {
-    res.status(statusCode.NO_CONTENT).send(utils.successFalse(responseMessage.NULL_VALUE));
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
     return;
   }
 
@@ -107,7 +107,7 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
 
   if(result.length == 0)
   {
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.NO_BOARD));
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_READ_FAIL));
     return;
   }
 

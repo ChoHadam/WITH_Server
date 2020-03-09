@@ -118,7 +118,7 @@ router.put('/', authUtil.validToken, async (req, res) => {
         return;
     }
     else if(result == -2) {
-        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.WITH_ALREADY));
+        res.status(statusCode.CONFLICT).send(utils.successFalse(statusCode.CONFLICT, responseMessage.WITH_ALREADY));
         return;
     }
     
