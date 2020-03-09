@@ -201,7 +201,7 @@ router.post("/selfAuth", upload_auth.single('img'), async(req, res) => {
     let mailOptions = {
       from: process.env.E_MAIL_ID,    // 발송 메일 주소
       to: process.env.E_MAIL_ID,    // 수신 메일 주소
-      subject: `${userName}님께서 본인인증을 요청하였습니다.`,   // 제목
+      subject: `[본인인증] ${userName}님께서 본인인증을 요청하였습니다`,   // 제목
       text: `${userName}님께서 본인인증을 요청하였습니다.\n AWS S3에서 확인해주세요!\n https://s3.console.aws.amazon.com/s3/`  // 내용
     };
 
@@ -258,7 +258,7 @@ router.post("/contactUs", authUtil.validToken, async(req, res) => {
     let mailOptions = {
         from: process.env.E_MAIL_ID,    // 발송 메일 주소
         to: process.env.E_MAIL_ID,    // 수신 메일 주소
-        subject: `${userId} 님으로부터의 문의입니다`,   // 제목
+        subject: `[문의] ${userId} 님으로부터의 문의입니다`,   // 제목
         text: content  // 내용
     };
   

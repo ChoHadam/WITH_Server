@@ -96,6 +96,9 @@ module.exports = {
     WITH_FAIL: "동행 실패",
     WITH_ALREADY: "이미 동행을 신청하였습니다",
 
+    REPORT_SUCCESS: "신고하기 성공",
+    REPORT_FAIL: "신고하기 실패",
+
     X_NULL_VALUE: (x) => `${x}가 존재하지 않습니다`,
     X_CREATE_SUCCESS: (x) => `${x} 작성 성공`,
     X_CREATE_FAIL: (x) => `${x} 작성 실패`,

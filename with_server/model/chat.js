@@ -74,9 +74,9 @@ module.exports = {
         }
     },
 
-    checkRoom : async (json) => {
+    checkRoom : async (roomId) => {
         // 이미 채팅방이 존재하는지 확인한다.
-        const result = await pool.queryParam_None(`SELECT invitationIdx FROM ${table1} WHERE roomId = '${json.roomId}' LIMIT 1`)
+        const result = await pool.queryParam_None(`SELECT invitationIdx FROM ${table1} WHERE roomId = '${roomId}' LIMIT 1`)
         return result;
     },
 

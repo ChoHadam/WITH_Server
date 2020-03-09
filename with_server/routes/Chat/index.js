@@ -11,6 +11,8 @@ moment.tz.setDefault("Asia/Seoul");
 
 const authUtil = require('../../module/utils/authUtil');
 const Chat = require('../../model/chat');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 // 채팅방 개설
 router.post('/', authUtil.validToken, async (req, res) => {
@@ -45,7 +47,7 @@ router.post('/', authUtil.validToken, async (req, res) => {
     let json = {userIdx1, boardIdx, roomId, rand};
 
     // 채팅방 중복 확인
-    const check = await Chat.checkRoom(json);
+    const check = await Chat.checkRoom(roomId);
     if(check.length) {
         res.status(statusCode.CONFLICT).send(utils.successTrue(statusCode.CONFLICT, responseMessage.ALREADY_CHAT, check[0].invitationIdx));
         return;
@@ -179,6 +181,65 @@ router.get('/', authUtil.validToken, async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.CHAT_READ_ALL_SUCCESS, result));
 });
 
+router.post('/report', authUtil.validToken, async (req, res) => {
+    const userIdx = req.decoded.userIdx;
+    const gender = req.decoded.gender;
+    const roomId = req.body.roomId;
+    const category = req.body.category;
 
+
+    if(gender == 0) {
+      res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+      return;
+    }
+    else if (!category || !roomId) {
+        const missParameters = Object.entries({category, roomId})
+        .filter(it => it[1] == undefined).map(it => it[0]).join(',');
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE(missParameters)));
+        return;
+    }
+
+    const parsingArr = roomId.split('-');
+    var defendant;
+
+    const check = await Chat.checkRoom(roomId);
+    if(check.length == 0) {
+        res.status(statusCode.BAD_REQUEST).send(utils.successTrue(statusCode.BAD_REQUEST, responseMessage.CHAT_EMPTY));
+        return;
+    }
+
+    if(userIdx == parsingArr[1])
+        defendant = parsingArr[2];
+    else
+        defendant = parsingArr[1];
+
+    let transporter = nodemailer.createTransport({
+        service: process.env.E_MAIL_SERVICE,
+        host: process.env.E_MAIL_HOST,
+        port: process.env.E_MAIL_PORT,
+        auth: {
+          user: process.env.E_MAIL_ID,  // 계정 아이디
+          pass: process.env.E_MAIL_PW // 계정 비밀번호
+        }
+      });
+    
+      let mailOptions = {
+        from: process.env.E_MAIL_ID,    // 발송 메일 주소
+        to: process.env.E_MAIL_ID,    // 수신 메일 주소
+        subject: `[신고] ${userIdx}님께서 ${defendant}님을 신고하셨습니다`,   // 제목
+        text: `${userIdx}님께서 ${defendant}님을 신고하셨습니다.\n 확인 부탁드립니다 \n 사유 : ${category} \n 채팅방 roomId : ${roomId}`  // 내용
+      };
+  
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.REPORT_FAIL));
+          console.log(error);
+          return;
+        }
+        else {
+          res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.REPORT_SUCCESS, null));
+        }
+      });
+});
 
 module.exports = router;
