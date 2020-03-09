@@ -9,7 +9,7 @@ const authUtil = require('../../module/utils/authUtil');
 require('dotenv').config();
 
 // 국가 리스트 출력하기
-router.get("/regions", authUtil.validToken, async (req, res) => {
+router.get("/regions", async (req, res) => {
     const result = await Home.readRegion();
 
     if(result == -1) {
