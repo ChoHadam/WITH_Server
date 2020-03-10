@@ -56,6 +56,8 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
   var {regionCode, startDate, endDate, keyword, filter} = req.params;
   const {userIdx, gender} = req.decoded;
 
+  if(gender == 0)  filter = -1; //둘러보기 유저 필터적용 안됨
+
   if(startDate !='0' && endDate != '0')
   {
     startDate = moment(startDate, 'YY.MM.DD').format('YYYY-MM-DD');
