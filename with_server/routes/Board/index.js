@@ -81,8 +81,8 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
 
   for(var i in result)
   {
-    result[i].startDate = moment(result[i].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
-    result[i].endDate = moment(result[i].endDate, 'YYYY-MM-DD').format('YY.MM.DD');
+    result[i].startDate = moment(result[i].startDate, 'YYYY-MM-DD').format('YYYY.M.D');
+    result[i].endDate = moment(result[i].endDate, 'YYYY-MM-DD').format('YYYY.M.D');
   }
 
   res.status(statusCode.OK).send(utils.successTrue(statusCode.OK,responseMessage.BOARD_READ_ALL_SUCCESS, result));
@@ -118,8 +118,8 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
   else
     result[0].writer = 0;
 
-  result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YY.MM.DD');
-  result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YY.MM.DD');  
+  result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YYYY.M.D');
+  result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YYYY.M.D');  
   
   //클라에서 필요없는 정보 제거 
   delete result[0].regionCode;

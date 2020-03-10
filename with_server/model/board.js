@@ -48,6 +48,7 @@ module.exports = {
 
     readAll : async (json) => {
         // regionCode Parsing
+        console.log(json.regionCode);
         var region = json.regionCode.substr(0,2);
         var semi_region = json.regionCode.substr(2,2);
         var country = json.regionCode.substr(4,2);
@@ -67,13 +68,12 @@ module.exports = {
         }
         else{
             // 나라에서 찾기
-            query = `' ${json.regionCode}'`;
+            query += ` '${json.regionCode}'`;
         }
 
         // 날짜 필터 적용된 경우
-        if(json.startDate != '0' && json.endDate != '0'){
-            //query += ` AND (startDate >= '${json.startDate}' AND endDate <= '${json.endDate}')`;
-            query += ` AND (startDate <= '${json.endDate}' AND endDate >= '${json.startDate}')`;
+        if(json.startDate != '0' && json.endDate != '0'){            
+            query += ` AND (startDate <= '${json.endDate}' AND endDate >= '${json.startDate}' OR startDate <= '${json.EndDate}' OR endDate >= '${json.startDate}')`;
         }
 
         // 검색 필터 적용된 경우
