@@ -149,9 +149,14 @@ module.exports = {
         // birth field 값 나이로 변환하여 반환.
         const birthYear = result[0].birth.split("-");
         const currentYear = moment().format('YYYY');
-        const age = currentYear - birthYear[0] + 1;
+        const age = currentYear - birthYear[0] + 1;        
 
         result[0].birth = age;
+        // 관심사 배열에 넣기
+        if(result[0].interest != null){
+            result[0].interest = result[0].interest.split(',');
+        }
+
         return result;
     },
 
