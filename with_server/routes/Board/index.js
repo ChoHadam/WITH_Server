@@ -124,7 +124,7 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
   //클라에서 필요없는 정보 제거 
   delete result[0].regionCode;
 
-  res.status(statusCode.OK).send(utils.successTrue(statusCode.OK,responseMessage.BOARD_READ_SUCCESS, result[0]));
+  res.status(statusCode.OK).send(utils.successTrue(statusCode.OK,responseMessage.BOARD_READ_SUCCESS, result));
 });
 
 // 게시글 수정하기

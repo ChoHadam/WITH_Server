@@ -11,7 +11,7 @@ const user = {
                 json.interest = String(json.interest).split(',').join('","');
             }
             json.interest = `"${json.interest}"`;  //쿼리 형식 맞추기            
-            const result = await pool.queryParam_None(`SELECT * FROM ${table2} WHERE interests IN(${interestStr})`); //select * 한게 select intIdx보다 빨라서 *로 바꿈
+            const result = await pool.queryParam_None(`SELECT * FROM ${table2} WHERE interests IN(${json.interest})`); //select * 한게 select intIdx보다 빨라서 *로 바꿈
 
             var i = 0;
             while(i < result.length){
