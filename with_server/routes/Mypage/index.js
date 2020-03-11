@@ -321,4 +321,35 @@ router.get("/notice/:noticeIdx",authUtil.validToken,async(req,res) => {
 
 });
 
+// 탈퇴 하기
+router.put("/withdraw", authUtil.validToken, async(req, res) => {
+    const userIdx = req.decoded.userIdx;
+    const gender = req.decoded.gender;
+
+    if(gender == 0){
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.LOOK_AROUND_TOKEN));
+        return;
+    }
+
+    if(!userIdx)
+    {
+        res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.EMPTY_TOKEN));
+        return;
+    }
+
+    const result =  await Mypage.byeUser(userIdx);
+    console.log(result);
+
+    if(result.length == 0) { 
+        res
+        .status(statusCode.INTERNAL_SERVER_ERROR)
+        .send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.WITHDRAW_FAIL));
+        return;
+    }
+
+    res
+    .status(statusCode.OK)
+    .send(utils.successTrue(statusCode.OK, responseMessage.WITHDRAW_SUCCESS, result[0]))
+});
+
 module.exports = router;

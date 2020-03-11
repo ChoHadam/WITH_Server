@@ -189,7 +189,7 @@ router.delete("/:boardIdx", async(req, res) => {
   res.status(statusCode.OK).send(utils.successTrue(responseMessage.BOARD_DELETE_SUCCESS, result));
 });
 
-// 마감 풀기
+// 마감 하기/풀기
 router.put("/activate/:boardIdx", authUtil.validToken, async(req, res) => {
   const userIdx = req.decoded.userIdx;
   const boardIdx = req.params.boardIdx;

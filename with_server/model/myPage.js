@@ -98,5 +98,12 @@ module.exports = {
         const result = await pool.queryParam_None(`SELECT * FROM ${table5} WHERE noticeIdx = ${noticeIdx}`); 
         return result;
 
+    },
+
+    byeUser : async(userIdx) =>{
+        const setStr = `exist = '-1', userId = Null, active = '-1'`
+        const result = await pool.queryParam_None(`UPDATE ${table1} INNER JOIN ${table2} ON ${table1}.userIdx = ${table2}.userIdx SET ${setStr} WHERE ${table1}.userIdx = ${userIdx}`);
+        return result;
+        
     }
 };

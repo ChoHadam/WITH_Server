@@ -19,6 +19,8 @@ module.exports = {
     USER_IMG_MISS: "유저 프로필 이미지가 필요합니다",
     FIND_PW_SUCCESS: "비밀번호 찾기 성공",
     FIND_PW_FAIL: "비밀번호 찾기 실패",
+    WITHDRAW_SUCCESS: "회원 탈퇴 성공",
+    WITHDRAW_FAIL: "회원 탈퇴 실패",
 
     EMPTY_TOKEN: "토큰이 없습니다.",
     INVALID_TOKEN: "올바르지 않은 토큰입니다",
