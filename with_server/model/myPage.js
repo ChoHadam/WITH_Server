@@ -55,9 +55,9 @@ module.exports = {
             
     },
 
-    readBoard: async(userIdx) => {
+    readBoards: async(userIdx) => {
         const fields = 'boardIdx, regionName, title, uploadTime, startDate, endDate, withNum';
-        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table2} WHERE userIdx = '${userIdx}'`)
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table2} WHERE userIdx = '${userIdx}' ORDER BY uploadTime desc`)
         return result;
     },
 
