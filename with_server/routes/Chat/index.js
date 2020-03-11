@@ -95,7 +95,7 @@ router.put('/', authUtil.validToken, async (req, res) => {
         return;
     }
 
-    const parsingArr = roomId.split('-')
+    const parsingArr = roomId.split('_')
     const boardIdx = parsingArr[0];
     const writerIdx = parsingArr[1];
 
@@ -181,6 +181,7 @@ router.get('/', authUtil.validToken, async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.CHAT_READ_ALL_SUCCESS, result));
 });
 
+// 신고하기
 router.post('/report', authUtil.validToken, async (req, res) => {
     const userIdx = req.decoded.userIdx;
     const gender = req.decoded.gender;
@@ -199,7 +200,7 @@ router.post('/report', authUtil.validToken, async (req, res) => {
         return;
     }
 
-    const parsingArr = roomId.split('-');
+    const parsingArr = roomId.split('_');
     var defendant;
 
     const check = await Chat.checkRoom(roomId);
