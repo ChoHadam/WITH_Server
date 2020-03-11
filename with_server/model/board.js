@@ -171,7 +171,7 @@ module.exports = {
 
         result[0].birth = age;
 
-        return result;
+        return result[0];
     },
 
     update : async (json, boardIdx, userIdx) => {
