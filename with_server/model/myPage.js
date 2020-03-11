@@ -16,7 +16,7 @@ module.exports = {
             if(result[0].interest != null){
                 var interestArr = [];
                 var interest = result[0].interest;
-                const interestResult = await pool.queryParam_None(`SELECT * FROM ${table4} WHERE intIdx IN(${interest})`);                 
+                const interestResult = await pool.queryParam_None(`SELECT * FROM ${table4} WHERE intIdx IN(${interest})`);
                 result[0].interest = interestResult;
             }    
         }

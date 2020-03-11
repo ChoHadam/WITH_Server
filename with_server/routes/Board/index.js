@@ -113,13 +113,13 @@ router.get("/:boardIdx", authUtil.validToken, async(req, res) => {
     return;
   }
 
-  if(userIdx == result[0].userIdx)
-    result[0].writer = 1;
+  if(userIdx == result.userIdx)
+    result.writer = 1;
   else
-    result[0].writer = 0;
+    result.writer = 0;
 
-  result[0].startDate = moment(result[0].startDate, 'YYYY-MM-DD').format('YYYY년 M월 D일');
-  result[0].endDate = moment(result[0].endDate, 'YYYY-MM-DD').format('YYYY년 M월 D일');
+  result.startDate = moment(result.startDate, 'YYYY-MM-DD').format('YYYY년 M월 D일');
+  result.endDate = moment(result.endDate, 'YYYY-MM-DD').format('YYYY년 M월 D일');
 
   res.status(statusCode.OK).send(utils.successTrue(statusCode.OK,responseMessage.BOARD_READ_SUCCESS, result));
 });
