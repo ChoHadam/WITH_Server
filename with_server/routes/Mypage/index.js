@@ -338,7 +338,6 @@ router.put("/withdraw", authUtil.validToken, async(req, res) => {
     }
 
     const result =  await Mypage.byeUser(userIdx);
-    console.log(result);
 
     if(result.length == 0) { 
         res
