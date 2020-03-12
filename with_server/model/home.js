@@ -57,7 +57,7 @@ module.exports = {
         continent.korea.north = null;
         continent.korea.south = null;
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-        continent.europe.all.name = "유럽 전체";
+        continent.europe.all.name = "전체";
         continent.europe.all.country = new Array();
         continent.europe.east.name = "동유럽";
         continent.europe.east.country = new Array();
@@ -66,7 +66,7 @@ module.exports = {
         continent.europe.north.name = "북유럽";
         continent.europe.north.country = new Array();
         
-        continent.asia.all.name = "아시아 전체";
+        continent.asia.all.name = "전체";
         continent.asia.all.country = new Array();
         continent.asia.east.name = "동남아시아";
         continent.asia.east.country = new Array();
@@ -77,16 +77,16 @@ module.exports = {
         continent.asia.south.name = "남부아시아";
         continent.asia.south.country = new Array();
         
-        continent.north_america.all.name = "북아메리카 전체";
+        continent.north_america.all.name = "전체";
         continent.north_america.all.country = new Array();
         
-        continent.south_america.all.name = "남아메리카 전체";
+        continent.south_america.all.name = "전체";
         continent.south_america.all.country = new Array();
         
-        continent.oceania.all.name = "오세아니아 전체";
+        continent.oceania.all.name = "전체";
         continent.oceania.all.country = new Array();
         
-        continent.africa.all.name = "아프리카 전체";
+        continent.africa.all.name = "전체";
         continent.africa.all.country = new Array();
         continent.africa.east.name = "동아프리카";
         continent.africa.east.country = new Array();
@@ -95,7 +95,7 @@ module.exports = {
         continent.africa.south.name = "남아프리카";
         continent.africa.south.country = new Array();
         
-        continent.korea.all.name = "국내 전체";
+        continent.korea.all.name = "전체";
         continent.korea.all.country = new Array();
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
