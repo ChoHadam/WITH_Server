@@ -98,6 +98,7 @@ module.exports = {
     WITH_SUCCESS: "동행 성공",
     WITH_FAIL: "동행 실패",
     WITH_ALREADY: "이미 동행을 신청하였습니다",
+    WITH_WRITER: "글쓴이는 동행을 수락할 수 없습니다",
 
     REPORT_SUCCESS: "신고하기 성공",
     REPORT_FAIL: "신고하기 실패",
