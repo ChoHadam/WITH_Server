@@ -46,7 +46,7 @@ router.get("/:regionCode", async (req, res) => {
         return;
     }
 
-    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.READ_REGION_IMG_SUCCESS, result));
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.READ_REGION_IMG_SUCCESS, result[0]));
 });
 
 
