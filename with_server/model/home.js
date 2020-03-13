@@ -197,5 +197,11 @@ module.exports = {
     bgImage : async()  => {
         const result = await pool.queryParam_None(`SELECT imgUrl FROM ${table4}`);
         return result;
+    },
+
+    regionInfo : async(regionCode)  => {
+        const fields = 'regionNameEng, regionImgH'
+        const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table2} WHERE regionCode = ${regionCode}`);
+        return result;
     }
 };

@@ -55,6 +55,7 @@ router.post('/', authUtil.validToken, async (req, res) => {
 
     // 채팅방 생성
     let result = await Chat.create(json);
+    console.log(result);
 
     // DB 쿼리 오류 시, 에러 처리
     if(result.length == 0) {
