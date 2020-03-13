@@ -3,7 +3,7 @@ const {secretOrPrivateKey, secretOrRefreshKey} = require('../../config/secretKey
 
 const options = {
     algorithm: "HS256",
-    expiresIn: "1d",
+    expiresIn: "1y",
     issuer: "withDev"
 }
 
