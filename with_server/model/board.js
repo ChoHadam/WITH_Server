@@ -74,7 +74,7 @@ module.exports = {
 
         // 날짜 필터 적용된 경우
         if(json.startDate != '0' && json.endDate != '0'){            
-            query += ` AND (startDate <= '${json.endDate}' AND endDate >= '${json.startDate}' OR startDate <= '${json.EndDate}' OR endDate >= '${json.startDate}')`;
+            query += ` AND ((startDate >= '${json.startDate}' AND endDate <= '${json.endDate}') OR (startDate <= '${json.endDate}' AND endDate >= '${json.endDate}') OR (endDate >= '${json.startDate}' AND startDate <= '${json.startDate}'))`;
         }
 
         // 검색 필터 적용된 경우
@@ -82,10 +82,6 @@ module.exports = {
             const decode_keyword = decodeURI(json.keyword);
             query += ` AND (title LIKE '%${decode_keyword}%' OR content LIKE '%${decode_keyword}%')`;
         }
-
-        /*var front_query = query.substr(0, 116);
-        var back_query = query.substr(115, query.length);
-        query = front_query + `NATURAL JOIN User NATURAL JOIN Region` + back_query;*/
 
         if(json.filter != -1){
             // 동성 필터 적용된 경우
@@ -95,6 +91,7 @@ module.exports = {
             // 동성 필터 적용되지 않은 경우
             query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender})) ORDER BY uploadTime desc`;
         }
+        console.log(query);
 
         const result = await pool.queryParam_None(query);
         
