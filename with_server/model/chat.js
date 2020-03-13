@@ -63,7 +63,7 @@ module.exports = {
 
         else {
             result = await pool.queryParam_None(`
-            SELECT Chat.userIdx, Chat.boardIdx, roomId, invitationIdx userImg, name, title, withFlag, auth 
+            SELECT Chat.userIdx, Chat.boardIdx, roomId, invitationIdx, userImg, name, title, withFlag, auth 
             FROM Chat 
                 LEFT JOIN Board ON Chat.boardIdx = Board.boardIdx 
                 LEFT JOIN User ON Chat.userIdx = User.userIdx 
