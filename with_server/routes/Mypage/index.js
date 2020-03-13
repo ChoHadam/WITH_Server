@@ -348,7 +348,7 @@ router.put("/withdraw", authUtil.validToken, async(req, res) => {
 
     res
     .status(statusCode.OK)
-    .send(utils.successTrue(statusCode.OK, responseMessage.WITHDRAW_SUCCESS, result[0]))
+    .send(utils.successTrue(statusCode.OK, responseMessage.WITHDRAW_SUCCESS, null))
 });
 
 module.exports = router;
