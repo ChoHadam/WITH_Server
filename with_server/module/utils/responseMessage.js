@@ -35,6 +35,7 @@ module.exports = {
     BOARD_CREATE_FAIL: "게시글 작성 실패",
     BOARD_READ_ALL_SUCCESS: "게시글 전체 조회 성공",
     BOARD_READ_ALL_FAIL: "게시글 전체 조회 실패",
+    BOARD_PAGE_EXCESS: "게시글 페이지를 초과하였습니다",
     BOARD_READ_SUCCESS: "게시글 조회 성공",
     BOARD_READ_FAIL: "게시글 조회 실패",
     BOARD_UPDATE_SUCCESS: "게시글 수정 성공",

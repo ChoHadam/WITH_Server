@@ -52,8 +52,8 @@ router.post('/', authUtil.validToken, async (req, res) => {
 });
 
 // 게시글 전체 보기
-router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter", authUtil.validToken, async (req, res) => {
-  var {regionCode, startDate, endDate, keyword, filter} = req.params;
+router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords/:keyword/filters/:filter/currPage/:currPage", authUtil.validToken, async (req, res) => {
+  var {regionCode, startDate, endDate, keyword, filter,currPage} = req.params;
   const {userIdx, gender} = req.decoded;
 
   if(gender == 0)  filter = -1; //둘러보기 유저 필터적용 안됨
@@ -64,16 +64,23 @@ router.get("/region/:regionCode/startDates/:startDate/endDates/:endDate/keywords
     endDate = moment(endDate, 'YY.MM.DD').format('YYYY-MM-DD');
   }
 
-  if(!regionCode)
+  if(!regionCode || !currPage)
   {
-    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.X_NULL_VALUE("regionCode")));
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
     return;
   }
 
-  const json = {regionCode, startDate, endDate, userIdx, filter, keyword, gender};
+  const json = {regionCode, startDate, endDate, userIdx, filter, keyword, gender,currPage};
   let result = await Board.readAll(json);
+  
 
-  if(result.length == 0)
+  if(result == 1) //요청 페이지 초과했을때
+  {
+    res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.BOARD_PAGE_EXCESS));
+    return;
+  }
+
+  if(result.length == 0) //디비 내부 오류
   {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.BOARD_READ_ALL_FAIL));
     return;

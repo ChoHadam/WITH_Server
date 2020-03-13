@@ -49,51 +49,60 @@ module.exports = {
 
     readAll : async (json) => {
         // regionCode Parsing
-        console.log(json.regionCode);
         var region = json.regionCode.substr(0,2);
         var semi_region = json.regionCode.substr(2,2);
         var country = json.regionCode.substr(4,2);
-        var query;
+        //paging 
+        var pageSize = 15;
+        var offset = (json.currPage - 1) * pageSize;        
         const fields = 'boardIdx, regionCode, regionName, title, uploadTime, startDate, endDate, withNum, filter, userImg, auth';
-        query = `SELECT ${fields} FROM ${table1} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE active = 1 AND regionCode LIKE`;
+        var queryMain = `FROM ${table1} NATURAL JOIN ${table2} NATURAL JOIN ${table3} WHERE active = 1 AND regionCode LIKE`;
 
         if(country == "00"){
             if(semi_region == "00"){
                 // 대분류에서 찾기
-                query += ` '${region}%'`;
+                queryMain += ` '${region}%'`;
             }
             else{
                 // 중분류에서 찾기
-                query += ` '${region}${semi_region}%'`;
+                queryMain += ` '${region}${semi_region}%'`;
             }
         }
         else{
             // 나라에서 찾기
-            query += ` '${json.regionCode}'`;
+            queryMain += ` '${json.regionCode}'`;
         }
 
         // 날짜 필터 적용된 경우
         if(json.startDate != '0' && json.endDate != '0'){            
-            query += ` AND ((startDate >= '${json.startDate}' AND endDate <= '${json.endDate}') OR (startDate <= '${json.endDate}' AND endDate >= '${json.endDate}') OR (endDate >= '${json.startDate}' AND startDate <= '${json.startDate}'))`;
+            queryMain += ` AND ((startDate >= '${json.startDate}' AND endDate <= '${json.endDate}') OR (startDate <= '${json.endDate}' AND endDate >= '${json.endDate}') OR (endDate >= '${json.startDate}' AND startDate <= '${json.startDate}'))`;
         }
 
         // 검색 필터 적용된 경우
         if(json.keyword != '0'){
             const decode_keyword = decodeURI(json.keyword);
-            query += ` AND (title LIKE '%${decode_keyword}%' OR content LIKE '%${decode_keyword}%')`;
+            queryMain += ` AND (title LIKE '%${decode_keyword}%' OR content LIKE '%${decode_keyword}%')`;
         }
 
         if(json.filter != -1){
             // 동성 필터 적용된 경우
-            query += ` AND gender = ${json.gender} ORDER BY uploadTime desc`;
+            queryMain += ` AND gender = ${json.gender}`;
         }
         else{
             // 동성 필터 적용되지 않은 경우
-            query += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender})) ORDER BY uploadTime desc`;
+            queryMain += ` AND (filter = -1 OR (filter = 1 AND gender = ${json.gender}))`;
         }
-        console.log(query);
 
-        const result = await pool.queryParam_None(query);
+        var query = `SELECT COUNT(*) as cnt ${queryMain}` ;        
+        var result = await pool.queryParam_None(query);       
+        var count = result[0].cnt;
+        if(json.currPage > count/pageSize + 1){ //페이지 넘어갔을때 오류처리
+            result = 1;
+            return result;
+        }
+
+        query = `SELECT PT.* FROM (SELECT ${fields} ${queryMain} ORDER BY uploadTime desc) PT LIMIT ${pageSize} OFFSET ${offset}`;
+        var result = await pool.queryParam_None(query);
         
         // uploadTime "n분 전/n시간 전/n일 전"으로 수정하여 반환
         for(var i in result){
