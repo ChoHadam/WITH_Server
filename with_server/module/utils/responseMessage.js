@@ -72,8 +72,8 @@ module.exports = {
     READ_REGION_LIST_SUCCESS: "국가 리스트 조회 성공",
     READ_REGION_LIST_FAIL: "국가 리스트 조회 실패",
 
-    READ_REGION_INFO_SUCCESS:"국가 정보 조회 성공",
-    READ_REGION_INFO_FAIL: "국가 정보 조회 실패",
+    READ_REGION_IMG_SUCCESS:"지역 이미지 조회 성공",
+    READ_REGION_IMG_FAIL: "지역 이미지 조회 실패",
 
     READ_HOME_BGIMG_SUCCESS: "홈배경 이미지 조회 성공",
     READ_HOME_BGIMG_FAIL: "홈배경 이미지 조회 실패",

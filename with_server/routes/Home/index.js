@@ -39,14 +39,14 @@ router.get("/bgImg", authUtil.validToken, async (req, res) => {
 router.get("/:regionCode", async (req, res) => {
     const regionCode = req.params.regionCode;
 
-    const result = await Home.regionInfo(regionCode);
+    const result = await Home.regionImage(regionCode);
 
     if(result.length == 0) {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.READ_REGION_INFO_FAIL));
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send(utils.successFalse(statusCode.INTERNAL_SERVER_ERROR, responseMessage.READ_REGION_IMG_FAIL));
         return;
     }
 
-    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.READ_REGION_INFO_SUCCESS, result));
+    res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.READ_REGION_IMG_SUCCESS, result));
 });
 
 
