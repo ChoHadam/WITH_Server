@@ -199,7 +199,7 @@ module.exports = {
         return result;
     },
 
-    regionInfo : async(regionCode)  => {
+    regionImage : async(regionCode)  => {
         const fields = 'regionNameEng, regionImgH'
         const result = await pool.queryParam_None(`SELECT ${fields} FROM ${table2} WHERE regionCode = ${regionCode}`);
         return result;
