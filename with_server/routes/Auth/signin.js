@@ -68,8 +68,8 @@ router.post('/', async(req, res) => {
     
     if(userResult.length == 0) { //존재하지 않는 데이터
         res
-        .status(statusCode.BAD_REQUEST)
-        .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.NO_ID));
+        .status(statusCode.NO_ID)
+        .send(utils.successFalse(statusCode.NO_ID, responseMessage.NO_ID));
         return;
     } else {
         const salt = userResult[0].salt;      
@@ -101,8 +101,8 @@ router.post('/', async(req, res) => {
             }
         } else { //비밀번호 불일지, 로그인 실패
             res
-            .status(statusCode.BAD_REQUEST)
-            .send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_PW));
+            .status(statusCode.MISS_PASSWORD)
+            .send(utils.successFalse(statusCode.MISS_PASSWORD, responseMessage.MISS_MATCH_PW));
             return;
         }
     }

@@ -73,7 +73,7 @@ router.post('/', authUtil.validToken, async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.CHAT_CREATE_SUCCESS, json.rand));
 });
 
-// 동행 신청하기
+// 동행 수락하기
 router.put('/', authUtil.validToken, async (req, res) => {
     const gender = req.decoded.gender;
     const userIdx = req.decoded.userIdx;
@@ -96,12 +96,12 @@ router.put('/', authUtil.validToken, async (req, res) => {
         return;
     }
 
-    const parsingArr = roomId.split('-')
+    const parsingArr = roomId.split('_')
     const boardIdx = parsingArr[0];
     const writerIdx = parsingArr[1];
 
-    // 글쓴이 이외의 유저가 초대장을 보내려 하는 경우
-    if(userIdx != writerIdx) {
+    // 글쓴이(=동행하기 신청한 사람)가 동행 수락을 하려는 경우
+    if(userIdx == writerIdx) {
         res.status(statusCode.BAD_REQUEST).send(utils.successFalse(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_ID));
         return;
     }
@@ -182,6 +182,7 @@ router.get('/', authUtil.validToken, async (req, res) => {
     res.status(statusCode.OK).send(utils.successTrue(statusCode.OK, responseMessage.CHAT_READ_ALL_SUCCESS, result));
 });
 
+// 신고하기
 router.post('/report', authUtil.validToken, async (req, res) => {
     const userIdx = req.decoded.userIdx;
     const gender = req.decoded.gender;
@@ -200,7 +201,7 @@ router.post('/report', authUtil.validToken, async (req, res) => {
         return;
     }
 
-    const parsingArr = roomId.split('-');
+    const parsingArr = roomId.split('_');
     var defendant;
 
     const check = await Chat.checkRoom(roomId);
